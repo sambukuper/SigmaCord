@@ -9,7 +9,7 @@
 - Configurable keybinds: Settings → Keybinds lists every action with its key, click it and press a new combination to change it, and the × next to it goes back to the default. Assigning a key another action already uses moves it off that action.
 - The microphone mute and the deafen toggles finally have keys, `Ctrl+Shift+M` and `Ctrl+Shift+D`, and both are rebindable like everything else.
 - The command palette, search, settings, fullscreen, next theme, inbox, saved messages and the tab actions are all in the same list. The fixed extras (Ctrl+Shift+P, interface zoom, Alt+1…9, Alt+Enter) stay as they were.
-- The rule is the same one plugins already had: letters and digits need Ctrl, Alt or Super, F1–F24 can go alone, and while you're typing in a text box only binds with a modifier fire.
+- The rule is the same one plugins already had: letters and digits need Ctrl, Alt or Super, and F1–F24 can go alone.
 
 **Builds**
 - Both release binaries now come from GitHub Actions: Linux portable and Windows cross-compiled, each with a build attestation. Nothing is built locally anymore; the release script only downloads, checks and signs.

@@ -126,8 +126,8 @@ pub fn resolve(b: *const Bind, s: *const S.Settings) ?Combo {
     return k;
 }
 
-/// A tecla vale com a janela em foco; digitando numa caixa de texto, só as
-/// que têm modificador ou são F1–F24 (o comportamento dos atalhos de sempre).
+/// A tecla vale com a janela em foco. Tudo que a captura aceita tem Ctrl, Alt
+/// ou Super, ou é F1–F24: nada aqui digita uma letra por cima da caixa de texto.
 pub fn dispatch(ctx: *d.Ctx) void {
     if (capturing != null) return;
     const io = ctx.io;
@@ -137,7 +137,6 @@ pub fn dispatch(ctx: *d.Ctx) void {
         if (io.*.KeyCtrl != k.ctrl or io.*.KeyAlt != k.alt or io.*.KeySuper != k.super) continue;
         if (!b.variant and io.*.KeyShift != k.shift) continue;
         if (!c.ImGui_IsKeyPressedEx(k.key, false)) continue;
-        if (!k.hasModifier() and !keys.isFkey(k.key) and io.*.WantTextInput) continue;
         b.run(ctx);
     }
 }
@@ -243,7 +242,7 @@ pub fn pageRows(p: anytype) void {
     }
     p.y += 4;
     p.note(i18n.tr(
-        "Vale com a janela do SigmaCord em foco. Enquanto você digita numa caixa de texto, atalhos sem Ctrl/Alt/Super não disparam (F1–F24 valem). Letras e números precisam de Ctrl, Alt ou Super, como nos plugins.",
-        "Binds work while the SigmaCord window is focused. While you're typing in a text box, binds without Ctrl/Alt/Super don't fire (F1–F24 do). Letters and digits need Ctrl, Alt or Super, like in plugins.",
+        "Vale com a janela do SigmaCord em foco. A regra é a dos plugins: letras e números precisam de Ctrl, Alt ou Super; F1–F24 podem ir sozinhas.",
+        "Binds work while the SigmaCord window is focused. Same rule as plugins: letters and digits need Ctrl, Alt or Super; F1–F24 can go alone.",
     ));
 }

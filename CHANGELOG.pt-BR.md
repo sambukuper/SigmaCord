@@ -9,7 +9,7 @@
 - Atalhos configuráveis: Configurações → Atalhos de teclado lista cada ação com a tecla dela; clicar e apertar outra combinação troca, e o × ao lado volta ao padrão. Se a tecla já era de outra ação, ela sai de lá.
 - O mudo do microfone e o ensurdecer finalmente têm teclas, `Ctrl+Shift+M` e `Ctrl+Shift+D`, e os dois trocam como todo o resto.
 - A paleta de comandos, a busca, as configurações, a tela cheia, o próximo tema, a caixa de entrada, as mensagens salvas e as ações de aba estão na mesma lista. Os fixos (Ctrl+Shift+P, zoom da interface, Alt+1…9, Alt+Enter) continuam como eram.
-- A regra é a mesma que os plugins já tinham: letras e números pedem Ctrl, Alt ou Super, F1–F24 podem ir sozinhas, e enquanto você digita numa caixa de texto só atalhos com modificador disparam.
+- A regra é a mesma que os plugins já tinham: letras e números pedem Ctrl, Alt ou Super, e F1–F24 podem ir sozinhas.
 
 **Builds**
 - Os dois binários das releases agora saem do GitHub Actions: o Linux portável e o Windows cruzado, cada um com atestado de build. Nada mais é compilado daqui; o script da release só baixa, confere e assina.

@@ -84,20 +84,18 @@ pub fn parse(spec: []const u8) ?Combo {
     return k;
 }
 
-/// A combinação serve de atalho? Regra igual à dos plugins: sem Ctrl/Alt/Super
-/// só F1–F24 (uma letra dispararia enquanto se digita), e Ctrl sozinho não
+/// A combinação serve de atalho? Regra igual à dos plugins (runtime.zig): sem
+/// Ctrl/Alt/Super só F1–F24 (Shift sozinho digita a letra), e Ctrl sozinho não
 /// leva a,c,v,x,y,z (copiar, colar e desfazer acontecem o tempo todo).
 pub fn valid(k: Combo) bool {
     if (k.key == 0) return false;
-    if (k.hasModifier()) {
-        if (k.ctrl and !k.shift and !k.alt and !k.super) {
-            var b: [4]u8 = undefined;
-            const name = keySpec(k.key, &b);
-            if (name.len == 1 and std.mem.indexOfScalar(u8, "acvxyz", name[0]) != null) return false;
-        }
-        return true;
+    if (!k.ctrl and !k.alt and !k.super and !isFkey(k.key)) return false;
+    if (k.ctrl and !k.shift and !k.alt and !k.super) {
+        var b: [4]u8 = undefined;
+        const name = keySpec(k.key, &b);
+        if (name.len == 1 and std.mem.indexOfScalar(u8, "acvxyz", name[0]) != null) return false;
     }
-    return isFkey(k.key);
+    return true;
 }
 
 /// O nome da tecla no atalho salvo: "m", "44", "f2", "enter", ",".
@@ -223,7 +221,9 @@ test "rótulo bonito das teclas" {
 test "o que não pode virar atalho" {
     // Letra sem Ctrl/Alt/Super: digitaria a letra na caixa de texto.
     try std.testing.expect(!valid(parse("m").?));
+    // Shift sozinho também digita: não conta como modificador.
     try std.testing.expect(!valid(parse("shift+5").?));
+    try std.testing.expect(!valid(parse("shift+m").?));
     // Tecla nomeada sem modificador: idem (a regra é a dos plugins).
     try std.testing.expect(!valid(parse("enter").?));
     try std.testing.expect(!valid(parse("-").?));
