@@ -4,7 +4,9 @@
 //! atalhos dos plugins (plugins/runtime.zig). Quem liga isso à interface é
 //! ui/bindings.zig.
 const std = @import("std");
-const c = @import("c");
+/// Só os códigos de tecla do ImGui (build.zig): o módulo completo "c" puxa o
+/// SDL, que os testes puros não têm.
+const c = @import("imgui_c");
 
 /// Uma combinação: modificadores + tecla do ImGui (0 = nenhuma).
 pub const Combo = struct {
@@ -141,28 +143,29 @@ fn keyLabel(k: c_int, buf: []u8) []const u8 {
     return "";
 }
 
-fn join(k: Combo, buf: []u8, comptime tags: anytype) []const u8 {
+fn join(k: Combo, buf: []u8, comptime tags: []const []const u8, keyFn: *const fn (c_int, []u8) []const u8) []const u8 {
     var n: usize = 0;
-    inline for (tags.mods, tags.flags) |tag, on| {
-        if (on) {
+    const on = [_]bool{ k.ctrl, k.shift, k.alt, k.super };
+    inline for (tags, 0..) |tag, i| {
+        if (on[i]) {
             if (n + tag.len > buf.len) return "";
             @memcpy(buf[n..][0..tag.len], tag);
             n += tag.len;
         }
     }
-    const kn = tags.keyFn(k.key, buf[n..]);
+    const kn = keyFn(k.key, buf[n..]);
     n += kn.len;
     return buf[0..n];
 }
 
 /// Como a combinação fica no arquivo de configurações: "ctrl+shift+m".
 pub fn serialize(k: Combo, buf: []u8) []const u8 {
-    return join(k, buf, .{ .mods = .{ "ctrl+", "shift+", "alt+", "super+" }, .flags = .{ k.ctrl, k.shift, k.alt, k.super }, .keyFn = &keySpec });
+    return join(k, buf, &.{ "ctrl+", "shift+", "alt+", "super+" }, &keySpec);
 }
 
 /// Como a combinação aparece na tela: "Ctrl+Shift+M".
 pub fn format(k: Combo, buf: []u8) []const u8 {
-    return join(k, buf, .{ .mods = .{ "Ctrl+", "Shift+", "Alt+", "Super+" }, .flags = .{ k.ctrl, k.shift, k.alt, k.super }, .keyFn = &keyLabel });
+    return join(k, buf, &.{ "Ctrl+", "Shift+", "Alt+", "Super+" }, &keyLabel);
 }
 
 /// Todas as teclas que a captura da página de atalhos aceita: letras,

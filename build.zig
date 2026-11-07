@@ -105,6 +105,16 @@ pub fn build(b: *std.Build) void {
     translate.addIncludePath(b.path("third_party/stb"));
     translate.addIncludePath(b.path("third_party/libdave/includes"));
     translate.defineCMacro("IMGUI_USE_WCHAR32", "1");
+    // Só o enum de teclas do ImGui: os atalhos (ui/bind_keys.zig) e os testes
+    // puros deles não podem depender do SDL nem das outras bibliotecas.
+    const imgui_keys = b.addTranslateC(.{
+        .root_source_file = b.path("src/bind_keys_c.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+    imgui_keys.addIncludePath(imgui_dir);
+    imgui_keys.addIncludePath(dcimgui_dir);
+    imgui_keys.defineCMacro("IMGUI_USE_WCHAR32", "1");
     const windows = target.result.os.tag == .windows;
     // Sem pkg-config: as bibliotecas vêm de tools/windows_deps.sh.
     const win_deps = b.path(".deps/windows");
@@ -134,6 +144,7 @@ pub fn build(b: *std.Build) void {
     mod.addAnonymousImport("changelog_en", .{ .root_source_file = b.path("CHANGELOG.md") });
     mod.addAnonymousImport("changelog_pt", .{ .root_source_file = b.path("CHANGELOG.pt-BR.md") });
     mod.addImport("c", translate.createModule());
+    mod.addImport("imgui_c", imgui_keys.createModule());
     mod.addImport("builtin_themes", builtin_themes);
     mod.addImport("plugin_examples", plugin_examples);
     // Ícones da janela e da bandeja (tools/gen_icons.py).
@@ -293,6 +304,7 @@ pub fn build(b: *std.Build) void {
     });
     test_mod.addImport("builtin_themes", builtin_themes);
     test_mod.addImport("plugin_examples", plugin_examples);
+    test_mod.addImport("imgui_c", imgui_keys.createModule());
     test_mod.addAnonymousImport("changelog_en", .{ .root_source_file = b.path("CHANGELOG.md") });
     test_mod.addAnonymousImport("changelog_pt", .{ .root_source_file = b.path("CHANGELOG.pt-BR.md") });
     addLua(b, test_mod);
