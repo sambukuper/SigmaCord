@@ -7,10 +7,10 @@ zig build -Doptimize=ReleaseFast
 mkdir -p docs/themes
 export SDL_VIDEO_DRIVER=offscreen
 for t in classico vidro terminal subsolo orbital editorial bolhas zen papel escritorio cupertino; do
-    ./zig-out/bin/larpercord --theme "$t" --mode escuro --shot "docs/themes/$t.png"
-    ./zig-out/bin/larpercord --theme "$t" --mode claro --shot "docs/themes/$t-claro.png"
+    ./zig-out/bin/sigmacord --theme "$t" --mode escuro --shot "docs/themes/$t.png"
+    ./zig-out/bin/sigmacord --theme "$t" --mode claro --shot "docs/themes/$t-claro.png"
 done
-./zig-out/bin/larpercord --theme classico --settings --shot docs/settings.png
+./zig-out/bin/sigmacord --theme classico --settings --shot docs/settings.png
 
 if command -v magick >/dev/null; then
     magick -size 1280x800 xc:'#1a0f1f' \

@@ -8,7 +8,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 zig build -Doptimize=debug -p .zig-cache/qa || exit 1
-bin=$PWD/.zig-cache/qa/bin/larpercord
+bin=$PWD/.zig-cache/qa/bin/sigmacord
 fail=0
 mkdir -p qa-out
 for suite in bandeja-sair bandeja-menu bandeja-reinicio; do
@@ -31,7 +31,7 @@ if left=$(pgrep -f "^$bin( --restarted|\$)"); then
     echo "FALHOU: o QA deixou um app aberto: $left"; kill $left; fail=1
 fi
 # XDG_CURRENT_DESKTOP e o WAYLAND_DISPLAY de quem roda não entram.
-env -u WAYLAND_DISPLAY -u XDG_CURRENT_DESKTOP -u DBUS_SESSION_BUS_ADDRESS -u LARPER_TOKEN \
+env -u WAYLAND_DISPLAY -u XDG_CURRENT_DESKTOP -u DBUS_SESSION_BUS_ADDRESS -u SIGMACORD_TOKEN \
     xvfb-run -a -s "-screen 0 1280x800x24" \
     dbus-run-session -- python3 tools/qa_bandeja.py "$bin" "$@" || fail=1
 [ "$fail" = 0 ] && echo "bandeja: tudo passou" || { echo "bandeja: houve falhas"; exit 1; }

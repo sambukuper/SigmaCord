@@ -1,5 +1,5 @@
 //! Registro de depuração: ligado pelo botão em Configurações → Avançado, grava em
-//! `<cache>/larpercord/debug.log` o que o app registra, para a pessoa poder mandar sem
+//! `<cache>/sigmacord/debug.log` o que o app registra, para a pessoa poder mandar sem
 //! precisar de terminal (no Windows o app nem tem console). Desligado, custa só uma leitura.
 const std = @import("std");
 const c = @import("c");
@@ -29,7 +29,7 @@ pub fn path() ?[:0]const u8 {
 fn findPath() bool {
     var hb: [400]u8 = undefined;
     const base = sys.cacheHome(&hb) orelse return false;
-    const dir = std.fmt.bufPrint(&path_buf, "{s}/larpercord", .{base}) catch return false;
+    const dir = std.fmt.bufPrint(&path_buf, "{s}/sigmacord", .{base}) catch return false;
     dir_len = dir.len;
     var db: [460]u8 = undefined;
     const dz = std.fmt.bufPrintSentinel(&db, "{s}", .{dir}, 0) catch return false;

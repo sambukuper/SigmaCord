@@ -4,7 +4,7 @@
   assets/icon-64.png  ícone da janela (embutido no executável)
   assets/icon-32.png  ícone da bandeja (embutido): só o mascote, sem a placa
                       escura, que em 22 px come metade do desenho
-  assets/icon.ico     ícone do .exe no Windows (ver assets/larpercord.rc)
+  assets/icon.ico     ícone do .exe no Windows (ver assets/sigmacord.rc)
 
 Precisa de rsvg-convert e de Pillow. Rodar de novo só se os SVGs mudarem:
     python3 tools/gen_icons.py

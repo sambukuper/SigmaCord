@@ -1,6 +1,6 @@
 # Settings and files
 
-Open settings with `Ctrl+,`. Changes apply right away and are saved in `~/.config/larpercord/settings.kdl`.
+Open settings with `Ctrl+,`. Changes apply right away and are saved in `~/.config/sigmacord/settings.kdl`.
 
 ## The pages
 
@@ -37,17 +37,17 @@ Open settings with `Ctrl+,`. Changes apply right away and are saved in `~/.confi
 
 | Path | What it is |
 |---|---|
-| `~/.config/larpercord/settings.kdl` | Settings, including per-theme options and colors |
-| `~/.config/larpercord/themes/*.kdl` | Your themes |
-| `~/.config/larpercord/plugins/*.lua` | Your plugins |
-| `~/.config/larpercord/plugins.kdl` | Which plugins are off, the hosts you approved, and the side panel |
-| `~/.config/larpercord/plugin-data/` | What each plugin stores, per account |
-| `~/.config/larpercord/drafts.kdl` | Unsent drafts per channel (`chmod 600`) |
-| `~/.config/larpercord/saved-<account>.json` | Saved messages and notes |
-| `~/.config/larpercord/accounts` | Saved accounts: ID, name and avatar only |
-| `~/.config/larpercord/tokens/<ID>` | Remembered tokens when there's no keyring (`chmod 600`) |
-| `~/.config/larpercord/token` | Optional token file (`chmod 600`) |
-| `~/.cache/larpercord/messages` | Message cache: folders 700, files 600, 200 messages per channel, 50 MB cap |
+| `~/.config/sigmacord/settings.kdl` | Settings, including per-theme options and colors |
+| `~/.config/sigmacord/themes/*.kdl` | Your themes |
+| `~/.config/sigmacord/plugins/*.lua` | Your plugins |
+| `~/.config/sigmacord/plugins.kdl` | Which plugins are off, the hosts you approved, and the side panel |
+| `~/.config/sigmacord/plugin-data/` | What each plugin stores, per account |
+| `~/.config/sigmacord/drafts.kdl` | Unsent drafts per channel (`chmod 600`) |
+| `~/.config/sigmacord/saved-<account>.json` | Saved messages and notes |
+| `~/.config/sigmacord/accounts` | Saved accounts: ID, name and avatar only |
+| `~/.config/sigmacord/tokens/<ID>` | Remembered tokens when there's no keyring (`chmod 600`) |
+| `~/.config/sigmacord/token` | Optional token file (`chmod 600`) |
+| `~/.cache/sigmacord/messages` | Message cache: folders 700, files 600, 200 messages per channel, 50 MB cap |
 | `~/.cache/wal/colors` | Read only: pywal's palette, for themes that use it |
 
-To go back to defaults, close the app and delete `~/.config/larpercord/settings.kdl`.
+To go back to defaults, close the app and delete `~/.config/sigmacord/settings.kdl`.

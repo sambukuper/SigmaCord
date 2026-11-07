@@ -224,8 +224,8 @@ fn start(ctx: *d.Ctx, key: u64, link: []const u8, page: []const u8, r: d.Rect) b
         return false;
     }
     var source = link;
-    // LARPER_DEMO_VIDEO=/caminho.mp4 troca o vídeo da demonstração (testes).
-    if (std.mem.eql(u8, link, demo_link)) if (c.SDL_getenv("LARPER_DEMO_VIDEO")) |p| {
+    // SIGMACORD_DEMO_VIDEO=/caminho.mp4 troca o vídeo da demonstração (testes).
+    if (std.mem.eql(u8, link, demo_link)) if (c.SDL_getenv("SIGMACORD_DEMO_VIDEO")) |p| {
         var fb: [1024]u8 = undefined;
         if (std.fmt.bufPrint(&fb, "file://{s}", .{std.mem.span(p)})) |f| {
             if (alloc.dupe(u8, f)) |owned| {

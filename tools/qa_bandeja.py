@@ -201,11 +201,11 @@ WM_DELETE = dpy.intern_atom("WM_DELETE_WINDOW")
 
 
 def windows():
-    """Janelas do larperCord, mapeadas ou não."""
+    """Janelas do SigmaCord, mapeadas ou não."""
     out = []
     for w in root.query_tree().children:
         try:
-            if w.get_wm_name() == "larperCord" or (w.get_wm_class() or ("", ""))[0] == "larperCord":
+            if w.get_wm_name() == "SigmaCord" or (w.get_wm_class() or ("", ""))[0] == "SigmaCord":
                 out.append(w)
         except Exception:
             pass
@@ -259,7 +259,7 @@ running = []
 class App:
     def __init__(self, home, *args, single=True):
         running.append(self)
-        env = {k: v for k, v in os.environ.items() if k != "LARPER_TOKEN"}
+        env = {k: v for k, v in os.environ.items() if k != "SIGMACORD_TOKEN"}
         env.update(
             HOME=str(home),
             XDG_CONFIG_HOME=str(home / "config"),
@@ -267,13 +267,13 @@ class App:
             XDG_RUNTIME_DIR=str(home),
             SDL_VIDEO_DRIVER="x11",
             GDK_BACKEND="x11",
-            LARPER_RENDERER="software",
+            SIGMACORD_RENDERER="software",
             SDL_AUDIO_DRIVER="dummy",
-            LARPER_NO_PICS="1",
+            SIGMACORD_NO_PICS="1",
         )
         env.pop("WAYLAND_DISPLAY", None)
         if single:
-            env["LARPER_INSTANCE"] = "1"
+            env["SIGMACORD_INSTANCE"] = "1"
         self.log = tempfile.TemporaryFile()
         self.p = subprocess.Popen([BIN, "--demo", "--no-live", "--theme", "classico", *args], env=env, stdout=self.log, stderr=subprocess.STDOUT, start_new_session=True)
 
@@ -341,8 +341,8 @@ def no_windows():
 
 
 def fresh_home():
-    d = Path(tempfile.mkdtemp(prefix="larper-qa-"))
-    (d / "config" / "larpercord").mkdir(parents=True)
+    d = Path(tempfile.mkdtemp(prefix="sigma-qa-"))
+    (d / "config" / "sigmacord").mkdir(parents=True)
     return d
 
 
@@ -388,7 +388,7 @@ def option_off():
     panel.up()
     panel.clear()
     home = fresh_home()
-    (home / "config/larpercord/settings.kdl").write_text("settings close_to_tray=#false\n")
+    (home / "config/sigmacord/settings.kdl").write_text("settings close_to_tray=#false\n")
     a = start(home)
     close_window()
     code = a.wait(5)
@@ -431,8 +431,8 @@ def full_flow():
     pss_hidden = a.pss_kb()
     print(f"       RAM (PSS): {pss_open} KB aberta, {pss_hidden} KB na bandeja")
 
-    open_id = next(v for k, v in labels.items() if "larperCord" in k)
-    quit_id = next(v for k, v in labels.items() if "larperCord" not in k)
+    open_id = next(v for k, v in labels.items() if "SigmaCord" in k)
+    quit_id = next(v for k, v in labels.items() if "SigmaCord" not in k)
     panel.click(item, open_id)
     check("Abrir volta a janela", bool(wait_until(mapped, 5)))
     time.sleep(1.0)
@@ -440,7 +440,7 @@ def full_flow():
     cpu_back = cpu_percent(a, 5)
     check("aberta de novo, sem o ícone, volta ao custo de antes", cpu_back < cpu_open + 0.5, f"{cpu_back:.2f}% agora, {cpu_open:.2f}% antes de ir para a bandeja")
 
-    section("segundo larperCord")
+    section("segundo SigmaCord")
     b = App(home)
     code = b.wait(8)
     check("com a janela aberta: o segundo sai sem abrir outra", code == 0 and len(mapped()) == 1, f"código {code}")
@@ -494,7 +494,7 @@ def full_flow():
     close_window()
     item = wait_until(panel.items, ICON_MAX_S)[-1]
     labels = panel.menu(item)
-    quit_id = next(v for k, v in labels.items() if "larperCord" not in k)
+    quit_id = next(v for k, v in labels.items() if "SigmaCord" not in k)
     threads = a.threads()
     t = time.time()
     panel.click(item, quit_id)
@@ -504,7 +504,7 @@ def full_flow():
     check("sem erro na saída", "panic" not in a.output() and "Segmentation" not in a.output(), a.output()[-200:] if "panic" in a.output() else "")
     a.kill()
 
-    kdl = (home / "config/larpercord/settings.kdl").read_text()
+    kdl = (home / "config/sigmacord/settings.kdl").read_text()
     check("as configurações ficaram salvas", "close_to_tray=#true" in kdl and "video_volume=100" in kdl)
 
     section("depois de sair: a trava não fica presa")
@@ -555,7 +555,7 @@ def restarted():
     item = panel.items()[-1]
     labels = panel.menu(item)
     t = time.time()
-    panel.click(item, next(v for k, v in labels.items() if "larperCord" not in k))
+    panel.click(item, next(v for k, v in labels.items() if "SigmaCord" not in k))
     check("o antigo saiu", a.wait(5) == 0)
     check("o novo assume dentro dos 5 s", bool(wait_until(mapped, 8)) and b.alive(), f"{time.time() - t:.2f} s")
     time.sleep(1)
@@ -581,7 +581,7 @@ def restarted():
 
 
 def demo_not_gated():
-    section("a demonstração sem LARPER_INSTANCE roda ao lado (não pega a trava)")
+    section("a demonstração sem SIGMACORD_INSTANCE roda ao lado (não pega a trava)")
     panel.up()
     home = fresh_home()
     a = start(home, single=False)

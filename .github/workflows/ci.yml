@@ -15,7 +15,7 @@ jobs:
       - name: Caminhos do supressor de ruído
         run: |
           zig build test -Dcpu=baseline
-          for arch in 0 1 2; do LARPER_RNNOISE_ARCH=$arch zig build ruido-custo -Dcpu=baseline; done
+          for arch in 0 1 2; do SIGMACORD_RNNOISE_ARCH=$arch zig build ruido-custo -Dcpu=baseline; done
 
   # O build para Windows sai do Linux (as bibliotecas vêm de tools/windows_deps.sh).
   windows:
@@ -46,21 +46,21 @@ jobs:
         shell: pwsh
         env:
           SDL_VIDEO_DRIVER: windows
-          LARPER_RENDERER: software
+          SIGMACORD_RENDERER: software
           QA_SLOW: "3"
         run: |
           New-Item -ItemType Directory -Force qa-out | Out-Null
-          $p = Start-Process -FilePath bin\larpercord.exe -ArgumentList '--qa','--theme','classico' -NoNewWindow -Wait -PassThru -RedirectStandardOutput qa-out\out.txt -RedirectStandardError qa-out\err.txt
+          $p = Start-Process -FilePath bin\sigmacord.exe -ArgumentList '--qa','--theme','classico' -NoNewWindow -Wait -PassThru -RedirectStandardOutput qa-out\out.txt -RedirectStandardError qa-out\err.txt
           Get-Content qa-out\out.txt,qa-out\err.txt -ErrorAction SilentlyContinue | Select-String -Pattern 'passaram|falharam|^\s+- \[|panic' | ForEach-Object { $_.Line }
           exit $p.ExitCode
       - name: FFmpeg button, real download
         shell: pwsh
         env:
           SDL_VIDEO_DRIVER: windows
-          LARPER_RENDERER: software
+          SIGMACORD_RENDERER: software
           QA_SUITE: ffmpeg
         run: |
-          $p = Start-Process -FilePath bin\larpercord.exe -ArgumentList '--qa','--theme','classico' -NoNewWindow -Wait -PassThru -RedirectStandardOutput qa-out\ffmpeg-out.txt -RedirectStandardError qa-out\ffmpeg-err.txt
+          $p = Start-Process -FilePath bin\sigmacord.exe -ArgumentList '--qa','--theme','classico' -NoNewWindow -Wait -PassThru -RedirectStandardOutput qa-out\ffmpeg-out.txt -RedirectStandardError qa-out\ffmpeg-err.txt
           Get-Content qa-out\ffmpeg-out.txt,qa-out\ffmpeg-err.txt -ErrorAction SilentlyContinue | Select-String -Pattern 'passaram|falharam|^\s+- \[|panic' | ForEach-Object { $_.Line }
           exit $p.ExitCode
       - uses: actions/upload-artifact@v4

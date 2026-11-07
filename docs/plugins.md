@@ -6,11 +6,11 @@ Plugins are small scripts that add features to the app with no recompiling: pane
 entries, commands, reminders, notes under messages. Every `.lua` file in
 
 ```
-~/.config/larpercord/plugins/          ($XDG_CONFIG_HOME/larpercord/plugins, if set)
+~/.config/sigmacord/plugins/          ($XDG_CONFIG_HOME/sigmacord/plugins, if set)
 ```
 
 is a plugin. Open **Settings → Plugins** (`Ctrl+,`) to see what each one is, what it asks for and
-any error it hit, turn it on or off (the choice is kept in `~/.config/larpercord/plugins.kdl`),
+any error it hit, turn it on or off (the choice is kept in `~/.config/sigmacord/plugins.kdl`),
 approve the hosts it wants to talk to, open its panel and **Reload** after editing a file.
 
 ## The plugins that come with the app
@@ -20,7 +20,7 @@ overwrites a file you've edited and never removes anything.
 
 | Plugin | What it does |
 |---|---|
-| [`translate.lua`](plugins/translate.lua) | Right-click a message, or the 🌐 on its toolbar, to see the translation under it. "Translate to…" picks another language for one message, its card sets the default target and source, and `/tr es hello` puts a translation in the message box. Off until you approve the host: see [HTTP](#larperhttp) |
+| [`translate.lua`](plugins/translate.lua) | Right-click a message, or the 🌐 on its toolbar, to see the translation under it. "Translate to…" picks another language for one message, its card sets the default target and source, and `/tr es hello` puts a translation in the message box. Off until you approve the host: see [HTTP](#sigmahttp) |
 | [`reminders.lua`](plugins/reminders.lua) | `/remind 10m call back`, `/remind tomorrow 9am pay the bill`, `/remind every day 8:30 standup`, or "Remind me" on a message. Notifies you at the right time, also after a restart. What already fired can come back in 10 minutes |
 | [`highlights.lua`](plugins/highlights.lua) | Words to watch across all channels: a notification, a number on the panel for what you haven't seen, and a history that takes you to the message. You can mute a channel |
 | [`scamguard.lua`](plugins/scamguard.lua) | Marks in red the classic Discord scams in other people's messages: addresses that imitate Discord or Steam (swapped letters, another alphabet, a disguised subdomain), fake free Nitro and gifts with a link, shortened links with bait, links that show one address and open another. Official addresses and talk with no link are never marked. "Not a scam" on a message keeps that address on a list for your account. `/scam` opens the panel with the latest ones. No network |
@@ -71,10 +71,10 @@ can't make the app stutter. The interface and that thread only talk through two 
 -- @version 1.0.0
 -- @capabilities send
 
-larper.command("/shrug", function(args)
+sigma.command("/shrug", function(args)
   local text = "¯\\_(ツ)_/¯"
   if args ~= "" then text = args .. " " .. text end
-  larper.send(larper.channel(), text)
+  sigma.send(sigma.channel(), text)
 end)
 ```
 
@@ -92,28 +92,28 @@ anything, so the settings page shows them even for a plugin that's off.
 | `-- @description …` | One or two sentences (and `-- @description:pt …`) |
 | `-- @version 1.0.0` | Shown next to the name |
 | `-- @capabilities menu, panel, storage` | What it asks for. Shown on its card, and the only things it can use |
-| `-- @hosts api.example.com` | The hosts for [`larper.http`](#larperhttp), just the name. No IP address, port or Discord domain |
+| `-- @hosts api.example.com` | The hosts for [`sigma.http`](#sigmahttp), just the name. No IP address, port or Discord domain |
 
 | Capability | Gives access to |
 |---|---|
-| `messages` | `larper.on("message")`, `larper.on("edit")`, `larper.on("delete")`, `larper.messages` |
-| `send` | `larper.send` |
-| `notify` | `larper.notify` |
-| `storage` | `larper.storage` |
-| `timers` | `larper.after`, `larper.every` |
-| `panel` | `larper.panel` |
-| `menu` | `larper.menu` |
-| `decorate` | `larper.decorate`, `larper.undecorate`, `larper.rules`, `larper.on("dismiss")` |
-| `composer` | `larper.insert` |
-| `http` | `larper.http` (needs `@hosts`) |
-| `lsp` | `larper.lsp` |
-| `settings` | `larper.settings` |
-| `completions` | `larper.completions` |
-| `rewrite` | `larper.rewrite` (its card says "Changes what you send") |
-| `links` | `larper.open` (its card says "Opens links") |
+| `messages` | `sigma.on("message")`, `sigma.on("edit")`, `sigma.on("delete")`, `sigma.messages` |
+| `send` | `sigma.send` |
+| `notify` | `sigma.notify` |
+| `storage` | `sigma.storage` |
+| `timers` | `sigma.after`, `sigma.every` |
+| `panel` | `sigma.panel` |
+| `menu` | `sigma.menu` |
+| `decorate` | `sigma.decorate`, `sigma.undecorate`, `sigma.rules`, `sigma.on("dismiss")` |
+| `composer` | `sigma.insert` |
+| `http` | `sigma.http` (needs `@hosts`) |
+| `lsp` | `sigma.lsp` |
+| `settings` | `sigma.settings` |
+| `completions` | `sigma.completions` |
+| `rewrite` | `sigma.rewrite` (its card says "Changes what you send") |
+| `links` | `sigma.open` (its card says "Opens links") |
 
-Commands, keybinds, `larper.channel`, `larper.guild`, `larper.jump`, `larper.copy`, `larper.tr` and
-`larper.json` don't need any capability. Calling something the manifest doesn't ask for raises an error that says
+Commands, keybinds, `sigma.channel`, `sigma.guild`, `sigma.jump`, `sigma.copy`, `sigma.tr` and
+`sigma.json` don't need any capability. Calling something the manifest doesn't ask for raises an error that says
 what to add.
 
 **Files with no manifest** keep working: they are "old API" plugins, with `messages`, `send`,
@@ -132,9 +132,9 @@ These are what make it safe to run other people's scripts next to your account.
   timer or in the answer to an HTTP request. Replying on its own would turn the account into a
   *self-bot*, which Discord forbids and usually punishes with a ban. There are no auto-replies,
   auto-reactions or anything else that writes to the account in the background.
-- `larper.insert`, `larper.jump`, `larper.copy`, `larper.open` and `larper.panel.open` also need a
+- `sigma.insert`, `sigma.jump`, `sigma.copy`, `sigma.open` and `sigma.panel.open` also need a
   gesture: a background plugin can't type into your message box or move you around. The one
-  exception: the answer to an HTTP request made in a gesture can call `larper.insert`. It still can't
+  exception: the answer to an HTTP request made in a gesture can call `sigma.insert`. It still can't
   send.
 - **No files, programs or raw sockets.** Only `string`, `table`, `math`, `utf8` and the basic
   functions, plus `os.time`, `os.date`, `os.clock` and `os.difftime`. There is no `io`,
@@ -154,9 +154,9 @@ Plugins run with your account: only use files you've read and understand.
 
 ## API
 
-Everything lives in the global table `larper`. Discord IDs are strings (`"1234567890"`).
+Everything lives in the global table `sigma`. Discord IDs are strings (`"1234567890"`).
 
-### `larper.on(event, function)`
+### `sigma.on(event, function)`
 
 | event | when | argument |
 |---|---|---|
@@ -183,9 +183,9 @@ Everything lives in the global table `larper`. Discord IDs are strings (`"123456
 | `msg.id` | `"1350000000000000000"` |
 | `msg.time` | seconds since 1970 |
 | `msg.attachments` | how many |
-| `msg.files` | only from `larper.messages({ files = true })`: a list of `{ name, url, size }` |
+| `msg.files` | only from `sigma.messages({ files = true })`: a list of `{ name, url, size }` |
 | `msg.reply_to` | the ID of the message it replies to, if any |
-| `msg.mentions_me` | only from `larper.messages`: `true` if it calls you (a mention, one of your roles, `@everyone`) |
+| `msg.mentions_me` | only from `sigma.messages`: `true` if it calls you (a mention, one of your roles, `@everyone`) |
 
 `"message"` and `"edit"` take a third argument, `{ contains = { "cve-", "://" } }` (up to 16 pieces of
 text, ignoring case): your function only runs for messages with one of them, and the others don't even
@@ -196,14 +196,14 @@ System messages (someone joined, pinned…) don't either. A plugin never gets wh
 message's text from before it was edited, not even with the message log turned on.
 
 ```lua
-larper.on("message", function(msg)
+sigma.on("message", function(msg)
   if not msg.mine and msg.content:lower():find("pizza", 1, true) then
-    larper.notify(msg.author.name .. " talked about pizza in #" .. msg.channel.name)
+    sigma.notify(msg.author.name .. " talked about pizza in #" .. msg.channel.name)
   end
 end)
 ```
 
-### `larper.command("/name", function(args))`
+### `sigma.command("/name", function(args))`
 
 A local command: when you send a message that starts with `/name`, the function runs with the
 rest of the text (`args`, trimmed at both ends, `""` if there's nothing) and **nothing goes to
@@ -211,7 +211,7 @@ Discord**. The name is `/` followed by letters, numbers, `_` or `-` (up to 32). 
 register the same name, the first one in file name order wins. A `/something` that no enabled
 plugin knows is sent as normal text.
 
-### `larper.keybind("ctrl+shift+x", function)`
+### `sigma.keybind("ctrl+shift+x", function)`
 
 A keyboard shortcut. Modifiers: `ctrl`, `shift`, `alt`, `super`; keys: `a`–`z`, `0`–`9`,
 `f1`–`f24`, `enter`, `space`, `tab`, `backspace`, `delete`, `insert`, `home`, `end`, `pageup`,
@@ -220,7 +220,7 @@ A keyboard shortcut. Modifiers: `ctrl`, `shift`, `alt`, `super`; keys: `a`–`z`
 The shortcut works outside settings and the command palette, including with the text box focused.
 The app's own shortcuts (`Ctrl+K`, `Ctrl+W`…) keep working alongside it: pick another combination.
 
-### `larper.notify(text, [options])`
+### `sigma.notify(text, [options])`
 
 Shows a notice at the top of the window. With the window unfocused (and "Desktop notifications"
 on), a system notification goes out too, except in focus mode. With `{ desktop = true }` the system
@@ -228,46 +228,46 @@ notification goes out even with the window focused or in focus mode, for somethi
 explicitly asked for, like a reminder. At most 20 per 10 seconds and 6 system notifications a minute
 per plugin (20 a minute across all of them); the rest are dropped silently.
 
-### `larper.send(channel, text)`
+### `sigma.send(channel, text)`
 
 Sends a real message, as if you had typed it. `channel` can be `nil` (the open channel), a table
-with an `id` (like `larper.channel()` or `msg.channel`) or the ID as a string.
+with an `id` (like `sigma.channel()` or `msg.channel`) or the ID as a string.
 `text` is 1 to 2000 bytes. At most 5 per gesture. See [Limits](#limits).
 
-### `larper.channel()` and `larper.guild()`
+### `sigma.channel()` and `sigma.guild()`
 
 The open channel (`{ id, name }`) and its server (`{ id, name }`). `nil` when no channel is open
 (friends screen) or, for `guild()`, in a direct message.
 
-### `larper.messages([options], function(list))`
+### `sigma.messages([options], function(list))`
 
 The messages loaded in the open channel, oldest first, as a copy. Options: `channel` (an ID), `limit`
 (200 by default, up to 500) and `files` (`true` also brings `msg.files`, so only who asks pays for
-it). `contains` works as in `larper.on`. The list also has `list.last_read`: the ID of the last message
+it). `contains` works as in `sigma.on`. The list also has `list.last_read`: the ID of the last message
 already read before you opened this channel, when there are unread ones. The answer arrives in
 `function`, later. It returns `false`, and never calls the function, if you ask again within half a second.
 
-### `larper.jump(channel, message)`
+### `sigma.jump(channel, message)`
 
 Opens the channel and goes to the message, fetching it if needed. Needs a gesture.
 
-### `larper.insert(text)`
+### `sigma.insert(text)`
 
 Puts text in the message box. It never sends. Needs a gesture, or the answer to an HTTP request made
 in one.
 
-### `larper.copy(text)` and `larper.open(url)`
+### `sigma.copy(text)` and `sigma.open(url)`
 
-`larper.copy` puts text on the clipboard. `larper.open` opens an `http://` or `https://` address in the
+`sigma.copy` puts text on the clipboard. `sigma.open` opens an `http://` or `https://` address in the
 browser, and needs the `links` capability: an address can carry data, so the card warns when the
 plugin also reads messages. Both need a gesture.
 
-### `larper.completions(trigger, list)`
+### `sigma.completions(trigger, list)`
 
 Suggestions in the message box while someone types the trigger at the start of a word:
 
 ```lua
-larper.completions(";", { { name = "hi", text = "Hello, how are you?", hint = "greeting" } })
+sigma.completions(";", { { name = "hi", text = "Hello, how are you?", hint = "greeting" } })
 ```
 
 Typing `;h` shows the list, and picking one puts `text` in the box, instead of `;h`. It never sends.
@@ -275,12 +275,12 @@ The list stays with the app, so the search runs on every key without calling you
 again when it changes. The trigger is one of `;` `!` `$` `%` `&` `+` `=` `?` `^`. Up to 256 suggestions
 and 256 KB per plugin.
 
-### `larper.rewrite(list)`
+### `sigma.rewrite(list)`
 
 Fixed rules for the text the person sends:
 
 ```lua
-larper.rewrite({
+sigma.rewrite({
   { strip_params = { "utm_*", "fbclid" } },                 -- in links, anywhere
   { strip_params = { "si" }, host = "youtu.be" },           -- only there and on its subdomains
   { replace_host = "old.example.com", with = "new.example.com" },
@@ -291,36 +291,36 @@ larper.rewrite({
 The app applies them when sending, after mentions are resolved. Your plugin doesn't see what was
 written and nothing runs while typing. Code blocks, mentions and emoji stay as they are. If the result
 wouldn't fit in a message, the text goes as written. Each call replaces the plugin's rules; up to 256,
-counting each parameter. It doesn't touch what `larper.send` sends, or edits.
+counting each parameter. It doesn't touch what `sigma.send` sends, or edits.
 
-### `larper.lang()` and `larper.tr(pt, en)`
+### `sigma.lang()` and `sigma.tr(pt, en)`
 
-`larper.lang()` is `"pt"` or `"en"`, and `larper.tr("olá", "hello")` is the text in the interface's
-language. Plugins should use it for all their text, and draw again on `larper.on("lang", …)`.
+`sigma.lang()` is `"pt"` or `"en"`, and `sigma.tr("olá", "hello")` is the text in the interface's
+language. Plugins should use it for all their text, and draw again on `sigma.on("lang", …)`.
 
-### `larper.after(seconds, function)`, `larper.every(seconds, function)`, `larper.cancel(id)`
+### `sigma.after(seconds, function)`, `sigma.every(seconds, function)`, `sigma.cancel(id)`
 
-Timers that run while the plugin is on, and die with it. Both return an ID for `larper.cancel`.
+Timers that run while the plugin is on, and die with it. Both return an ID for `sigma.cancel`.
 `every` has a minimum of 1 second. A plugin can have up to 64. To survive a restart, keep the time in
-`larper.storage` and start the timer again when the plugin loads, as `reminders.lua` does.
+`sigma.storage` and start the timer again when the plugin loads, as `reminders.lua` does.
 
-### `larper.storage`
+### `sigma.storage`
 
 Data that stays between restarts, separate for each plugin and account, on this computer
-(`~/.config/larpercord/plugin-data/`). Up to 1 MB per plugin.
+(`~/.config/sigmacord/plugin-data/`). Up to 1 MB per plugin.
 
 | Function | What it does |
 |---|---|
-| `larper.storage.get(key)` | The value, or `nil`. It's a copy: changing it doesn't save |
-| `larper.storage.set(key, value)` | Saves a string, number, boolean or table (a list, or with string keys). `nil` deletes. Raises an error if it doesn't fit, leaving the old value there |
-| `larper.storage.delete(key)` | Deletes |
-| `larper.storage.keys()` | The list of keys |
-| `larper.storage.clear()` | Deletes everything |
+| `sigma.storage.get(key)` | The value, or `nil`. It's a copy: changing it doesn't save |
+| `sigma.storage.set(key, value)` | Saves a string, number, boolean or table (a list, or with string keys). `nil` deletes. Raises an error if it doesn't fit, leaving the old value there |
+| `sigma.storage.delete(key)` | Deletes |
+| `sigma.storage.keys()` | The list of keys |
+| `sigma.storage.clear()` | Deletes everything |
 
 It goes to disk shortly after the change, off the interface thread, and when the plugin stops. A file
 that can't be read is kept next to it as `.bad`, and the plugin starts empty with the error on its card.
 
-### `larper.panel`
+### `sigma.panel`
 
 A panel the app draws in a side panel the person can dock on either side and resize. Reach it with the
 button in the channel header, the command palette (`Panel: name`) or **Open panel** on the plugin's
@@ -328,8 +328,8 @@ card. You describe it as data; publish again whenever something changes.
 
 ```lua
 local function draw()
-  larper.panel.set({
-    title = larper.tr("Meu painel", "My panel"),
+  sigma.panel.set({
+    title = sigma.tr("Meu painel", "My panel"),
     { type = "heading", text = "Heading" },
     { type = "text", text = "Text that wraps", style = "muted" },
     { type = "input", key = "search", placeholder = "Search", value = query,
@@ -370,36 +370,36 @@ end
 | list item | `title`, `subtitle`, `meta`, `on_click`, `actions` (buttons) |
 
 Any of them takes a `key`. While someone is typing in an input, publishing doesn't overwrite what's
-there; with the focus elsewhere, `value` wins. `larper.panel.open()` (needs a gesture) and
-`larper.panel.close()` show and hide it. Up to 4000 items and 1 MB of text. A click on an option or a
+there; with the focus elsewhere, `value` wins. `sigma.panel.open()` (needs a gesture) and
+`sigma.panel.close()` show and hide it. Up to 4000 items and 1 MB of text. A click on an option or a
 toggle counts as a gesture. A `badge` next to `title` (a short text, like `"3"`) shows on the panel's
 tab and as a dot on the channel header button, which then opens that panel first. Publish without it to
 clear.
 
-### `larper.settings.set(list)`
+### `sigma.settings.set(list)`
 
 Options on the plugin's card in **Settings → Plugins**, with the same types as a panel, usually `select`
-and `toggle`. They show while the plugin is on. Your plugin keeps the value, with `larper.storage`, and
+and `toggle`. They show while the plugin is on. Your plugin keeps the value, with `sigma.storage`, and
 publishes again on `"lang"`:
 
 ```lua
 -- @capabilities settings, storage
-local target = larper.storage.get("target") or "auto"
+local target = sigma.storage.get("target") or "auto"
 local function options()
-  larper.settings.set({
-    { type = "select", key = "target", label = larper.tr("Traduzir para", "Translate to"), value = target,
+  sigma.settings.set({
+    { type = "select", key = "target", label = sigma.tr("Traduzir para", "Translate to"), value = target,
       options = { { value = "auto", label = "App language" }, { value = "es", label = "Spanish" } },
-      on_change = function(v) target = v; larper.storage.set("target", v) end },
+      on_change = function(v) target = v; sigma.storage.set("target", v) end },
   })
 end
-larper.on("lang", options)
+sigma.on("lang", options)
 options()
 ```
 
-### `larper.menu(where, label, function, [options])`
+### `sigma.menu(where, label, function, [options])`
 
 An entry on the right-click menu. `where` is `"message"` (the function receives `msg`, as in
-`larper.on`, for the message you clicked) or `"user"` (it receives `{ id, name }`). `label` is a string
+`sigma.on`, for the message you clicked) or `"user"` (it receives `{ id, name }`). `label` is a string
 or `{ pt = "…", en = "…" }`. Up to 4 per plugin. Options:
 
 | Option | What it does |
@@ -408,12 +408,12 @@ or `{ pt = "…", en = "…" }`. Up to 4 per plugin. Options:
 | `toolbar` | An emoji: the entry also becomes a button on the toolbar of the hovered message, with the label as a tooltip. Only for `"message"`, and at most 3 across all plugins |
 
 ```lua
-larper.menu("message", { pt = "Traduzir para…", en = "Translate to…" }, function(msg, lang)
+sigma.menu("message", { pt = "Traduzir para…", en = "Translate to…" }, function(msg, lang)
   translate(msg, lang)
 end, { choices = { { value = "es", pt = "Espanhol", en = "Spanish" } } })
 ```
 
-### `larper.decorate(message, options)` and `larper.undecorate(message)`
+### `sigma.decorate(message, options)` and `sigma.undecorate(message)`
 
 Marks a message, only on your screen. `message` is an ID or a `msg`.
 
@@ -426,15 +426,15 @@ Marks a message, only on your screen. `message` is an ID or a `msg`.
 | `style` | `"danger"` shows it in red, for a warning |
 
 Up to 4096 per plugin. When a message is deleted, what was on it goes too. When the person closes a
-note with its ×, `larper.on("dismiss")` tells you.
+note with its ×, `sigma.on("dismiss")` tells you.
 
-### `larper.rules(list)`
+### `sigma.rules(list)`
 
 The same thing as rules the app applies on its own, including to messages that arrive later, without
 calling your plugin:
 
 ```lua
-larper.rules({
+sigma.rules({
   { word = "spoiler", collapse = true, label = "Collapsed by my filter" },
   { user = "1234567890", badge = "!" },
 })
@@ -443,25 +443,25 @@ larper.rules({
 `word` matches whole words, ignoring case. Each call replaces the plugin's rules. Up to 256. Your own
 messages are never affected.
 
-### `larper.http`
+### `sigma.http`
 
 Requests to the outside world, off the interface thread. This is the only network a plugin has.
 
 ```lua
 -- @capabilities http
 -- @hosts api.example.com
-larper.http.get("https://api.example.com/x?q=" .. larper.urlencode(text), function(res)
-  if res.ok then local data = larper.json.decode(res.body) end
+sigma.http.get("https://api.example.com/x?q=" .. sigma.urlencode(text), function(res)
+  if res.ok then local data = sigma.json.decode(res.body) end
 end)
 ```
 
-`larper.http.get(url, [options], function)` and `larper.http.post(url, options, function)`. Options:
+`sigma.http.get(url, [options], function)` and `sigma.http.post(url, options, function)`. Options:
 `body` (up to 64 KB) and `headers`. The function receives `{ ok, status, body, error }`. `error` is
 `"not_approved"`, `"rate_limited"`, `"too_big"` or `"network"`.
 
 - **HTTPS only**, and only to a host in `@hosts` that **you approved on the plugin's card**, separately
   for each plugin and host. Until then nothing goes out, and the plugin gets `not_approved`.
-  `larper.http.allowed(host)` says whether it's approved.
+  `sigma.http.allowed(host)` says whether it's approved.
 - A URL with a user, a port or characters that aren't encoded raises an error. So does a host that's
   not in `@hosts`. Discord's own domains can't be declared at all.
 - Redirects aren't followed: the 3xx comes back to the plugin, so it can't lead to a host you didn't approve.
@@ -470,19 +470,19 @@ end)
 - Limits: answers up to 1 MB, 20 seconds per request, 3 at a time and 30 a minute per plugin.
 - It respects your proxy, if you have one.
 
-### `larper.json.encode(value)`, `larper.json.decode(text)` and `larper.urlencode(text)`
+### `sigma.json.encode(value)`, `sigma.json.decode(text)` and `sigma.urlencode(text)`
 
-`decode` returns the value, or `nil` and an error message. `encode` takes what `larper.storage.set`
+`decode` returns the value, or `nil` and an error message. `encode` takes what `sigma.storage.set`
 takes.
 
-### `larper.lsp(lang, argv)`
+### `sigma.lsp(lang, argv)`
 
 Proposes a language server for code blocks in the message box
 ([code diagnostics](lsp.md)): `lang` is the block tag or a language key from that page (`"zig"`,
 `"python"`, `"haskell"`), and `argv` is the program and its arguments, with no shell involved.
 
 ```lua
-larper.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
+sigma.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
 ```
 
 This does not run anything. The proposal appears under Settings → Code diagnostics, off, with the

@@ -6,7 +6,7 @@
 -- @capabilities messages, decorate, http, storage, panel, links, notify, timers
 -- @hosts cveawg.mitre.org
 
-local tr = larper.tr
+local tr = sigma.tr
 local HOST = "cveawg.mitre.org"
 local MAX_CACHE = 400
 local MAX_QUEUE = 64
@@ -20,7 +20,7 @@ local TTL_NONE = DAY
 local BACKOFF = 60
 
 -- Só dados públicos do registro: nada do que foi escrito na mensagem.
-local cache = larper.storage.get("cache") or {}
+local cache = sigma.storage.get("cache") or {}
 local queue = {}
 local queued = {}
 local flying = 0
@@ -110,7 +110,7 @@ end
 
 -- O registro em JSON vira só o que a nota usa. nil = não é um registro.
 local function read_record(body)
-  local ok, data = pcall(larper.json.decode, body)
+  local ok, data = pcall(sigma.json.decode, body)
   if not ok or type(data) ~= "table" then return nil end
   local meta = data.cveMetadata
   local conts = data.containers
@@ -150,9 +150,9 @@ end
 local function save_soon()
   if save_timer then return end
   -- Várias respostas seguidas gravam uma vez só.
-  save_timer = larper.after(3, function()
+  save_timer = sigma.after(3, function()
     save_timer = nil
-    larper.storage.set("cache", cache)
+    sigma.storage.set("cache", cache)
   end)
 end
 
@@ -205,7 +205,7 @@ local function paint(msg_id)
   local note = table.concat(notes, "  |  ")
   if ref.note == note then return end
   ref.note = note
-  larper.decorate(msg_id, { note = note, style = danger and "danger" or nil })
+  sigma.decorate(msg_id, { note = note, style = danger and "danger" or nil })
 end
 
 local render = function() end
@@ -225,7 +225,7 @@ local pump
 local function pause_for(seconds)
   if paused then return end
   paused = true
-  larper.after(seconds, function()
+  sigma.after(seconds, function()
     paused = false
     pump()
   end)
@@ -233,10 +233,10 @@ end
 
 pump = function()
   while not paused and flying < IN_FLIGHT and #queue > 0 do
-    if not larper.http.allowed(HOST) then return end
+    if not sigma.http.allowed(HOST) then return end
     local id = table.remove(queue, 1)
     flying = flying + 1
-    larper.http.get("https://" .. HOST .. "/api/cve/" .. id, function(res)
+    sigma.http.get("https://" .. HOST .. "/api/cve/" .. id, function(res)
       flying = flying - 1
       if res.error == "rate_limited" or res.status == 429 or res.status == 503 then
         -- Volta para o começo da fila: é só esperar.
@@ -304,7 +304,7 @@ local function examine(m)
     -- Uma edição tirou o CVE do texto.
     if old then
       on_message[m.id] = nil
-      larper.undecorate(m)
+      sigma.undecorate(m)
     end
     return
   end
@@ -327,33 +327,33 @@ end
 -- As já carregadas no canal aberto.
 local again = false
 local function scan()
-  local asked = larper.messages({ limit = 200, contains = { "cve-" } }, function(list)
+  local asked = sigma.messages({ limit = 200, contains = { "cve-" } }, function(list)
     for _, m in ipairs(list) do examine(m) end
   end)
   if not asked and not again then
     again = true
-    larper.after(0.6, function()
+    sigma.after(0.6, function()
       again = false
       scan()
     end)
   end
 end
 
-larper.on("message", examine, { contains = { "cve-" } })
-larper.on("edit", examine)
-larper.on("channel", function()
+sigma.on("message", examine, { contains = { "cve-" } })
+sigma.on("edit", examine)
+sigma.on("channel", function()
   scan()
   -- O histórico do canal chega um pouco depois de abrir.
-  larper.after(1.5, scan)
+  sigma.after(1.5, scan)
 end)
 
 -- Acabou de aprovar o host: o que estava esperando sai agora, e o canal aberto é olhado.
-larper.on("hosts", function()
+sigma.on("hosts", function()
   pump()
   scan()
 end)
 
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   on_message[d.id] = nil
   dismissed[d.id] = nil
   for _, ref in pairs(seen_at) do
@@ -365,14 +365,14 @@ larper.on("delete", function(d)
   if panel_open then render() end
 end)
 
-larper.on("dismiss", function(d)
+sigma.on("dismiss", function(d)
   dismissed[d.id] = true
 end)
 
-larper.command("/cve", function(args)
+sigma.command("/cve", function(args)
   local ids = ids_in(args)
   if #ids == 0 then
-    larper.notify(tr("Use assim: /cve CVE-2021-44228", "Use it like this: /cve CVE-2021-44228"))
+    sigma.notify(tr("Use assim: /cve CVE-2021-44228", "Use it like this: /cve CVE-2021-44228"))
     return
   end
   for _, id in ipairs(ids) do
@@ -380,7 +380,7 @@ larper.command("/cve", function(args)
     if not fresh(cache[id]) then ask(id) end
   end
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
 local function rank(id)
@@ -391,7 +391,7 @@ end
 
 render = function()
   local tree = { title = tr("Radar de CVE", "CVE radar") }
-  if not larper.http.allowed(HOST) then
+  if not sigma.http.allowed(HOST) then
     tree[#tree + 1] = { type = "text", style = "danger", text = tr(
       "Aprove " .. HOST .. " em Configurações → Plugins para ver as notas. Até lá, nada sai daqui.",
       "Approve " .. HOST .. " in Settings → Plugins to see the scores. Until then, nothing goes out.") }
@@ -432,23 +432,23 @@ render = function()
       subtitle = sub,
       meta = meta,
       key = id,
-      on_click = ref.id and function() larper.jump(ref.channel, ref.id) end or nil,
+      on_click = ref.id and function() sigma.jump(ref.channel, ref.id) end or nil,
       actions = { { label = tr("Abrir o registro", "Open the record"), key = "open" .. id, on_click = function()
-        larper.open("https://www.cve.org/CVERecord?id=" .. id)
+        sigma.open("https://www.cve.org/CVERecord?id=" .. id)
       end } },
     }
   end
   tree[#tree + 1] = { type = "list", key = "seen", items = items,
     empty = tr("Nenhum CVE visto ainda. Use /cve CVE-2021-44228 para consultar um.", "No CVEs seen yet. Use /cve CVE-2021-44228 to look one up.") }
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
-larper.on("panel", function(open)
+sigma.on("panel", function(open)
   panel_open = open
   if open then render() end
 end)
 
-larper.on("lang", function()
+sigma.on("lang", function()
   for msg_id, ref in pairs(on_message) do
     ref.note = nil
     paint(msg_id)
@@ -457,4 +457,4 @@ larper.on("lang", function()
 end)
 
 render()
-larper.after(1, scan)
+sigma.after(1, scan)

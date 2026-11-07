@@ -16,6 +16,7 @@ const dropdown = @import("dropdown.zig");
 const tray = @import("../platform/tray.zig");
 const inbox = @import("inbox.zig");
 const mem_use_mod = @import("../core/mem_use.zig");
+const bindings = @import("bindings.zig");
 
 // Japonês: como o `label` é também a marca do QA (settings:…), a tradução
 // mora no ponto de uso (`sidebarLabel`), não num campo aqui.
@@ -41,7 +42,7 @@ pub const sections = [_]Section{
         .{ .page = .idioma, .label = "Idioma", .label_en = "Language" },
         .{ .page = .avancado, .label = "Avançado", .label_en = "Advanced" },
     } },
-    .{ .title = "LARPERCORD", .title_en = "LARPERCORD", .items = &.{
+    .{ .title = "SIGMACORD", .title_en = "SIGMACORD", .items = &.{
         .{ .page = .desempenho, .label = "Desempenho", .label_en = "Performance" },
         .{ .page = .lsp, .label = "Erros no código", .label_en = "Code diagnostics" },
         .{ .page = .plugins, .label = "Plugins", .label_en = "Plugins" },
@@ -73,7 +74,7 @@ fn sidebarLabel(pt: []const u8, en: []const u8) []const u8 {
         .{ .pt = "Plugins", .ja = "プラグイン" },
         .{ .pt = "Atualizações", .ja = "アップデート" },
         .{ .pt = "Novidades", .ja = "新着情報" },
-        .{ .pt = "Sobre", .ja = "larperCordについて" },
+        .{ .pt = "Sobre", .ja = "SigmaCordについて" },
     };
     for (ja) |e| if (std.mem.eql(u8, e.pt, pt)) return e.ja;
     return en;
@@ -747,21 +748,19 @@ fn page(p: *Page, previews: []const Preview) void {
             p.title(i18n.tr("Atalhos de teclado", "Keybinds"));
             p.toggle(i18n.tr("Navegação estilo vim", "Vim-style navigation"), i18n.tr("Com a caixa de texto sem foco (Esc sai dela), as teclas abaixo navegam.", "With the text box unfocused (Esc leaves it), the keys below navigate."), &s.vim_keys);
             p.divider();
-            p.keyRow(i18n.tr("Paleta de comandos", "Command palette"), "Ctrl+K");
+            p.heading(i18n.tr("Teclas das ações", "Action binds"));
+            // As teclas configuráveis (ui/bindings.zig), mic e surdez inclusive:
+            // clicar na caixa começa a captura, o × volta ao padrão.
+            bindings.pageRows(p);
+            if (p.button(i18n.tr("Restaurar os padrões", "Restore defaults"), false)) bindings.resetDefaults(ctx);
+            p.y += 4;
+            p.divider();
+            p.heading(i18n.tr("Fixos", "Fixed"));
             p.keyRow(i18n.tr("Paleta com as ações primeiro", "Palette, actions first"), "Ctrl+Shift+P");
-            p.keyRow(i18n.tr("Buscar mensagens", "Search messages"), "Ctrl+F");
-            p.keyRow(i18n.tr("Configurações", "Settings"), "Ctrl+,");
             p.keyRow(i18n.tr("Aumentar ou diminuir a interface", "Make the interface bigger or smaller"), "Ctrl + / Ctrl -");
             p.keyRow(i18n.tr("Interface no tamanho normal", "Interface at normal size"), "Ctrl 0");
-            p.keyRow(i18n.tr("Tela cheia", "Fullscreen"), "F11 / Alt+Enter");
-            p.keyRow(i18n.tr("Próximo tema", "Next theme"), "F2");
-            p.keyRow(i18n.tr("Tema anterior", "Previous theme"), "Shift+F2");
-            p.keyRow(i18n.tr("Próxima aba", "Next tab"), "Ctrl+Tab");
-            p.keyRow(i18n.tr("Aba anterior", "Previous tab"), "Ctrl+Shift+Tab");
+            p.keyRow(i18n.tr("Tela cheia com Alt", "Fullscreen with Alt"), "Alt+Enter");
             p.keyRow(i18n.tr("Ir para a aba N", "Go to tab N"), "Alt+1…9");
-            p.keyRow(i18n.tr("Fechar aba", "Close tab"), "Ctrl+W");
-            p.keyRow(i18n.tr("Caixa de entrada", "Inbox"), "Ctrl+I");
-            p.keyRow(i18n.tr("Mensagens salvas", "Saved messages"), "Ctrl+Shift+S");
             p.keyRow(i18n.tr("Abrir canal em nova aba", "Open channel in a new tab"), i18n.tr("Ctrl+Clique", "Ctrl+Click"));
             p.keyRow(i18n.tr("Fechar aba com o mouse", "Close tab with the mouse"), i18n.tr("Botão do meio", "Middle click"));
             if (s.vim_keys) {
@@ -796,7 +795,7 @@ fn page(p: *Page, previews: []const Preview) void {
         .avancado => {
             p.title(i18n.tr("Avançado", "Advanced"));
             p.toggle(i18n.tr("Modo desenvolvedor", "Developer Mode"), i18n.tr("Mostra o ID das mensagens e põe \"Copiar ID\" nos menus.", "Shows message IDs and adds \"Copy ID\" to menus."), &s.developer_mode);
-            p.toggle(i18n.tr("Recarregar temas ao salvar", "Reload themes on save"), i18n.tr("Salvar um .kdl em themes/ ou ~/.config/larpercord/themes aplica na hora.", "Saving a .kdl in themes/ or ~/.config/larpercord/themes applies it right away."), &s.hot_reload);
+            p.toggle(i18n.tr("Recarregar temas ao salvar", "Reload themes on save"), i18n.tr("Salvar um .kdl em themes/ ou ~/.config/sigmacord/themes aplica na hora.", "Saving a .kdl in themes/ or ~/.config/sigmacord/themes applies it right away."), &s.hot_reload);
             p.toggle(i18n.tr("Fechar para a bandeja", "Close to tray"), i18n.tr("Fechar a janela deixa o app conectado, com um ícone na bandeja do sistema.", "Closing the window keeps the app connected, with an icon in the system tray."), &s.close_to_tray);
             if (s.close_to_tray and !tray.hostSeen(ctx.now_ms)) p.note(i18n.tr("Este sistema não tem bandeja agora: fechar a janela encerra o app.", "This system has no tray right now: closing the window quits the app."));
             textSection(p);
@@ -1116,7 +1115,7 @@ fn videoSection(p: *Page) void {
     if (!sys.windows and !get.qa_no_network) {
         p.note(i18n.tr("Instale o pacote ffmpeg do seu sistema (pacman -S ffmpeg, apt install ffmpeg ou dnf install ffmpeg).", "Install your system's ffmpeg package (pacman -S ffmpeg, apt install ffmpeg or dnf install ffmpeg)."));
     } else if (ffmpeg_confirming) {
-        p.note(i18n.fmt(&buf, "Vai baixar {d} MB de {s}, um projeto de terceiros sem relação com o larperCord. O app confere o SHA-256 do arquivo e guarda só o necessário, cerca de {d} MB em disco. Depois de instalado, o FFmpeg roda dentro do app sempre que um vídeo tocar.", "This downloads {d} MB from {s}, a third-party project unrelated to larperCord. The app checks the file's SHA-256 and keeps only what it needs, about {d} MB on disk. Once installed, FFmpeg runs inside the app whenever a video plays.", .{ get.download_mb, get.source, get.disk_mb }));
+        p.note(i18n.fmt(&buf, "Vai baixar {d} MB de {s}, um projeto de terceiros sem relação com o SigmaCord. O app confere o SHA-256 do arquivo e guarda só o necessário, cerca de {d} MB em disco. Depois de instalado, o FFmpeg roda dentro do app sempre que um vídeo tocar.", "This downloads {d} MB from {s}, a third-party project unrelated to SigmaCord. The app checks the file's SHA-256 and keeps only what it needs, about {d} MB on disk. Once installed, FFmpeg runs inside the app whenever a video plays.", .{ get.download_mb, get.source, get.disk_mb }));
         if (p.button(i18n.tr("Baixar agora", "Download now"), false)) {
             ffmpeg_confirming = false;
             // O QA clica em tudo: aqui ele nunca baixa de verdade.
@@ -1188,7 +1187,7 @@ fn debugSection(p: *Page) void {
 fn about(p: *Page) void {
     const ctx = p.ctx;
     p.title(i18n.tr("Sobre", "About"));
-    d.text(p.dl, p.font(.bold), 28, p.x, p.y, ctx.col(.accent), "larperCord");
+    d.text(p.dl, p.font(.bold), 28, p.x, p.y, ctx.col(.accent), "SigmaCord");
     p.y += 40;
     p.note(i18n.tr("Cliente de Discord nativo: Zig + SDL3 + Dear ImGui + FreeType.", "Native Discord client: Zig + SDL3 + Dear ImGui + FreeType."));
     p.note(i18n.tr("Temas em KDL que reorganizam a interface inteira, recarregados ao salvar.", "KDL themes that rearrange the whole interface, reloaded on save."));

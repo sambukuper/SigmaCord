@@ -1,12 +1,12 @@
 // Aplica o tema antes do primeiro desenho, para a página não piscar.
 (function () {
-  var name = "larper", mode = "dark";
+  var name = "sigma", mode = "dark";
   try {
     name = localStorage.getItem("lc-theme") || name;
     mode = localStorage.getItem("lc-mode") || mode;
   } catch (e) {}
   var data = window.LC_DATA;
-  if (!data.themes[name]) name = "larper";
+  if (!data.themes[name]) name = "sigma";
   if (mode !== "light") mode = "dark";
   window.LC_apply = function (n, m) {
     var t = data.themes[n], root = document.documentElement, toks = t[m];

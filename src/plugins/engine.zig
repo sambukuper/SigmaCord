@@ -1,4 +1,4 @@
-//! Plugins em Lua 5.4: scripts pequenos em ~/.config/larpercord/plugins/*.lua
+//! Plugins em Lua 5.4: scripts pequenos em ~/.config/sigmacord/plugins/*.lua
 //! que reagem a eventos e criam comandos, painéis e menus, sem recompilar.
 //!
 //! Este é o lado da interface. O Lua roda em outra thread (runtime.zig) e as duas
@@ -80,9 +80,9 @@ pub const Plugin = struct {
     tree: ?*panel.Tree = null,
     /// As opções que ele mostra no cartão da página de plugins.
     settings: ?*panel.Tree = null,
-    /// Sugestões da caixa de mensagem (larper.completions).
+    /// Sugestões da caixa de mensagem (sigma.completions).
     completions: ?*wire.CompletionSet = null,
-    /// Regras para o texto que a pessoa envia (larper.rewrite).
+    /// Regras para o texto que a pessoa envia (sigma.rewrite).
     rewrite: []rewrite.Rule = &.{},
     /// Pediu para abrir antes de a árvore chegar.
     want_open: bool = false,
@@ -194,7 +194,7 @@ pub const Engine = struct {
     panel_wanted_len: u8 = 0,
     last_channel: u64 = 0,
     last_en: bool = false,
-    /// A primeira letra de `larper.lang()`: de inglês para japonês, `en` não muda.
+    /// A primeira letra de `sigma.lang()`: de inglês para japonês, `en` não muda.
     last_lang: u8 = 0,
 
     pub fn init(gpa: std.mem.Allocator, host: Host) Engine {
@@ -771,7 +771,7 @@ pub const Engine = struct {
             },
             .send => |s| {
                 if (p.validToken(s.token) and !e.host.send(e.host.ctx, s.channel, s.text)) {
-                    p.setErr(runtime_tr("larper.send: canal não encontrado", "larper.send: channel not found"));
+                    p.setErr(runtime_tr("sigma.send: canal não encontrado", "sigma.send: channel not found"));
                     e.generation +%= 1;
                     e.host.failed(e.host.ctx, p.name, p.err() orelse "");
                 }
@@ -896,7 +896,7 @@ pub const Engine = struct {
     }
 
     pub fn writePrefs(e: *const Engine, gpa: std.mem.Allocator, out: *std.ArrayList(u8)) !void {
-        try out.appendSlice(gpa, "// gerado pelo larperCord: plugins desligados, hosts aprovados e o painel\n");
+        try out.appendSlice(gpa, "// gerado pelo SigmaCord: plugins desligados, hosts aprovados e o painel\n");
         var it = e.disabled.keyIterator();
         while (it.next()) |k| {
             // Nomes que o KDL precisaria escapar ficam de fora.
@@ -1150,7 +1150,7 @@ test "plugins: sandbox só com as bibliotecas permitidas" {
         \\assert(type(os.time()) == "number" and type(os.date("%Y")) == "string")
         \\assert(string.upper("a") == "A" and math.max(1, 2) == 2 and utf8.char(227) == "ã")
         \\assert(table.concat({ "a", "b" }, ",") == "a,b" and ("x"):rep(3) == "xxx")
-        \\larper.notify("ok")
+        \\sigma.notify("ok")
     );
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expectEqual(@as(usize, 1), T.n_notes);
@@ -1187,29 +1187,29 @@ test "plugins: sem plugin ligado não há thread nem estado de Lua" {
     try std.testing.expect(std.mem.indexOf(u8, p.err().?, "nunca roda") != null);
 }
 
-test "plugins: larper.lsp só guarda a proposta e valida tudo" {
+test "plugins: sigma.lsp só guarda a proposta e valida tudo" {
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
-        \\larper.lsp("zig", {"zls"})
-        \\larper.lsp("haskell", {"hls", "--lsp"})
-        \\larper.lsp("zig", {"/opt/zls", "--x"})
+        \\sigma.lsp("zig", {"zls"})
+        \\sigma.lsp("haskell", {"hls", "--lsp"})
+        \\sigma.lsp("zig", {"/opt/zls", "--x"})
         \\local ruins = {
-        \\  function() larper.lsp("Zig", {"a"}) end,
-        \\  function() larper.lsp("c#", {"a"}) end,
-        \\  function() larper.lsp("a/b", {"a"}) end,
-        \\  function() larper.lsp("", {"a"}) end,
-        \\  function() larper.lsp("x", {}) end,
-        \\  function() larper.lsp("x", {""}) end,
-        \\  function() larper.lsp("x", {1}) end,
-        \\  function() larper.lsp("x", {"a", {}}) end,
-        \\  function() larper.lsp("x", {"a\0b"}) end,
-        \\  function() larper.lsp("x", "zls") end,
-        \\  function() larper.lsp("x", {string.rep("a", 2000)}) end,
+        \\  function() sigma.lsp("Zig", {"a"}) end,
+        \\  function() sigma.lsp("c#", {"a"}) end,
+        \\  function() sigma.lsp("a/b", {"a"}) end,
+        \\  function() sigma.lsp("", {"a"}) end,
+        \\  function() sigma.lsp("x", {}) end,
+        \\  function() sigma.lsp("x", {""}) end,
+        \\  function() sigma.lsp("x", {1}) end,
+        \\  function() sigma.lsp("x", {"a", {}}) end,
+        \\  function() sigma.lsp("x", {"a\0b"}) end,
+        \\  function() sigma.lsp("x", "zls") end,
+        \\  function() sigma.lsp("x", {string.rep("a", 2000)}) end,
         \\}
         \\for i, f in ipairs(ruins) do assert(not pcall(f), "passou " .. i) end
-        \\for i = 1, 6 do larper.lsp("l" .. i, {"p"}) end
-        \\assert(not pcall(larper.lsp, "demais", {"p"}))
+        \\for i = 1, 6 do sigma.lsp("l" .. i, {"p"}) end
+        \\assert(not pcall(sigma.lsp, "demais", {"p"}))
     );
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expectEqual(@as(usize, 8), p.lsp.items.len);
@@ -1232,7 +1232,7 @@ test "plugins: laço infinito é parado, nem pcall segura, e a interface segue" 
     try std.testing.expect(std.mem.indexOf(u8, p.err().?, "limite") != null);
 
     const q = testOne(&e,
-        \\larper.command("/x", function()
+        \\sigma.command("/x", function()
         \\  while true do pcall(function() while true do end end) end
         \\end)
     );
@@ -1250,10 +1250,10 @@ test "plugins: chamar um plugin nunca espera o Lua" {
     // Bem mais instruções que o normal: um segundo inteiro por comando, se deixar.
     e.budget = 4_000_000_000;
     const p = testOne(&e,
-        \\larper.command("/lento", function()
+        \\sigma.command("/lento", function()
         \\  local t = os.clock()
         \\  while os.clock() - t < 0.3 do end
-        \\  larper.notify("acabou")
+        \\  sigma.notify("acabou")
         \\end)
     );
     try std.testing.expectEqual(Status.running, p.status());
@@ -1269,11 +1269,11 @@ test "plugins: chamar um plugin nunca espera o Lua" {
 test "plugins: erro de sintaxe e erro em tempo de execução" {
     var e = T.engine();
     defer e.deinit();
-    const p = testOne(&e, "larper.on('message', function( end");
+    const p = testOne(&e, "sigma.on('message', function( end");
     try std.testing.expectEqual(Status.failed, p.status());
     try std.testing.expect(std.mem.startsWith(u8, p.err().?, "t.lua:1:"));
 
-    const q = testOne(&e, "larper.on('message', function(m) error('quebrou') end)");
+    const q = testOne(&e, "sigma.on('message', function(m) error('quebrou') end)");
     const m: Message = .{ .content = "oi", .author = 1, .author_name = "ana", .channel = 42, .channel_name = "geral" };
     e.onMessage(&m);
     e.waitIdle();
@@ -1291,13 +1291,13 @@ test "plugins: send só em gesto, nunca em resposta a mensagem, temporizador ou 
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
-        \\larper.on("message", function(msg)
-        \\  if msg.content:find("bom dia") then larper.send(msg.channel, "bom dia, " .. msg.author.name) end
+        \\sigma.on("message", function(msg)
+        \\  if msg.content:find("bom dia") then sigma.send(msg.channel, "bom dia, " .. msg.author.name) end
         \\end)
-        \\larper.command("/shrug", function(args)
-        \\  larper.send(larper.channel(), (args ~= "" and args .. " " or "") .. "¯\\_(ツ)_/¯")
+        \\sigma.command("/shrug", function(args)
+        \\  sigma.send(sigma.channel(), (args ~= "" and args .. " " or "") .. "¯\\_(ツ)_/¯")
         \\end)
-        \\larper.keybind("Ctrl+Shift+X", function() larper.send("99", "atalho") end)
+        \\sigma.keybind("Ctrl+Shift+X", function() sigma.send("99", "atalho") end)
     );
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expectEqual(@as(u32, 1), e.n_keys);
@@ -1307,7 +1307,7 @@ test "plugins: send só em gesto, nunca em resposta a mensagem, temporizador ou 
     e.onMessage(&m);
     e.waitIdle();
     try std.testing.expectEqual(@as(usize, 0), T.n_sent);
-    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "larper.send") != null);
+    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "sigma.send") != null);
 
     try cmdOk(&e, "/shrug oi");
     try std.testing.expect(!e.command("/outro"));
@@ -1334,21 +1334,21 @@ test "plugins: um gesto não vale para o que vem depois dele" {
     const p = testOne(&e,
         \\-- @name G
         \\-- @capabilities send, timers, composer, panel, messages, menu
-        \\larper.command("/depois", function()
-        \\  larper.after(0.01, function() larper.send(nil, "do temporizador") end)
+        \\sigma.command("/depois", function()
+        \\  sigma.after(0.01, function() sigma.send(nil, "do temporizador") end)
         \\end)
-        \\larper.command("/ins", function() larper.insert("texto") end)
-        \\larper.command("/pula", function() larper.jump("5", "6") end)
-        \\larper.command("/varias", function() for i = 1, 6 do larper.send(nil, "x" .. i) end end)
-        \\larper.command("/erro", function() pcall(larper.after, "x", 1); larper.after(0, function() larper.insert("não") end) end)
-        \\larper.on("message", function() larper.jump("1", "2") end)
+        \\sigma.command("/ins", function() sigma.insert("texto") end)
+        \\sigma.command("/pula", function() sigma.jump("5", "6") end)
+        \\sigma.command("/varias", function() for i = 1, 6 do sigma.send(nil, "x" .. i) end end)
+        \\sigma.command("/erro", function() pcall(sigma.after, "x", 1); sigma.after(0, function() sigma.insert("não") end) end)
+        \\sigma.on("message", function() sigma.jump("1", "2") end)
     );
     try std.testing.expectEqual(Status.running, p.status());
     try cmdOk(&e, "/depois");
     sync.sleepMs(40);
     e.waitIdle();
     try std.testing.expectEqual(@as(usize, 0), T.n_sent);
-    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "larper.send") != null);
+    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "sigma.send") != null);
     try cmdOk(&e, "/ins");
     try std.testing.expectEqualStrings("texto", T.inserted[0..T.inserted_len]);
     try cmdOk(&e, "/pula");
@@ -1363,7 +1363,7 @@ test "plugins: um gesto não vale para o que vem depois dele" {
     sync.sleepMs(40);
     e.waitIdle();
     try std.testing.expectEqual(@as(usize, 0), T.inserted_len);
-    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "larper.insert") != null);
+    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "sigma.insert") != null);
     const m: Message = .{ .content = "oi", .author = 1, .author_name = "ana", .channel = 42, .channel_name = "geral" };
     e.onMessage(&m);
     e.waitIdle();
@@ -1373,13 +1373,13 @@ test "plugins: um gesto não vale para o que vem depois dele" {
 test "plugins: capacidade que o cabeçalho não pede dá erro que explica" {
     var e = T.engine();
     defer e.deinit();
-    const a = testOne(&e, "larper.storage.set('x', 1)");
+    const a = testOne(&e, "sigma.storage.set('x', 1)");
     try std.testing.expect(std.mem.indexOf(u8, a.err().?, "@capabilities") != null);
     try std.testing.expect(std.mem.indexOf(u8, a.err().?, "storage") != null);
-    const b = testOne(&e, "-- @name B\nlarper.send(nil, 'x')");
+    const b = testOne(&e, "-- @name B\nsigma.send(nil, 'x')");
     try std.testing.expect(std.mem.indexOf(u8, b.err().?, "send") != null);
     // Cabeçalho com problema: nem liga, e o erro diz o que é.
-    const c = testOne(&e, "-- @name C\n-- @capabilities http\n-- @hosts discord.com\nlarper.notify('nunca')");
+    const c = testOne(&e, "-- @name C\n-- @capabilities http\n-- @hosts discord.com\nsigma.notify('nunca')");
     try std.testing.expectEqual(Status.failed, c.status());
     try std.testing.expect(std.mem.indexOf(u8, c.err().?, "Discord") != null);
     try std.testing.expectEqual(@as(usize, 0), T.n_notes);
@@ -1401,7 +1401,7 @@ test "plugins: atalhos inválidos e teto de memória" {
         \\  local t = {}
         \\  for i = 1, 1e8 do t[i] = ("x"):rep(64) .. i end
         \\end)
-        \\larper.notify(tostring(err))
+        \\sigma.notify(tostring(err))
     );
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expect(std.mem.indexOf(u8, T.note(0), "memory") != null);
@@ -1412,8 +1412,8 @@ test "plugins: desligar, religar e ready" {
     var e = T.engine();
     defer e.deinit();
     e.load(&.{
-        .{ .name = "a.lua", .src = "larper.on('ready', function() larper.notify('pronto a') end)" },
-        .{ .name = "b.lua", .src = "larper.command('/b', function() larper.notify('b') end)" },
+        .{ .name = "a.lua", .src = "sigma.on('ready', function() sigma.notify('pronto a') end)" },
+        .{ .name = "b.lua", .src = "sigma.command('/b', function() sigma.notify('b') end)" },
     }, true);
     e.waitIdle();
     try std.testing.expectEqual(@as(usize, 1), T.n_notes);
@@ -1423,8 +1423,8 @@ test "plugins: desligar, religar e ready" {
     try std.testing.expect(!e.command("/b"));
     // Recarregar lembra quem está desligado.
     e.load(&.{
-        .{ .name = "a.lua", .src = "larper.on('ready', function() larper.notify('pronto a') end)" },
-        .{ .name = "b.lua", .src = "larper.command('/b', function() larper.notify('b') end)" },
+        .{ .name = "a.lua", .src = "sigma.on('ready', function() sigma.notify('pronto a') end)" },
+        .{ .name = "b.lua", .src = "sigma.command('/b', function() sigma.notify('b') end)" },
     }, true);
     e.waitIdle();
     try std.testing.expectEqual(Status.off, e.list.items[1].status());
@@ -1440,20 +1440,20 @@ test "plugins: nada trava dentro de C (__gc, string.rep, padrões, table)" {
     // __gc roda com o gancho desligado: nem chega a ser aceito.
     const gc = testOne(&e,
         \\local ok, err = pcall(setmetatable, {}, {__gc = function() while true do end end})
-        \\larper.notify(tostring(ok) .. " " .. tostring(err))
+        \\sigma.notify(tostring(ok) .. " " .. tostring(err))
     );
     try std.testing.expectEqual(Status.running, gc.status());
     try std.testing.expect(std.mem.startsWith(u8, T.note(0), "false"));
     T.reset();
     _ = testOne(&e,
         \\local t = setmetatable({}, {__index = function() return 1 end})
-        \\larper.notify(tostring(t.x))
+        \\sigma.notify(tostring(t.x))
         \\local p = setmetatable({}, {__metatable = "não"})
-        \\larper.notify(tostring(pcall(setmetatable, p, {})))
-        \\larper.notify(tostring(pcall(setmetatable, 1, {})))
-        \\larper.notify(#string.rep("", 1000000000000000000) .. "")
+        \\sigma.notify(tostring(pcall(setmetatable, p, {})))
+        \\sigma.notify(tostring(pcall(setmetatable, 1, {})))
+        \\sigma.notify(#string.rep("", 1000000000000000000) .. "")
         \\local s = string.rep("a", 100000)
-        \\larper.notify(tostring(pcall(string.find, s, ".-.-.-.-.-.-.-.-b")))
+        \\sigma.notify(tostring(pcall(string.find, s, ".-.-.-.-.-.-.-.-b")))
     );
     try std.testing.expectEqualStrings("1", T.note(0));
     try std.testing.expectEqualStrings("false", T.note(1));
@@ -1462,10 +1462,10 @@ test "plugins: nada trava dentro de C (__gc, string.rep, padrões, table)" {
     try std.testing.expectEqualStrings("false", T.note(4));
     T.reset();
     _ = testOne(&e,
-        \\larper.notify(tostring(pcall(table.move, {}, 1, 1000000000000000, 2)))
+        \\sigma.notify(tostring(pcall(table.move, {}, 1, 1000000000000000, 2)))
         \\local big = setmetatable({}, {__len = function() return 1000000000000000 end})
-        \\larper.notify(tostring(pcall(table.insert, big, 1, "x")))
-        \\larper.notify(tostring(pcall(table.remove, big, 1)))
+        \\sigma.notify(tostring(pcall(table.insert, big, 1, "x")))
+        \\sigma.notify(tostring(pcall(table.remove, big, 1)))
     );
     for (0..3) |i| try std.testing.expectEqualStrings("false", T.note(i));
 }
@@ -1548,12 +1548,12 @@ test "plugins: temporizadores acabam com o plugin" {
         \\-- @name T
         \\-- @capabilities timers, notify
         \\local n = 0
-        \\larper.after(0.01, function() larper.notify("depois") end)
-        \\local cancelado = larper.after(0.01, function() larper.notify("cancelado") end)
-        \\larper.cancel(cancelado)
-        \\larper.command("/longe", function() larper.after(0.05, function() larper.notify("não deveria") end) end)
-        \\assert(not pcall(larper.every, 0.1, function() end))
-        \\assert(not pcall(larper.after, "x", function() end))
+        \\sigma.after(0.01, function() sigma.notify("depois") end)
+        \\local cancelado = sigma.after(0.01, function() sigma.notify("cancelado") end)
+        \\sigma.cancel(cancelado)
+        \\sigma.command("/longe", function() sigma.after(0.05, function() sigma.notify("não deveria") end) end)
+        \\assert(not pcall(sigma.every, 0.1, function() end))
+        \\assert(not pcall(sigma.after, "x", function() end))
     );
     try std.testing.expectEqual(Status.running, p.status());
     sync.sleepMs(40);
@@ -1567,19 +1567,19 @@ test "plugins: temporizadores acabam com o plugin" {
     try std.testing.expectEqual(@as(usize, 1), T.n_notes);
 }
 
-test "plugins: larper.every repete até cancelar" {
+test "plugins: sigma.every repete até cancelar" {
     var e = T.engine();
     defer e.deinit();
     e.budget = 5_000_000;
     const p = testOne(&e,
         \\-- @capabilities timers, notify
-        \\larper.command("/n", function(a) larper.notify(a) end)
+        \\sigma.command("/n", function(a) sigma.notify(a) end)
         \\local n = 0
         \\local id
-        \\id = larper.every(1, function()
+        \\id = sigma.every(1, function()
         \\  n = n + 1
-        \\  larper.notify("tique")
-        \\  larper.cancel(id)
+        \\  sigma.notify("tique")
+        \\  sigma.cancel(id)
         \\end)
     );
     try std.testing.expectEqual(Status.running, p.status());
@@ -1598,42 +1598,42 @@ test "plugins: armazenamento persiste entre partidas e tem teto" {
     const src =
         \\-- @name S
         \\-- @capabilities storage, notify
-        \\larper.command("/grava", function()
-        \\  larper.storage.set("n", 42)
-        \\  larper.storage.set("txt", "olá \"mundo\"\n")
-        \\  larper.storage.set("lista", {1, 2, {a = "b"}})
-        \\  larper.storage.set("apaga", true)
-        \\  larper.storage.delete("apaga")
+        \\sigma.command("/grava", function()
+        \\  sigma.storage.set("n", 42)
+        \\  sigma.storage.set("txt", "olá \"mundo\"\n")
+        \\  sigma.storage.set("lista", {1, 2, {a = "b"}})
+        \\  sigma.storage.set("apaga", true)
+        \\  sigma.storage.delete("apaga")
         \\end)
-        \\larper.command("/le", function()
-        \\  local s = larper.storage
+        \\sigma.command("/le", function()
+        \\  local s = sigma.storage
         \\  local l = s.get("lista")
-        \\  larper.notify(tostring(s.get("n")) .. "|" .. tostring(s.get("txt")) .. "|" .. l[3].a .. "|" .. tostring(s.get("apaga")) .. "|" .. #s.keys())
+        \\  sigma.notify(tostring(s.get("n")) .. "|" .. tostring(s.get("txt")) .. "|" .. l[3].a .. "|" .. tostring(s.get("apaga")) .. "|" .. #s.keys())
         \\end)
-        \\larper.command("/copia", function()
-        \\  local l = larper.storage.get("lista")
+        \\sigma.command("/copia", function()
+        \\  local l = sigma.storage.get("lista")
         \\  l[1] = 99
-        \\  larper.notify(tostring(larper.storage.get("lista")[1]))
+        \\  sigma.notify(tostring(sigma.storage.get("lista")[1]))
         \\end)
-        \\larper.command("/grande", function()
+        \\sigma.command("/grande", function()
         \\  local bloco = string.rep("x", 400 * 1024)
-        \\  larper.storage.set("a", bloco)
-        \\  larper.storage.set("b", bloco)
-        \\  local ok, err = pcall(larper.storage.set, "c", bloco)
-        \\  larper.notify(tostring(ok) .. " " .. tostring(err):sub(1, 30))
+        \\  sigma.storage.set("a", bloco)
+        \\  sigma.storage.set("b", bloco)
+        \\  local ok, err = pcall(sigma.storage.set, "c", bloco)
+        \\  sigma.notify(tostring(ok) .. " " .. tostring(err):sub(1, 30))
         \\  -- Trocar por algo menor cabe, e o que não deu certo não mudou nada.
-        \\  larper.storage.set("a", "pouco")
-        \\  larper.storage.set("c", bloco)
-        \\  larper.storage.delete("b")
-        \\  larper.storage.delete("c")
-        \\  larper.notify(#larper.storage.get("a") .. "")
+        \\  sigma.storage.set("a", "pouco")
+        \\  sigma.storage.set("c", bloco)
+        \\  sigma.storage.delete("b")
+        \\  sigma.storage.delete("c")
+        \\  sigma.notify(#sigma.storage.get("a") .. "")
         \\end)
-        \\larper.command("/ruim", function()
-        \\  larper.notify(tostring(pcall(larper.storage.set, "f", function() end)))
+        \\sigma.command("/ruim", function()
+        \\  sigma.notify(tostring(pcall(sigma.storage.set, "f", function() end)))
         \\  local ciclo = {}
         \\  ciclo.eu = ciclo
-        \\  larper.notify(tostring(pcall(larper.storage.set, "c", ciclo)))
-        \\  larper.notify(tostring(pcall(larper.storage.set, "", 1)))
+        \\  sigma.notify(tostring(pcall(sigma.storage.set, "c", ciclo)))
+        \\  sigma.notify(tostring(pcall(sigma.storage.set, "", 1)))
         \\end)
     ;
     const p = testOne(&e, src);
@@ -1666,7 +1666,7 @@ test "plugins: arquivo de dados ilegível fica guardado e o plugin começa do ze
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities storage, notify
-        \\larper.notify(tostring(larper.storage.get("x")))
+        \\sigma.notify(tostring(sigma.storage.get("x")))
     );
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expectEqual(@as(usize, 1), T.broken);
@@ -1674,12 +1674,12 @@ test "plugins: arquivo de dados ilegível fica guardado e o plugin começa do ze
     try std.testing.expectEqualStrings("nil", T.note(0));
 }
 
-test "plugins: larper.json vai e volta" {
+test "plugins: sigma.json vai e volta" {
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities notify
-        \\local j = larper.json
+        \\local j = sigma.json
         \\assert(j.encode({1, 2, 3}) == "[1,2,3]")
         \\assert(j.encode({a = "x\n"}) == '{"a":"x\\n"}')
         \\assert(j.encode("ã") == '"ã"')
@@ -1693,20 +1693,20 @@ test "plugins: larper.json vai e volta" {
         \\assert(not pcall(j.encode, {1, 2, x = 3}))
         \\assert(not pcall(j.encode, 0/0))
         \\assert(not pcall(j.encode, print))
-        \\assert(larper.urlencode("a b&c/ç") == "a%20b%26c%2F%C3%A7")
-        \\larper.notify("ok")
+        \\assert(sigma.urlencode("a b&c/ç") == "a%20b%26c%2F%C3%A7")
+        \\sigma.notify("ok")
     );
     if (p.err()) |msg| std.debug.print("{s}\n", .{msg});
     try std.testing.expectEqual(Status.running, p.status());
     try std.testing.expectEqualStrings("ok", T.note(0));
 }
 
-test "plugins: larper.tr segue o idioma" {
+test "plugins: sigma.tr segue o idioma" {
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities notify
-        \\larper.command("/fala", function() larper.notify(larper.lang() .. " " .. larper.tr("oi", "hi")) end)
+        \\sigma.command("/fala", function() sigma.notify(sigma.lang() .. " " .. sigma.tr("oi", "hi")) end)
     );
     try std.testing.expectEqual(Status.running, p.status());
     try cmdOk(&e, "/fala");
@@ -1742,33 +1742,33 @@ test "plugins: painel chega pronto e os botões voltam ao Lua" {
         \\-- @capabilities panel, notify, send
         \\local cliques = 0
         \\local function desenha()
-        \\  larper.panel.set({
+        \\  sigma.panel.set({
         \\    title = "T" .. cliques,
         \\    {type = "heading", text = "H"},
         \\    {type = "text", text = "texto", style = "muted"},
         \\    {type = "input", key = "campo", placeholder = "dica", value = "v",
-        \\      on_change = function(v) larper.notify("mudou " .. v) end,
-        \\      on_submit = function(v) larper.send(nil, "enviei " .. v) end},
+        \\      on_change = function(v) sigma.notify("mudou " .. v) end,
+        \\      on_submit = function(v) sigma.send(nil, "enviei " .. v) end},
         \\    {type = "row",
         \\      {type = "button", label = "A", on_click = function() cliques = cliques + 1; desenha() end},
-        \\      {type = "button", label = "B", style = "danger", on_click = function() larper.panel.close() end},
+        \\      {type = "button", label = "B", style = "danger", on_click = function() sigma.panel.close() end},
         \\    },
         \\    {type = "bar", label = "ana", value = 3, max = 10, text = "3"},
         \\    {type = "separator"},
         \\    {type = "list", empty = "nada", items = {
-        \\      {title = "item", subtitle = "sub", meta = "m", on_click = function() larper.notify("item") end,
-        \\        actions = {{label = "x", on_click = function() larper.notify("ação") end}}},
+        \\      {title = "item", subtitle = "sub", meta = "m", on_click = function() sigma.notify("item") end,
+        \\        actions = {{label = "x", on_click = function() sigma.notify("ação") end}}},
         \\    }},
         \\  })
         \\end
         \\desenha()
-        \\larper.command("/abre", function() desenha(); larper.panel.open() end)
-        \\larper.command("/ruim", function()
-        \\  larper.notify(tostring(pcall(larper.panel.set, {{type = "foguete"}})))
-        \\  larper.notify(tostring(pcall(larper.panel.set, {{type = "input"}})))
-        \\  larper.notify(tostring(pcall(larper.panel.set, {"texto"})))
+        \\sigma.command("/abre", function() desenha(); sigma.panel.open() end)
+        \\sigma.command("/ruim", function()
+        \\  sigma.notify(tostring(pcall(sigma.panel.set, {{type = "foguete"}})))
+        \\  sigma.notify(tostring(pcall(sigma.panel.set, {{type = "input"}})))
+        \\  sigma.notify(tostring(pcall(sigma.panel.set, {"texto"})))
         \\end)
-        \\larper.on("ready", function() pcall(larper.panel.open) end)
+        \\sigma.on("ready", function() pcall(sigma.panel.open) end)
     );
     if (p.err()) |msg| std.debug.print("{s}\n", .{msg});
     try std.testing.expectEqual(Status.running, p.status());
@@ -1837,19 +1837,19 @@ test "plugins: menus e decoração, com o plugin parado levando tudo" {
     const p = testOne(&e,
         \\-- @name M
         \\-- @capabilities menu, decorate, notify
-        \\larper.menu("message", {pt = "Marcar", en = "Mark"}, function(m)
-        \\  larper.decorate(m, {badge = "ok", note = m.content})
-        \\  larper.notify(m.author.name .. ":" .. m.id)
+        \\sigma.menu("message", {pt = "Marcar", en = "Mark"}, function(m)
+        \\  sigma.decorate(m, {badge = "ok", note = m.content})
+        \\  sigma.notify(m.author.name .. ":" .. m.id)
         \\end)
-        \\larper.menu("user", "Pessoa", function(u) larper.notify(u.id .. "=" .. u.name) end)
-        \\larper.command("/regras", function()
-        \\  larper.rules({ {word = "SPOILER", collapse = true, label = "fora"}, {user = "9", badge = "!"} })
+        \\sigma.menu("user", "Pessoa", function(u) sigma.notify(u.id .. "=" .. u.name) end)
+        \\sigma.command("/regras", function()
+        \\  sigma.rules({ {word = "SPOILER", collapse = true, label = "fora"}, {user = "9", badge = "!"} })
         \\end)
-        \\larper.command("/tira", function() larper.undecorate("10") end)
-        \\larper.command("/ruim", function()
-        \\  larper.notify(tostring(pcall(larper.menu, "canal", "x", print)))
-        \\  larper.notify(tostring(pcall(larper.decorate, "", {})))
-        \\  larper.notify(tostring(pcall(larper.rules, {"nada"})))
+        \\sigma.command("/tira", function() sigma.undecorate("10") end)
+        \\sigma.command("/ruim", function()
+        \\  sigma.notify(tostring(pcall(sigma.menu, "canal", "x", print)))
+        \\  sigma.notify(tostring(pcall(sigma.decorate, "", {})))
+        \\  sigma.notify(tostring(pcall(sigma.rules, {"nada"})))
         \\end)
     );
     try std.testing.expectEqual(Status.running, p.status());
@@ -1885,8 +1885,8 @@ test "plugins: apagar uma mensagem leva a nota junto e avisa quem pediu" {
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities decorate, messages, notify
-        \\larper.command("/d", function() larper.decorate("10", {note = "texto"}) end)
-        \\larper.on("delete", function(d) larper.notify("apagou " .. d.id .. " em " .. d.channel) end)
+        \\sigma.command("/d", function() sigma.decorate("10", {note = "texto"}) end)
+        \\sigma.on("delete", function(d) sigma.notify("apagou " .. d.id .. " em " .. d.channel) end)
     );
     try std.testing.expectEqual(Status.running, p.status());
     try cmdOk(&e, "/d");
@@ -1907,14 +1907,14 @@ test "plugins: mensagens carregadas chegam numa cópia" {
     T.loaded = &list;
     const p = testOne(&e,
         \\-- @capabilities messages, notify
-        \\larper.command("/le", function()
-        \\  local ok = larper.messages({limit = 10}, function(l)
-        \\    larper.notify(#l .. " " .. l[1].content .. " " .. l[2].author.name .. " " .. l[2].time .. " " .. l[2].attachments)
+        \\sigma.command("/le", function()
+        \\  local ok = sigma.messages({limit = 10}, function(l)
+        \\    sigma.notify(#l .. " " .. l[1].content .. " " .. l[2].author.name .. " " .. l[2].time .. " " .. l[2].attachments)
         \\  end)
-        \\  larper.notify(tostring(ok))
+        \\  sigma.notify(tostring(ok))
         \\end)
-        \\larper.command("/seguido", function()
-        \\  larper.notify(tostring(larper.messages(function() end)))
+        \\sigma.command("/seguido", function()
+        \\  sigma.notify(tostring(sigma.messages(function() end)))
         \\end)
     );
     try std.testing.expectEqual(Status.running, p.status());
@@ -1935,21 +1935,21 @@ test "plugins: HTTP só com host declarado e aprovado, e sem cabeçalhos da cont
         \\-- @capabilities http, notify, send
         \\-- @hosts api.exemplo.com
         \\local function resposta(r)
-        \\  larper.notify(tostring(r.ok) .. "|" .. tostring(r.status) .. "|" .. tostring(r.error) .. "|" .. r.body)
-        \\  if r.ok and r.body == "manda" then larper.send(nil, "automático") end
+        \\  sigma.notify(tostring(r.ok) .. "|" .. tostring(r.status) .. "|" .. tostring(r.error) .. "|" .. r.body)
+        \\  if r.ok and r.body == "manda" then sigma.send(nil, "automático") end
         \\end
-        \\larper.command("/get", function() larper.http.get("https://api.exemplo.com/x?q=1", resposta) end)
-        \\larper.command("/post", function()
-        \\  larper.http.post("https://api.exemplo.com/y", {body = "corpo", headers = {
+        \\sigma.command("/get", function() sigma.http.get("https://api.exemplo.com/x?q=1", resposta) end)
+        \\sigma.command("/post", function()
+        \\  sigma.http.post("https://api.exemplo.com/y", {body = "corpo", headers = {
         \\    ["Content-Type"] = "text/plain", Cookie = "a=b", Authorization = "x",
         \\    ["X-Super-Properties"] = "z", Accept = "a\r\nCookie: b"}}, resposta)
         \\end)
-        \\larper.command("/fora", function()
-        \\  larper.notify(tostring(pcall(larper.http.get, "https://outro.com/", resposta)))
-        \\  larper.notify(tostring(pcall(larper.http.get, "http://api.exemplo.com/", resposta)))
-        \\  larper.notify(tostring(pcall(larper.http.get, "https://u:s@api.exemplo.com/", resposta)))
-        \\  larper.notify(tostring(pcall(larper.http.get, "https://api.exemplo.com:8443/", resposta)))
-        \\  larper.notify(larper.http.allowed("api.exemplo.com") and "sim" or "não")
+        \\sigma.command("/fora", function()
+        \\  sigma.notify(tostring(pcall(sigma.http.get, "https://outro.com/", resposta)))
+        \\  sigma.notify(tostring(pcall(sigma.http.get, "http://api.exemplo.com/", resposta)))
+        \\  sigma.notify(tostring(pcall(sigma.http.get, "https://u:s@api.exemplo.com/", resposta)))
+        \\  sigma.notify(tostring(pcall(sigma.http.get, "https://api.exemplo.com:8443/", resposta)))
+        \\  sigma.notify(sigma.http.allowed("api.exemplo.com") and "sim" or "não")
         \\end)
     );
     try std.testing.expectEqual(Status.running, p.status());
@@ -1973,7 +1973,7 @@ test "plugins: HTTP só com host declarado e aprovado, e sem cabeçalhos da cont
     e.waitIdle();
     try std.testing.expectEqualStrings("true|200|nil|manda", T.note(0));
     try std.testing.expectEqual(@as(usize, 0), T.n_sent);
-    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "larper.send") != null);
+    try std.testing.expect(std.mem.indexOf(u8, p.err().?, "sigma.send") != null);
     // Só os cabeçalhos da lista, e sem quebra de linha.
     try cmdOk(&e, "/post");
     const req = T.http_reqs[0].?;
@@ -1998,10 +1998,10 @@ test "plugins: HTTP tem limite por plugin" {
     const p = testOne(&e,
         \\-- @capabilities http, notify
         \\-- @hosts api.exemplo.com
-        \\larper.command("/rajada", function()
+        \\sigma.command("/rajada", function()
         \\  for i = 1, 5 do
-        \\    larper.http.get("https://api.exemplo.com/" .. i, function(r)
-        \\      if r.error then larper.notify(r.error) end
+        \\    sigma.http.get("https://api.exemplo.com/" .. i, function(r)
+        \\      if r.error then sigma.notify(r.error) end
         \\    end)
         \\  end
         \\end)
@@ -2025,8 +2025,8 @@ test "plugins: um plugin parado não atrapalha o outro" {
     defer e.deinit();
     e.budget = 200_000;
     e.load(&.{
-        .{ .name = "a.lua", .src = "larper.command('/a', function() while true do end end)" },
-        .{ .name = "b.lua", .src = "larper.command('/b', function() larper.notify('b vivo') end)" },
+        .{ .name = "a.lua", .src = "sigma.command('/a', function() while true do end end)" },
+        .{ .name = "b.lua", .src = "sigma.command('/b', function() sigma.notify('b vivo') end)" },
     }, false);
     e.waitIdle();
     try cmdOk(&e, "/a");
@@ -2039,8 +2039,8 @@ test "plugins: uma rajada de mensagens não cresce sem limite" {
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
-        \\larper.on("message", function(m) end)
-        \\larper.command("/fim", function() larper.notify("vivo") end)
+        \\sigma.on("message", function(m) end)
+        \\sigma.command("/fim", function() sigma.notify("vivo") end)
     );
     try std.testing.expectEqual(Status.running, p.status());
     const m: Message = .{ .content = "x", .author = 1, .author_name = "a", .channel = 42, .channel_name = "g" };
@@ -2054,7 +2054,7 @@ test "plugins: trocar de conta reinicia, cada um com os seus dados" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
-    const p = testOne(&e, "-- @capabilities notify\nlarper.notify('subiu')\nlarper.command('/x', function() end)");
+    const p = testOne(&e, "-- @capabilities notify\nsigma.notify('subiu')\nsigma.command('/x', function() end)");
     try std.testing.expectEqual(@as(usize, 1), T.n_notes);
     try std.testing.expectEqual(@as(u32, 1), e.n_commands);
     e.setAccount(0);
@@ -2075,7 +2075,7 @@ test "plugins: escolhas vão e voltam pelo plugins.kdl" {
         var e = T.engine();
         defer e.deinit();
         e.setDisabledName("velho.lua");
-        const p = testOne(&e, "-- @capabilities panel, http\n-- @hosts api.exemplo.com\nlarper.panel.set({})");
+        const p = testOne(&e, "-- @capabilities panel, http\n-- @hosts api.exemplo.com\nsigma.panel.set({})");
         e.setApproved(p, "api.exemplo.com", true);
         e.panel_left = true;
         e.panel_w = 412;
@@ -2092,14 +2092,14 @@ test "plugins: escolhas vão e voltam pelo plugins.kdl" {
     try std.testing.expect(e.panel_left);
     try std.testing.expectEqual(@as(f32, 412), e.panel_w);
     // O painel que estava aberto volta sozinho quando o plugin publica.
-    const p = testOne(&e, "-- @capabilities panel\nlarper.panel.set({})");
+    const p = testOne(&e, "-- @capabilities panel\nsigma.panel.set({})");
     try std.testing.expect(e.panel_open == p);
 }
 
 test "plugins: recarregar não fecha o painel, e a lista de hosts vale para o próximo" {
     var e = T.engine();
     defer e.deinit();
-    const src = "-- @capabilities panel\nlarper.panel.set({title = 'x'})";
+    const src = "-- @capabilities panel\nsigma.panel.set({title = 'x'})";
     const p = testOne(&e, src);
     e.openPanel(p);
     const q = testOne(&e, src);
@@ -2370,21 +2370,21 @@ fn noteHas(needle: []const u8) bool {
     return false;
 }
 
-test "plugins: larper.settings publica opções que respondem, e somem ao desligar" {
+test "plugins: sigma.settings publica opções que respondem, e somem ao desligar" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities settings, panel, notify
-        \\larper.settings.set({
+        \\sigma.settings.set({
         \\  { type = "select", key = "lang", label = "Idioma", value = "b",
         \\    options = { { value = "a", label = "A" }, { value = "b", label = "B" } },
-        \\    on_change = function(v) larper.notify("sel:" .. v) end },
+        \\    on_change = function(v) sigma.notify("sel:" .. v) end },
         \\  { type = "toggle", key = "on", label = "Ligado", hint = "dica", value = true,
-        \\    on_change = function(v) larper.notify("tog:" .. tostring(v)) end },
+        \\    on_change = function(v) sigma.notify("tog:" .. tostring(v)) end },
         \\})
-        \\larper.command("/painel", function()
-        \\  larper.panel.set({ { type = "text", text = "oi" } })
+        \\sigma.command("/painel", function()
+        \\  sigma.panel.set({ { type = "text", text = "oi" } })
         \\end)
     );
     try std.testing.expect(p.err() == null);
@@ -2424,9 +2424,9 @@ test "plugins: um clique numa opção é gesto, e o select também vale no paine
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities panel, composer
-        \\larper.panel.set({
+        \\sigma.panel.set({
         \\  { type = "select", key = "k", label = "L", value = "a", options = { { value = "a", label = "A" } },
-        \\    on_change = function(v) larper.insert(v) end },
+        \\    on_change = function(v) sigma.insert(v) end },
         \\})
     );
     const sel = nodeKey(p.tree.?, "k");
@@ -2436,14 +2436,14 @@ test "plugins: um clique numa opção é gesto, e o select também vale no paine
     try std.testing.expect(!p.tree.?.settings);
 }
 
-test "plugins: larper.settings recusa o que não faz sentido, e explica" {
+test "plugins: sigma.settings recusa o que não faz sentido, e explica" {
     const cases = [_]struct { src: []const u8, want: []const u8 }{
-        .{ .src = "-- @capabilities notify\nlarper.settings.set({})", .want = "settings" },
-        .{ .src = "-- @capabilities settings\nlarper.settings.set({ { type = \"select\", label = \"x\" } })", .want = "key" },
-        .{ .src = "-- @capabilities settings\nlarper.settings.set({ { type = \"select\", key = \"x\" } })", .want = "options" },
-        .{ .src = "-- @capabilities settings\nlarper.settings.set({ { type = \"toggle\", label = \"x\" } })", .want = "key" },
-        .{ .src = "-- @capabilities settings\nlarper.settings.set({ { type = \"option\", label = \"x\" } })", .want = "option" },
-        .{ .src = "-- @capabilities settings\nlarper.settings.set({ { type = \"voar\" } })", .want = "voar" },
+        .{ .src = "-- @capabilities notify\nsigma.settings.set({})", .want = "settings" },
+        .{ .src = "-- @capabilities settings\nsigma.settings.set({ { type = \"select\", label = \"x\" } })", .want = "key" },
+        .{ .src = "-- @capabilities settings\nsigma.settings.set({ { type = \"select\", key = \"x\" } })", .want = "options" },
+        .{ .src = "-- @capabilities settings\nsigma.settings.set({ { type = \"toggle\", label = \"x\" } })", .want = "key" },
+        .{ .src = "-- @capabilities settings\nsigma.settings.set({ { type = \"option\", label = \"x\" } })", .want = "option" },
+        .{ .src = "-- @capabilities settings\nsigma.settings.set({ { type = \"voar\" } })", .want = "voar" },
     };
     for (cases) |k| {
         var e = T.engine();
@@ -2460,12 +2460,12 @@ test "plugins: escolhas de menu chegam como segundo argumento" {
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities menu, notify, composer
-        \\larper.menu("message", "Sem lista", function(m, v) larper.notify("a:" .. tostring(v)) end)
-        \\larper.menu("message", { pt = "Para", en = "To" }, function(m, v)
-        \\  larper.notify("b:" .. m.id .. ":" .. tostring(v))
-        \\  larper.insert(v)
+        \\sigma.menu("message", "Sem lista", function(m, v) sigma.notify("a:" .. tostring(v)) end)
+        \\sigma.menu("message", { pt = "Para", en = "To" }, function(m, v)
+        \\  sigma.notify("b:" .. m.id .. ":" .. tostring(v))
+        \\  sigma.insert(v)
         \\end, { choices = { { value = "es", pt = "Espanhol", en = "Spanish" }, { value = "fr", en = "French" } }, toolbar = "🌐" })
-        \\larper.menu("user", "Pessoa", function(u, v) larper.notify("c:" .. u.id .. ":" .. tostring(v)) end,
+        \\sigma.menu("user", "Pessoa", function(u, v) sigma.notify("c:" .. u.id .. ":" .. tostring(v)) end,
         \\  { choices = { { value = "x", pt = "X" } } })
     );
     try std.testing.expect(p.err() == null);
@@ -2492,18 +2492,18 @@ test "plugins: escolhas de menu chegam como segundo argumento" {
     try std.testing.expectEqual(@as(u32, 0), e.n_toolbar);
 }
 
-test "plugins: larper.menu confere as escolhas e a barra" {
+test "plugins: sigma.menu confere as escolhas e a barra" {
     var list_src: std.ArrayList(u8) = .empty;
     defer list_src.deinit(std.testing.allocator);
     const a = std.testing.allocator;
-    try list_src.appendSlice(a, "-- @capabilities menu\nlarper.menu(\"message\", \"x\", function() end, { choices = {");
+    try list_src.appendSlice(a, "-- @capabilities menu\nsigma.menu(\"message\", \"x\", function() end, { choices = {");
     for (0..17) |_| try list_src.appendSlice(a, "{ value = \"a\", pt = \"A\" },");
     try list_src.appendSlice(a, "} })");
     const cases = [_][]const u8{
         list_src.items,
-        "-- @capabilities menu\nlarper.menu(\"message\", \"x\", function() end, { choices = { { pt = \"A\" } } })",
-        "-- @capabilities menu\nlarper.menu(\"message\", \"x\", function() end, { choices = { 1 } })",
-        "-- @capabilities menu\nlarper.menu(\"user\", \"x\", function() end, { toolbar = \"🌐\" })",
+        "-- @capabilities menu\nsigma.menu(\"message\", \"x\", function() end, { choices = { { pt = \"A\" } } })",
+        "-- @capabilities menu\nsigma.menu(\"message\", \"x\", function() end, { choices = { 1 } })",
+        "-- @capabilities menu\nsigma.menu(\"user\", \"x\", function() end, { toolbar = \"🌐\" })",
     };
     for (cases) |src| {
         var e = T.engine();
@@ -2519,15 +2519,15 @@ test "plugins: copiar e abrir só num gesto, e abrir só http com a capacidade" 
     defer e.deinit();
     _ = testOne(&e,
         \\-- @capabilities links, timers, notify
-        \\larper.command("/ok", function()
-        \\  larper.copy("texto")
-        \\  larper.open("https://exemplo.com/a?b=1")
+        \\sigma.command("/ok", function()
+        \\  sigma.copy("texto")
+        \\  sigma.open("https://exemplo.com/a?b=1")
         \\end)
-        \\larper.command("/ruim", function(a) larper.open(a) end)
-        \\larper.after(0.01, function()
-        \\  local ok1 = pcall(larper.copy, "x")
-        \\  local ok2 = pcall(larper.open, "https://exemplo.com")
-        \\  larper.notify("sozinho:" .. tostring(ok1) .. ":" .. tostring(ok2))
+        \\sigma.command("/ruim", function(a) sigma.open(a) end)
+        \\sigma.after(0.01, function()
+        \\  local ok1 = pcall(sigma.copy, "x")
+        \\  local ok2 = pcall(sigma.open, "https://exemplo.com")
+        \\  sigma.notify("sozinho:" .. tostring(ok1) .. ":" .. tostring(ok2))
         \\end)
     );
     var spins: usize = 0;
@@ -2547,7 +2547,7 @@ test "plugins: copiar e abrir só num gesto, e abrir só http com a capacidade" 
     }
     try std.testing.expect(runtime.validOpenUrl("http://a.com") and !runtime.validOpenUrl("https://") and !runtime.validOpenUrl("HTTPS://a b"));
 
-    const q = testOne(&e, "-- @capabilities notify\nlarper.command(\"/x\", function() larper.open(\"https://a.com\") end)");
+    const q = testOne(&e, "-- @capabilities notify\nsigma.command(\"/x\", function() sigma.open(\"https://a.com\") end)");
     try cmdOk(&e, "/x");
     try std.testing.expect(std.mem.indexOf(u8, q.err().?, "links") != null);
 }
@@ -2558,8 +2558,8 @@ test "plugins: sugestões ficam com a interface, e o gatilho é conferido" {
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities completions
-        \\larper.completions(";", { { name = "oi", text = "olá, tudo bem?", hint = "saudação" }, { name = "tchau", text = "até mais" } })
-        \\larper.command("/troca", function() larper.completions(";", { { name = "novo", text = "texto novo" } }) end)
+        \\sigma.completions(";", { { name = "oi", text = "olá, tudo bem?", hint = "saudação" }, { name = "tchau", text = "até mais" } })
+        \\sigma.command("/troca", function() sigma.completions(";", { { name = "novo", text = "texto novo" } }) end)
     );
     try std.testing.expect(p.err() == null);
     try std.testing.expectEqual(@as(u32, 1), e.n_completions);
@@ -2575,10 +2575,10 @@ test "plugins: sugestões ficam com a interface, e o gatilho é conferido" {
     try std.testing.expectEqual(@as(u32, 0), e.n_completions);
     e.setEnabled(p, true);
     for ([_][]const u8{
-        "-- @capabilities notify\nlarper.completions(\";\", {})",
-        "-- @capabilities completions\nlarper.completions(\"@\", {})",
-        "-- @capabilities completions\nlarper.completions(\";;\", {})",
-        "-- @capabilities completions\nlarper.completions(\";\", { { name = \"x\" } })",
+        "-- @capabilities notify\nsigma.completions(\";\", {})",
+        "-- @capabilities completions\nsigma.completions(\"@\", {})",
+        "-- @capabilities completions\nsigma.completions(\";;\", {})",
+        "-- @capabilities completions\nsigma.completions(\";\", { { name = \"x\" } })",
     }) |src| {
         const q = testOne(&e, src);
         try std.testing.expect(q.err() != null);
@@ -2614,26 +2614,26 @@ test "plugins: regras de envio valem enquanto o plugin está ligado" {
     try std.testing.expect(e.rewriteOutgoing("https://a.com/?utm_x=1") == null);
 }
 
-test "plugins: larper.rewrite confere as regras, e dois plugins somam" {
+test "plugins: sigma.rewrite confere as regras, e dois plugins somam" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
     for ([_][]const u8{
-        "-- @capabilities notify\nlarper.rewrite({})",
-        "-- @capabilities rewrite\nlarper.rewrite({ {} })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { strip_params = { \"a b\" } } })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { replace_host = \"a.com\", with = \"https://b.com\" } })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { word = \"duas palavras\", with = \"x\" } })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { word = \"x\" } })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { word = \"x\", with = \"@everyone\" } })",
-        "-- @capabilities rewrite\nlarper.rewrite({ { word = \"x\", with = \"https://a.com\" } })",
+        "-- @capabilities notify\nsigma.rewrite({})",
+        "-- @capabilities rewrite\nsigma.rewrite({ {} })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { strip_params = { \"a b\" } } })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { replace_host = \"a.com\", with = \"https://b.com\" } })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { word = \"duas palavras\", with = \"x\" } })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { word = \"x\" } })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { word = \"x\", with = \"@everyone\" } })",
+        "-- @capabilities rewrite\nsigma.rewrite({ { word = \"x\", with = \"https://a.com\" } })",
     }) |src| {
         const q = testOne(&e, src);
         try std.testing.expect(q.err() != null);
     }
     e.load(&.{
-        .{ .name = "a.lua", .src = "-- @capabilities rewrite\nlarper.rewrite({ { word = \"vc\", with = \"você\" } })" },
-        .{ .name = "b.lua", .src = "-- @capabilities rewrite\nlarper.rewrite({ { replace_host = \"a.com\", with = \"b.com\" } })" },
+        .{ .name = "a.lua", .src = "-- @capabilities rewrite\nsigma.rewrite({ { word = \"vc\", with = \"você\" } })" },
+        .{ .name = "b.lua", .src = "-- @capabilities rewrite\nsigma.rewrite({ { replace_host = \"a.com\", with = \"b.com\" } })" },
     }, false);
     e.waitIdle();
     const got = e.rewriteOutgoing("vc viu https://a.com/x") orelse return error.NadaMudou;
@@ -2641,11 +2641,11 @@ test "plugins: larper.rewrite confere as regras, e dois plugins somam" {
     try std.testing.expectEqualStrings("você viu https://b.com/x", got);
 }
 
-test "plugins: larper.on(\"edit\") traz só o texto novo, e pede a capacidade" {
+test "plugins: sigma.on(\"edit\") traz só o texto novo, e pede a capacidade" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
-    const p = testOne(&e, "-- @capabilities messages, notify\nlarper.on(\"edit\", function(m) larper.notify(m.id .. \":\" .. m.content) end)");
+    const p = testOne(&e, "-- @capabilities messages, notify\nsigma.on(\"edit\", function(m) sigma.notify(m.id .. \":\" .. m.content) end)");
     try std.testing.expectEqual(@as(u32, 1), e.n_edit);
     const m: Message = .{ .id = 3, .content = "novo", .author = 7, .author_name = "ana", .channel = 42, .channel_name = "geral" };
     e.onEdit(&m);
@@ -2654,7 +2654,7 @@ test "plugins: larper.on(\"edit\") traz só o texto novo, e pede a capacidade" {
     e.setEnabled(p, false);
     try std.testing.expectEqual(@as(u32, 0), e.n_edit);
     e.setEnabled(p, true);
-    const q = testOne(&e, "-- @capabilities notify\nlarper.on(\"edit\", function() end)");
+    const q = testOne(&e, "-- @capabilities notify\nsigma.on(\"edit\", function() end)");
     try std.testing.expect(std.mem.indexOf(u8, q.err().?, "messages") != null);
 }
 
@@ -2665,7 +2665,7 @@ test "plugins: com a fila atrasada, o lento perde mensagens e o rápido não" {
     e.load(&.{
         .{ .name = "lento.lua", .src =
         \\-- @capabilities messages
-        \\larper.on("message", function()
+        \\sigma.on("message", function()
         \\  local x = 0
         \\  for i = 1, 1000000 do x = x + i end
         \\end)
@@ -2673,9 +2673,9 @@ test "plugins: com a fila atrasada, o lento perde mensagens e o rápido não" {
         .{ .name = "rapido.lua", .src =
         \\-- @capabilities messages, notify
         \\local n = 0
-        \\larper.on("message", function(m)
+        \\sigma.on("message", function(m)
         \\  n = n + 1
-        \\  if m.content == "fim" then larper.notify("total:" .. n) end
+        \\  if m.content == "fim" then sigma.notify("total:" .. n) end
         \\end)
         },
     }, false);
@@ -2706,18 +2706,18 @@ test "plugins: a resposta de um pedido feito num gesto pode pôr texto na caixa,
     const p = testOne(&e,
         \\-- @capabilities http, composer, send, notify, timers
         \\-- @hosts api.exemplo.com
-        \\larper.command("/pede", function()
-        \\  larper.http.get("https://api.exemplo.com/a", function(res)
-        \\    larper.insert("veio:" .. res.body)
-        \\    local ok = pcall(larper.send, nil, "não pode")
-        \\    larper.notify("send:" .. tostring(ok))
+        \\sigma.command("/pede", function()
+        \\  sigma.http.get("https://api.exemplo.com/a", function(res)
+        \\    sigma.insert("veio:" .. res.body)
+        \\    local ok = pcall(sigma.send, nil, "não pode")
+        \\    sigma.notify("send:" .. tostring(ok))
         \\  end)
         \\end)
-        \\larper.command("/sozinho", function()
-        \\  larper.after(0.01, function()
-        \\    larper.http.get("https://api.exemplo.com/b", function(res)
-        \\      local ok = pcall(larper.insert, "x")
-        \\      larper.notify("insert:" .. tostring(ok))
+        \\sigma.command("/sozinho", function()
+        \\  sigma.after(0.01, function()
+        \\    sigma.http.get("https://api.exemplo.com/b", function(res)
+        \\      local ok = pcall(sigma.insert, "x")
+        \\      sigma.notify("insert:" .. tostring(ok))
         \\    end)
         \\  end)
         \\end)
@@ -2754,14 +2754,14 @@ test "plugins: arquivos das mensagens só para quem pede" {
     T.loaded = &msgs;
     _ = testOne(&e,
         \\-- @capabilities messages, notify
-        \\larper.command("/com", function()
-        \\  larper.messages({ files = true }, function(list)
+        \\sigma.command("/com", function()
+        \\  sigma.messages({ files = true }, function(list)
         \\    local f = list[1].files[1]
-        \\    larper.notify(f.name .. ":" .. f.url .. ":" .. f.size)
+        \\    sigma.notify(f.name .. ":" .. f.url .. ":" .. f.size)
         \\  end)
         \\end)
-        \\larper.command("/sem", function()
-        \\  larper.messages(function(list) larper.notify("files:" .. tostring(list[1].files)) end)
+        \\sigma.command("/sem", function()
+        \\  sigma.messages(function(list) sigma.notify("files:" .. tostring(list[1].files)) end)
         \\end)
     );
     try cmdOk(&e, "/com");
@@ -2777,8 +2777,8 @@ test "plugins: número na etiqueta do painel" {
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities panel
-        \\larper.panel.set({ badge = "3", { type = "text", text = "oi" } })
-        \\larper.command("/lido", function() larper.panel.set({ { type = "text", text = "oi" } }) end)
+        \\sigma.panel.set({ badge = "3", { type = "text", text = "oi" } })
+        \\sigma.command("/lido", function() sigma.panel.set({ { type = "text", text = "oi" } }) end)
     );
     try std.testing.expectEqualStrings("3", p.tree.?.badge);
     try std.testing.expectEqual(@as(u32, 1), e.n_badges);
@@ -3192,7 +3192,7 @@ test "plugins incluídos: destaques só escuta as mensagens quando tem palavra" 
     try std.testing.expectEqual(@as(u32, 1), e.n_message);
 }
 
-// --- Filtros de texto, nota em vermelho e o que larper.messages traz a mais ---------
+// --- Filtros de texto, nota em vermelho e o que sigma.messages traz a mais ---------
 
 test "plugins: contains só chama a função para o texto pedido, e confere o que recebe" {
     T.wipeDisk();
@@ -3200,9 +3200,9 @@ test "plugins: contains só chama a função para o texto pedido, e confere o qu
     defer e.deinit();
     _ = testOne(&e,
         \\-- @capabilities messages, notify
-        \\larper.on("message", function(m) larper.notify("a:" .. m.content) end, { contains = { "CVE-", "://" } })
-        \\larper.on("message", function(m) larper.notify("b:" .. m.content) end, { contains = { "pizza" } })
-        \\larper.on("edit", function(m) larper.notify("e:" .. m.content) end, { contains = { "cve-" } })
+        \\sigma.on("message", function(m) sigma.notify("a:" .. m.content) end, { contains = { "CVE-", "://" } })
+        \\sigma.on("message", function(m) sigma.notify("b:" .. m.content) end, { contains = { "pizza" } })
+        \\sigma.on("edit", function(m) sigma.notify("e:" .. m.content) end, { contains = { "cve-" } })
     );
     chega(&e, "conversa normal");
     try std.testing.expectEqual(@as(usize, 0), T.n_notes);
@@ -3222,17 +3222,17 @@ test "plugins: contains só chama a função para o texto pedido, e confere o qu
     e.waitIdle();
     try std.testing.expectEqualStrings("e:CVE-1", lastNote());
     for ([_][]const u8{
-        "-- @capabilities messages\nlarper.on(\"message\", function() end, { contains = {} })",
-        "-- @capabilities messages\nlarper.on(\"message\", function() end, { contains = { 1 } })",
-        "-- @capabilities messages\nlarper.on(\"message\", function() end, { contains = { \"\" } })",
-        "-- @capabilities messages\nlarper.on(\"delete\", function() end, { contains = { \"a\" } })",
+        "-- @capabilities messages\nsigma.on(\"message\", function() end, { contains = {} })",
+        "-- @capabilities messages\nsigma.on(\"message\", function() end, { contains = { 1 } })",
+        "-- @capabilities messages\nsigma.on(\"message\", function() end, { contains = { \"\" } })",
+        "-- @capabilities messages\nsigma.on(\"delete\", function() end, { contains = { \"a\" } })",
     }) |src| {
         const q = testOne(&e, src);
         try std.testing.expect(q.err() != null);
     }
 }
 
-test "plugins: larper.messages filtra pelo texto, e traz resposta, menção e até onde foi lido" {
+test "plugins: sigma.messages filtra pelo texto, e traz resposta, menção e até onde foi lido" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
@@ -3245,13 +3245,13 @@ test "plugins: larper.messages filtra pelo texto, e traz resposta, menção e at
     defer T.last_read = 0;
     _ = testOne(&e,
         \\-- @capabilities messages, notify
-        \\larper.command("/com", function()
-        \\  larper.messages({ contains = { "://" } }, function(list)
-        \\    larper.notify(#list .. ":" .. list[1].id .. ":" .. list[1].reply_to .. ":" .. tostring(list.last_read))
+        \\sigma.command("/com", function()
+        \\  sigma.messages({ contains = { "://" } }, function(list)
+        \\    sigma.notify(#list .. ":" .. list[1].id .. ":" .. list[1].reply_to .. ":" .. tostring(list.last_read))
         \\  end)
         \\end)
-        \\larper.command("/todas", function()
-        \\  larper.messages(function(list) larper.notify(#list .. ":" .. tostring(list[1].mentions_me) .. ":" .. tostring(list[2].mentions_me)) end)
+        \\sigma.command("/todas", function()
+        \\  sigma.messages(function(list) sigma.notify(#list .. ":" .. tostring(list[1].mentions_me) .. ":" .. tostring(list[2].mentions_me)) end)
         \\end)
     );
     try cmdOk(&e, "/com");
@@ -3261,16 +3261,16 @@ test "plugins: larper.messages filtra pelo texto, e traz resposta, menção e at
     try std.testing.expectEqualStrings("2:true:nil", lastNote());
 }
 
-test "plugins: nota em vermelho, e larper.on(\"hosts\") avisa quando aprovam" {
+test "plugins: nota em vermelho, e sigma.on(\"hosts\") avisa quando aprovam" {
     T.wipeDisk();
     var e = T.engine();
     defer e.deinit();
     const p = testOne(&e,
         \\-- @capabilities decorate, http, notify
         \\-- @hosts api.exemplo.com
-        \\larper.command("/d", function() larper.decorate("5", { note = "cuidado", style = "danger" }) end)
-        \\larper.command("/n", function() larper.decorate("5", { note = "normal" }) end)
-        \\larper.on("hosts", function() larper.notify("hosts:" .. tostring(larper.http.allowed("api.exemplo.com"))) end)
+        \\sigma.command("/d", function() sigma.decorate("5", { note = "cuidado", style = "danger" }) end)
+        \\sigma.command("/n", function() sigma.decorate("5", { note = "normal" }) end)
+        \\sigma.on("hosts", function() sigma.notify("hosts:" .. tostring(sigma.http.allowed("api.exemplo.com"))) end)
     );
     var sm: @import("../core/store.zig").StoredMessage = .{ .msg = .{ .id = 5, .channel = 42, .author = 7, .timestamp = 0, .content = "x" }, .spans = &.{} };
     try cmdOk(&e, "/d");

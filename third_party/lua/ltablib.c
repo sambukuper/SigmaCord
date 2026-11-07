@@ -59,10 +59,10 @@ static void checktab (lua_State *L, int arg, int what) {
 
 
 /*
-** larperCord: estes laços rodam em C, onde o gancho de instruções do sandbox
+** SigmaCord: estes laços rodam em C, onde o gancho de instruções do sandbox
 ** não chega, e `__len` ou os índices podem dizer qualquer número.
 */
-#define LARPER_MAX_SHIFT	((lua_Integer)1 << 24)
+#define SIGMACORD_MAX_SHIFT	((lua_Integer)1 << 24)
 
 static int tinsert (lua_State *L) {
   lua_Integer pos;  /* where to insert new element */
@@ -79,7 +79,7 @@ static int tinsert (lua_State *L) {
       /* check whether 'pos' is in [1, e] */
       luaL_argcheck(L, (lua_Unsigned)pos - 1u < (lua_Unsigned)e, 2,
                        "position out of bounds");
-      luaL_argcheck(L, e - pos <= LARPER_MAX_SHIFT, 2, "table too big");
+      luaL_argcheck(L, e - pos <= SIGMACORD_MAX_SHIFT, 2, "table too big");
       for (i = e; i > pos; i--) {  /* move up elements */
         lua_geti(L, 1, i - 1);
         lua_seti(L, 1, i);  /* t[i] = t[i - 1] */
@@ -102,7 +102,7 @@ static int tremove (lua_State *L) {
     /* check whether 'pos' is in [1, size + 1] */
     luaL_argcheck(L, (lua_Unsigned)pos - 1u <= (lua_Unsigned)size, 2,
                      "position out of bounds");
-  luaL_argcheck(L, size - pos <= LARPER_MAX_SHIFT, 2, "table too big");
+  luaL_argcheck(L, size - pos <= SIGMACORD_MAX_SHIFT, 2, "table too big");
   lua_geti(L, 1, pos);  /* result = t[pos] */
   for ( ; pos < size; pos++) {
     lua_geti(L, 1, pos + 1);
@@ -132,7 +132,7 @@ static int tmove (lua_State *L) {
     luaL_argcheck(L, f > 0 || e < LUA_MAXINTEGER + f, 3,
                   "too many elements to move");
     n = e - f + 1;  /* number of elements to move */
-    luaL_argcheck(L, n <= LARPER_MAX_SHIFT, 3, "too many elements to move");
+    luaL_argcheck(L, n <= SIGMACORD_MAX_SHIFT, 3, "too many elements to move");
     luaL_argcheck(L, t <= LUA_MAXINTEGER - n + 1, 4,
                   "destination wrap around");
     if (t > e || t <= f || (tt != 1 && !lua_compare(L, 1, tt, LUA_OPEQ))) {

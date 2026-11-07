@@ -1,4 +1,4 @@
-/* larperCord: site. As cores vêm dos tokens dos temas do app (data.js). */
+/* SigmaCord: site. As cores vêm dos tokens dos temas do app (data.js). */
 @font-face{font-family:Archivo;src:url(../fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
 @font-face{font-family:Fraunces;src:url(../fonts/fraunces-normal.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
 @font-face{font-family:Fraunces;src:url(../fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
@@ -603,7 +603,7 @@ html[data-fx=zine] .topnav{position:sticky}
 
 /* Mascote: assume a cor do tema; no tema do site, as cores originais */
 .ma{--e:var(--accent);--c1:color-mix(in srgb,var(--accent) 62%,#1a0030);--c2:color-mix(in srgb,var(--accent) 36%,#12002a);overflow:visible;display:block;width:100%;height:auto}
-html[data-theme=larper] .ma{--e:#f03cff;--c1:#7a0bd0;--c2:#4b0790}
+html[data-theme=sigma] .ma{--e:#f03cff;--c1:#7a0bd0;--c2:#4b0790}
 .ma path,.ma g,.ma ellipse{transform-box:fill-box;transform-origin:center}
 .ma-edge{fill:var(--e);transition:fill .3s}
 .ma-core{fill:var(--c1);transition:fill .3s;transform-origin:0 0;transform-box:view-box}

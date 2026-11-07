@@ -536,7 +536,7 @@ fn addServer(now: u64) ?*Server {
 
 // --- O processo ----------------------------------------------------------------------
 
-/// O ambiente do filho é este e mais nada: nem LARPER_TOKEN, nem o que mais
+/// O ambiente do filho é este e mais nada: nem SIGMACORD_TOKEN, nem o que mais
 /// estiver no ambiente de quem abriu o app.
 const env_keep = [_][*:0]const u8{ "PATH", "HOME" } ++ (if (builtin.os.tag == .windows)
     [_][*:0]const u8{ "SystemRoot", "SystemDrive", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "TMP", "PATHEXT" }

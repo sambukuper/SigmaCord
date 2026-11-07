@@ -1,16 +1,16 @@
 #!/bin/sh
-# Installs larperCord into ~/.local (no sudo) from the latest published version.
-#   curl -fsSL https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/main/install.sh | sh
+# Installs SigmaCord into ~/.local (no sudo) from the latest published version.
+#   curl -fsSL https://raw.githubusercontent.com/sambukuper/SigmaCord/main/install.sh | sh
 #   sh install.sh --uninstall
 set -eu
-repo="RshaCuDeVidro/larperCord"
+repo="sambukuper/SigmaCord"
 bin_dir="${HOME}/.local/bin"
 app_dir="${HOME}/.local/share/applications"
 icon_dir="${HOME}/.local/share/icons/hicolor/128x128/apps"
 
 if [ "${1:-}" = "--uninstall" ]; then
-    rm -f "$bin_dir/larpercord" "$bin_dir/larpercord.old" "$app_dir/dev.larpercord.desktop" "$app_dir/larpercord.desktop" "$icon_dir/larpercord.png"
-    echo "larperCord removed. Your settings are still in ~/.config/larpercord."
+    rm -f "$bin_dir/sigmacord" "$bin_dir/sigmacord.old" "$app_dir/dev.sigmacord.desktop" "$app_dir/sigmacord.desktop" "$icon_dir/sigmacord.png"
+    echo "SigmaCord removed. Your settings are still in ~/.config/sigmacord."
     exit 0
 fi
 
@@ -24,32 +24,32 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 base="https://github.com/$repo/releases/latest/download"
 echo "Downloading the latest version..."
-curl -fsSL --proto '=https' -o "$tmp/larpercord-linux-x86_64" "$base/larpercord-linux-x86_64"
+curl -fsSL --proto '=https' -o "$tmp/sigmacord-linux-x86_64" "$base/sigmacord-linux-x86_64"
 curl -fsSL --proto '=https' -o "$tmp/SHA256SUMS" "$base/SHA256SUMS"
-(cd "$tmp" && grep ' larpercord-linux-x86_64$' SHA256SUMS | sha256sum -c --quiet -) || { echo "The download does not match SHA256SUMS. Nothing was installed."; exit 1; }
+(cd "$tmp" && grep ' sigmacord-linux-x86_64$' SHA256SUMS | sha256sum -c --quiet -) || { echo "The download does not match SHA256SUMS. Nothing was installed."; exit 1; }
 
 mkdir -p "$bin_dir" "$app_dir" "$icon_dir"
-install -m 755 "$tmp/larpercord-linux-x86_64" "$bin_dir/larpercord"
-curl -fsSL --proto '=https' -o "$icon_dir/larpercord.png" "https://raw.githubusercontent.com/$repo/main/docs/assets/icon-180.png" || true
+install -m 755 "$tmp/sigmacord-linux-x86_64" "$bin_dir/sigmacord"
+curl -fsSL --proto '=https' -o "$icon_dir/sigmacord.png" "https://raw.githubusercontent.com/$repo/main/docs/assets/icon-180.png" || true
 # Taskbars find the icon through the window's app ID, so the file carries that name.
-rm -f "$app_dir/larpercord.desktop"
-cat > "$app_dir/dev.larpercord.desktop" <<DESK
+rm -f "$app_dir/sigmacord.desktop"
+cat > "$app_dir/dev.sigmacord.desktop" <<DESK
 [Desktop Entry]
 Type=Application
-Name=larperCord
+Name=SigmaCord
 Comment=Native Discord client
-Exec=$bin_dir/larpercord
-Icon=larpercord
+Exec=$bin_dir/sigmacord
+Icon=sigmacord
 Terminal=false
 Categories=Network;InstantMessaging;
-StartupWMClass=dev.larpercord
+StartupWMClass=dev.sigmacord
 DESK
 
 # SDL3, curl and OpenSSL come inside the binary. The rest comes from the system:
 # report what is missing and how to get it.
-missing="$(ldd "$bin_dir/larpercord" 2>/dev/null | grep 'not found' || true)"
-glibc="$(ldd "$bin_dir/larpercord" 2>&1 | grep 'GLIBC_' || true)"
-"$bin_dir/larpercord" --help >/dev/null 2>"$tmp/err" || glibc="$(cat "$tmp/err")"
+missing="$(ldd "$bin_dir/sigmacord" 2>/dev/null | grep 'not found' || true)"
+glibc="$(ldd "$bin_dir/sigmacord" 2>&1 | grep 'GLIBC_' || true)"
+"$bin_dir/sigmacord" --help >/dev/null 2>"$tmp/err" || glibc="$(cat "$tmp/err")"
 if [ -n "$missing" ]; then
     echo "Missing system libraries:"
     echo "$missing"
@@ -78,4 +78,4 @@ case ":$PATH:" in
     *":$bin_dir:"*) ;;
     *) echo "Add $bin_dir to PATH to run it from a terminal." ;;
 esac
-echo "Done. Open it from your app menu or with: larpercord"
+echo "Done. Open it from your app menu or with: sigmacord"

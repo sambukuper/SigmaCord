@@ -278,7 +278,7 @@ pub fn draw(l: *Login, env: Env) ?Result {
     } else {
         // Estreita: logo e nome lado a lado no topo, cartão embaixo.
         logo_size = 84;
-        const lock_w = logo_size + 8 + f.width(.bold, 34, "larperCord");
+        const lock_w = logo_size + 8 + f.width(.bold, 34, "SigmaCord");
         hero_cx = f.win.x + (W - lock_w) / 2 + logo_size / 2;
         hero_cy = f.win.y + 22 + logo_size * 0.375;
         card_x = f.win.x + (W - card_w) / 2;
@@ -340,7 +340,7 @@ pub fn draw(l: *Login, env: Env) ?Result {
         const tag_k = outCubic(seg(t, 1.35, 1.8));
         f.centered(.medium, 17, hero_cx, word_y + 50 * 1.25 + (1 - tag_k) * 8, f.p.muted.alpha(tag_k), i18n.tr("o Discord leve, nativo e do seu jeito", "a light, native Discord, your way"));
     } else {
-        const ww = f.width(.bold, 34, "larperCord");
+        const ww = f.width(.bold, 34, "SigmaCord");
         wordmark(&f, hero_cx + logo_size / 2 + 10 + ww / 2, hero_cy - 34 * 0.62, 34);
     }
 
@@ -413,9 +413,9 @@ fn background(f: *Frame) void {
     }
 }
 
-/// "larperCord" letra por letra, subindo; "Cord" no degradê da marca.
+/// "SigmaCord" letra por letra, subindo; "Cord" no degradê da marca.
 fn wordmark(f: *Frame, cx: f32, y: f32, size: f32) void {
-    const word = "larperCord";
+    const word = "SigmaCord";
     const fb = f.font(.bold);
     const total = f.width(.bold, size, word) - size * 0.02 * 9;
     var x = cx - total / 2;

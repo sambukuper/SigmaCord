@@ -1,6 +1,6 @@
 //! Decisões sobre a janela que não dependem do SDL (testadas em `zig build
 //! test`): o que fechar faz, onde uma lista flutuante cabe e o arquivo com que
-//! um segundo larperCord acha o primeiro.
+//! um segundo SigmaCord acha o primeiro.
 const std = @import("std");
 const layout = @import("../theme/layout.zig");
 const Rect = layout.Rect;
@@ -41,7 +41,7 @@ pub fn place(anchor: Rect, want_w: f32, want_h: f32, win: Rect) Rect {
     return .{ .x = x, .y = if (up) anchor.y - gap - h else anchor.bottom() + gap, .w = w, .h = h };
 }
 
-/// O que o primeiro larperCord deixa no arquivo `instance.port`.
+/// O que o primeiro SigmaCord deixa no arquivo `instance.port`.
 pub const Instance = struct {
     port: u16,
     nonce: []const u8,

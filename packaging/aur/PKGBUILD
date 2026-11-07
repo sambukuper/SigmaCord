@@ -1,22 +1,22 @@
-# Maintainer: RshaCuDeVidro
-pkgname=larpercord-bin
-pkgver=0.6.1
+# Maintainer: sambukuper
+pkgname=sigmacord-bin
+pkgver=0.7.0
 pkgrel=1
 pkgdesc='Native Discord client in Zig, with SDL3 and Dear ImGui'
 arch=('x86_64')
-url='https://github.com/RshaCuDeVidro/larperCord'
+url='https://github.com/sambukuper/SigmaCord'
 license=('GPL-3.0-only')
 depends=('fontconfig' 'freetype2' 'glibc' 'libwebp' 'opus' 'zlib')
 optdepends=('ffmpeg: play videos inside the app'
             'noto-fonts-emoji: color emoji'
             'noto-fonts-cjk: Japanese, Korean and Chinese text')
-provides=('larpercord')
-conflicts=('larpercord')
+provides=('sigmacord')
+conflicts=('sigmacord')
 options=('!strip' '!debug')
-source=("larpercord-$pkgver::$url/releases/download/v$pkgver/larpercord-linux-x86_64"
-        "larpercord-$pkgver.png::https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/v$pkgver/docs/assets/icon-180.png"
-        "LICENSE-$pkgver::https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/v$pkgver/LICENSE"
-        'dev.larpercord.desktop')
+source=("sigmacord-$pkgver::$url/releases/download/v$pkgver/sigmacord-linux-x86_64"
+        "sigmacord-$pkgver.png::https://raw.githubusercontent.com/sambukuper/SigmaCord/v$pkgver/docs/assets/icon-180.png"
+        "LICENSE-$pkgver::https://raw.githubusercontent.com/sambukuper/SigmaCord/v$pkgver/LICENSE"
+        'dev.sigmacord.desktop')
 # Filled in at release time from the published files (updpkgsums).
 sha256sums=('SKIP'
             'SKIP'
@@ -24,10 +24,10 @@ sha256sums=('SKIP'
             'SKIP')
 
 package() {
-    install -Dm755 "larpercord-$pkgver" "$pkgdir/usr/bin/larpercord"
+    install -Dm755 "sigmacord-$pkgver" "$pkgdir/usr/bin/sigmacord"
     # Taskbars find the icon through the window's app ID, so it also goes under that name.
-    install -Dm644 "larpercord-$pkgver.png" "$pkgdir/usr/share/pixmaps/larpercord.png"
-    install -Dm644 "larpercord-$pkgver.png" "$pkgdir/usr/share/pixmaps/dev.larpercord.png"
-    install -Dm644 dev.larpercord.desktop "$pkgdir/usr/share/applications/dev.larpercord.desktop"
+    install -Dm644 "sigmacord-$pkgver.png" "$pkgdir/usr/share/pixmaps/sigmacord.png"
+    install -Dm644 "sigmacord-$pkgver.png" "$pkgdir/usr/share/pixmaps/dev.sigmacord.png"
+    install -Dm644 dev.sigmacord.desktop "$pkgdir/usr/share/applications/dev.sigmacord.desktop"
     install -Dm644 "LICENSE-$pkgver" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

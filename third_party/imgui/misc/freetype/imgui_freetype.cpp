@@ -175,7 +175,7 @@ struct ImGui_ImplFreeType_FontSrcData
 struct ImGui_ImplFreeType_FontSrcBakedData
 {
     FT_Size     FtSize;             // This represent a FT_Face with a given size.
-    float       BitmapScale;        // [larperCord] Scale applied to fixed-size bitmap strikes (CBDT color emoji). 1.0f for scalable fonts.
+    float       BitmapScale;        // [SigmaCord] Scale applied to fixed-size bitmap strikes (CBDT color emoji). 1.0f for scalable fonts.
     ImGui_ImplFreeType_FontSrcBakedData() { memset((void*)this, 0, sizeof(*this)); BitmapScale = 1.0f; }
 };
 
@@ -433,9 +433,9 @@ static bool ImGui_ImplFreeType_FontBakedInit(ImFontAtlas*, ImFontConfig* src, Im
     ImGui_ImplFreeType_FontSrcData* bd_font_data = (ImGui_ImplFreeType_FontSrcData*)src->FontLoaderData;
     bd_font_data->BakedLastActivated = baked;
 
-    // [larperCord] REAL_DIM (below) sizes a font by ascender + descender, which varies a lot between
+    // [SigmaCord] REAL_DIM (below) sizes a font by ascender + descender, which varies a lot between
     // families: next to Inter (1.21 em), Noto Sans CJK (1.45 em) came out 16% smaller.
-    if (src->MergeMode && (bd_font_data->UserFlags & ImGuiFreeTypeLoaderFlags_LarperMatchEm))
+    if (src->MergeMode && (bd_font_data->UserFlags & ImGuiFreeTypeLoaderFlags_SigmaMatchEm))
     {
         const FT_Face own_face = bd_font_data->FtFace;
         const FT_Face main_face = ((ImGui_ImplFreeType_FontSrcData*)baked->OwnerFont->Sources[0]->FontLoaderData)->FtFace;
@@ -465,7 +465,7 @@ static bool ImGui_ImplFreeType_FontBakedInit(ImFontAtlas*, ImFontConfig* src, Im
     FT_Face face = bd_font_data->FtFace;
     if (!FT_IS_SCALABLE(face) && FT_HAS_FIXED_SIZES(face) && face->num_fixed_sizes > 0)
     {
-        // [larperCord] Bitmap-only fonts (e.g. Noto Color Emoji) can't be requested at arbitrary sizes:
+        // [SigmaCord] Bitmap-only fonts (e.g. Noto Color Emoji) can't be requested at arbitrary sizes:
         // select the largest strike and downscale glyph bitmaps when loading them.
         int best = 0;
         for (int i = 1; i < face->num_fixed_sizes; i++)
@@ -575,7 +575,7 @@ static bool ImGui_ImplFreeType_FontBakedLoadGlyph(ImFontAtlas* atlas, ImFontConf
         }
         else
         {
-            // [larperCord] Blit at strike size, then area-average down to the requested size
+            // [SigmaCord] Blit at strike size, then area-average down to the requested size
             // (in premultiplied space to avoid dark fringes).
             atlas->Builder->TempBuffer.resize((src_w * src_h + w * h) * 4);
             uint32_t* full = (uint32_t*)atlas->Builder->TempBuffer.Data;

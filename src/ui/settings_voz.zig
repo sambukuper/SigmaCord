@@ -236,7 +236,7 @@ fn pushToTalk(p: anytype, key: *S.Text) void {
         d.text(p.dl, p.font(.regular), 13, r.right() - 12 - d.width(p.font(.regular), 13, hint), d.centerY(r, 13), ctx.col(.faint), hint);
     }
     p.y += 50;
-    p.note(i18n.tr("Só funciona com a janela do larperCord em foco: fora dela o programa não vê a tecla.", "Only works while the larperCord window is focused: outside it the app can't see the key."));
+    p.note(i18n.tr("Só funciona com a janela do SigmaCord em foco: fora dela o programa não vê a tecla.", "Only works while the SigmaCord window is focused: outside it the app can't see the key."));
     p.note(i18n.tr("O envio segue por um instante depois de soltar, para não cortar a última palavra.", "Sending continues for a moment after you release, so the last word isn't cut."));
 }
 

@@ -23,9 +23,9 @@ const timeline = @import("platform/timeline.zig");
 const instance = @import("platform/instance.zig");
 
 const usage =
-    \\larperCord — cliente de Discord nativo e leve
+    \\SigmaCord — cliente de Discord nativo e leve
     \\
-    \\uso: larpercord [opções]
+    \\uso: sigmacord [opções]
     \\  --theme NOME      começa com esse tema (classico, vidro, terminal, bolhas, zen…)
     \\  --list-themes     lista os temas embutidos
     \\  --settings        abre já nas configurações
@@ -39,7 +39,7 @@ const usage =
     \\  --stats           mostra a linha do tempo da abertura e o custo de cada quadro
     \\  --voice-test G C  entra no canal de voz C do servidor G por 25 s
     \\  --tls-check URL   confere se a rede do app funciona neste sistema (certificados e WebSocket)
-    \\  --restarted       toma o lugar do larperCord que está fechando (usado ao reiniciar)
+    \\  --restarted       toma o lugar do SigmaCord que está fechando (usado ao reiniciar)
     \\
     \\atalhos: Ctrl+K paleta · Ctrl+, configurações · F2 próximo tema
     \\         Ctrl+Tab abas · Alt+1..9 · Ctrl+W fecha aba
@@ -116,13 +116,13 @@ pub fn main(init: std.process.Init.Minimal) !void {
     if (!opts.qa and (c.SDL_getenv("QA_SUITE") != null or c.SDL_getenv("QA_SCENE") != null)) opts.demo = true;
 
     // Um por vez: a demonstração, os prints e o QA não têm conexão para repetir
-    // e rodam ao lado do app de verdade (LARPER_INSTANCE=1 liga para testar).
-    const single = (!opts.qa and opts.shot == null and !opts.demo) or c.SDL_getenv("LARPER_INSTANCE") != null;
+    // e rodam ao lado do app de verdade (SIGMACORD_INSTANCE=1 liga para testar).
+    const single = (!opts.qa and opts.shot == null and !opts.demo) or c.SDL_getenv("SIGMACORD_INSTANCE") != null;
     if (single) switch (instance.begin(restarted)) {
         .primary, .alone => {},
         .signaled => return,
         .stuck => {
-            _ = c.SDL_ShowSimpleMessageBox(c.SDL_MESSAGEBOX_ERROR, "larperCord", "O larperCord já está aberto, mas não está respondendo.\nThe larperCord already running isn't responding.", null);
+            _ = c.SDL_ShowSimpleMessageBox(c.SDL_MESSAGEBOX_ERROR, "SigmaCord", "O SigmaCord já está aberto, mas não está respondendo.\nThe SigmaCord already running isn't responding.", null);
             std.process.exit(1);
         },
     };
@@ -175,7 +175,7 @@ fn voiceTest(guild: u64, channel: u64) !void {
     _ = c.SDL_Init(c.SDL_INIT_AUDIO);
     const alloc = std.heap.c_allocator;
     _ = c.curl_global_init(c.CURL_GLOBAL_DEFAULT);
-    const token = discord.loadToken() orelse return fail("defina LARPER_TOKEN para testar a voz");
+    const token = discord.loadToken() orelse return fail("defina SIGMACORD_TOKEN para testar a voz");
     var gw: discord.Gateway = .{
         .commands = try Queue(ev.Command).init(alloc),
         .sink = .{ .ctx = &test_ctx, .push = testSink },
@@ -209,6 +209,6 @@ fn testSink(_: ?*anyopaque, e: ev.Event) void {
 }
 
 fn fail(msg: []const u8) error{InvalidArgs} {
-    std.debug.print("larpercord: {s}\n", .{msg});
+    std.debug.print("sigmacord: {s}\n", .{msg});
     return error.InvalidArgs;
 }

@@ -834,7 +834,7 @@ const old_translate =
     \\-- @version 1.0.0
     \\-- @capabilities menu
     \\-- arquivo-antigo
-    \\larper.menu("message", "Velho", function() end)
+    \\sigma.menu("message", "Velho", function() end)
 ;
 
 fn writeOldTranslate(_: *App) void {
@@ -1202,23 +1202,23 @@ const qa_http_plugin =
     \\-- @hosts qa.exemplo.com
     \\local function mostra(nome)
     \\  return function(r)
-    \\    larper.notify(nome .. "|" .. tostring(r.ok) .. "|" .. tostring(r.status) .. "|" .. tostring(r.error) .. "|" .. #r.body)
+    \\    sigma.notify(nome .. "|" .. tostring(r.ok) .. "|" .. tostring(r.status) .. "|" .. tostring(r.error) .. "|" .. #r.body)
     \\  end
     \\end
-    \\larper.command("/qa-big", function() larper.http.get("https://qa.exemplo.com/big", mostra("big")) end)
-    \\larper.command("/qa-redir", function() larper.http.get("https://qa.exemplo.com/redir", mostra("redir")) end)
-    \\larper.command("/qa-post", function()
-    \\  larper.http.post("https://qa.exemplo.com/echo", { body = "corpo-do-post", headers = { ["Content-Type"] = "text/plain", Cookie = "a=b", Authorization = "c" } }, mostra("post"))
+    \\sigma.command("/qa-big", function() sigma.http.get("https://qa.exemplo.com/big", mostra("big")) end)
+    \\sigma.command("/qa-redir", function() sigma.http.get("https://qa.exemplo.com/redir", mostra("redir")) end)
+    \\sigma.command("/qa-post", function()
+    \\  sigma.http.post("https://qa.exemplo.com/echo", { body = "corpo-do-post", headers = { ["Content-Type"] = "text/plain", Cookie = "a=b", Authorization = "c" } }, mostra("post"))
     \\end)
-    \\larper.command("/qa-plain", function()
-    \\  larper.notify("plain|" .. tostring(pcall(larper.http.get, "http://qa.exemplo.com/x", mostra("x"))))
+    \\sigma.command("/qa-plain", function()
+    \\  sigma.notify("plain|" .. tostring(pcall(sigma.http.get, "http://qa.exemplo.com/x", mostra("x"))))
     \\end)
 ;
 
 const qa_slow_plugin =
     \\-- @name QA lento
     \\-- @capabilities notify
-    \\larper.command("/qa-lento", function()
+    \\sigma.command("/qa-lento", function()
     \\  -- Mais de um segundo na thread dos plugins, com poucas instruções: o tempo
     \\  -- passa em C. Um laço de Lua contra o relógio estoura o limite de instruções
     \\  -- onde ler o relógio é barato (no Windows).
@@ -1229,15 +1229,15 @@ const qa_slow_plugin =
     \\    pcall(string.find, s, ".-.-.-b")
     \\    n = n + 1
     \\  end
-    \\  larper.notify("lento acabou")
+    \\  sigma.notify("lento acabou")
     \\end)
 ;
 
 const qa_noisy_plugin =
     \\-- @name QA barulhento
     \\-- @capabilities notify
-    \\larper.command("/qa-barulho", function()
-    \\  for i = 1, 12 do larper.notify("barulho " .. i, { desktop = true }) end
+    \\sigma.command("/qa-barulho", function()
+    \\  for i = 1, 12 do sigma.notify("barulho " .. i, { desktop = true }) end
     \\end)
 ;
 
@@ -2405,11 +2405,11 @@ fn themeLoaded(app: *App) bool {
 const qa_deco_plugin =
     \\-- @name QA nota
     \\-- @capabilities menu, decorate
-    \\larper.menu("message", "QA nota", function(m)
-    \\  larper.decorate(m, { badge = "selo", note = "uma nota de plugin comprida o bastante para quebrar a linha e mostrar como ela fica embaixo da mensagem em qualquer tema" })
+    \\sigma.menu("message", "QA nota", function(m)
+    \\  sigma.decorate(m, { badge = "selo", note = "uma nota de plugin comprida o bastante para quebrar a linha e mostrar como ela fica embaixo da mensagem em qualquer tema" })
     \\end)
-    \\larper.menu("message", "QA recolhe", function(m)
-    \\  larper.decorate(m, { collapse = true, label = "Recolhida pelo plugin de teste" })
+    \\sigma.menu("message", "QA recolhe", function(m)
+    \\  sigma.decorate(m, { collapse = true, label = "Recolhida pelo plugin de teste" })
     \\end)
 ;
 

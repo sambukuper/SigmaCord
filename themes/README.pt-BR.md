@@ -2,11 +2,11 @@
 
 [English](README.md) · **Português**
 
-Um tema do larperCord é um arquivo [KDL](https://kdl.dev) que descreve **a interface inteira**:
+Um tema do SigmaCord é um arquivo [KDL](https://kdl.dev) que descreve **a interface inteira**:
 cores, fontes, estilos e a árvore de layout. Dá pra mudar a posição de tudo sem escrever
 uma linha de código.
 
-Coloque o arquivo em `~/.config/larpercord/themes/meu-tema.kdl` (ou em `themes/`, ao rodar
+Coloque o arquivo em `~/.config/sigmacord/themes/meu-tema.kdl` (ou em `themes/`, ao rodar
 de dentro do repositório). **Ao salvar, o app recarrega na hora.** Se houver um erro, aparece
 um aviso com `arquivo:linha:coluna` e o tema anterior continua valendo.
 
@@ -188,10 +188,10 @@ label height=38 size=9 color=muted font=mono span-gap=9 {
 }
 
 // Efeitos.
-label text="larperCord" size=40 shadow="alpha(black, 0.5)" shadow-x=2 shadow-y=2
-label text="larperCord" size=40 shadow="alpha(@accent, 0.4)" shadow-blur=3   // brilho
-label text="larperCord" size=40 color=bg outline=accent outline-width=2
-label text="larperCord" size=40 text-gradient="@text @accent" text-gradient-angle=0
+label text="SigmaCord" size=40 shadow="alpha(black, 0.5)" shadow-x=2 shadow-y=2
+label text="SigmaCord" size=40 shadow="alpha(@accent, 0.4)" shadow-blur=3   // brilho
+label text="SigmaCord" size=40 color=bg outline=accent outline-width=2
+label text="SigmaCord" size=40 text-gradient="@text @accent" text-gradient-angle=0
 ```
 
 | Propriedade | O que faz |
@@ -324,7 +324,7 @@ Formas de usar as opções:
 | bloco de cores, cargos, estilos | `colors mode=dark when=verde { … }` |
 | estilo | `style "card" sheen="$brilho"` |
 
-As escolhas ficam salvas por tema em `~/.config/larpercord/settings.kdl`.
+As escolhas ficam salvas por tema em `~/.config/sigmacord/settings.kdl`.
 
 ## Cores personalizadas (sem editar o `.kdl`)
 

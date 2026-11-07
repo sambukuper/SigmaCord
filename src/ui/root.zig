@@ -19,6 +19,7 @@ const palette = @import("palette.zig");
 const settings = @import("settings.zig");
 const vim = @import("vim.zig");
 const search = @import("search.zig");
+const bindings = @import("bindings.zig");
 const Preview = @import("../theme/manager.zig").Preview;
 
 const extra = @import("comp_extra.zig");
@@ -75,7 +76,7 @@ fn profAdd(name: []const u8, us: u64) void {
     prof_n += 1;
 }
 
-/// `label text="larperCord" size=14 weight=bold color=accent align=center`
+/// `label text="SigmaCord" size=14 weight=bold color=accent align=center`
 fn label(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
     if (ctx.th.nodeFx(n)) |x| if (x.text) |tx| return display.label(ctx, n, r, tx);
     const t = d.pstr(n, "text", "");
@@ -222,29 +223,24 @@ fn shortcuts(ctx: *d.Ctx) void {
     const io = ctx.io;
     const ctrl = io.*.KeyCtrl;
     const shift = io.*.KeyShift;
+    // Captura da página Atalhos: enquanto ela espera (e no quadro em que
+    // termina), a tecla dela não vaza para os outros atalhos.
+    const was_capturing = bindings.capturingNow();
+    bindings.captureTick(ctx);
+    if (was_capturing) return;
     if (c.ImGui_IsKeyPressed(c.ImGuiKey_Escape) and ctx.st.popup == .none and !ctx.st.selection.empty()) ctx.st.selection = .{};
     if (ctrl) zoomKeys(ctx);
+    // Os atalhos configuráveis (Configurações → Atalhos de teclado): mic,
+    // surdez, paleta, busca, tela cheia e companhia.
+    bindings.dispatch(ctx);
     const alt_enter = io.*.KeyAlt and (c.ImGui_IsKeyPressedEx(c.ImGuiKey_Enter, false) or c.ImGui_IsKeyPressedEx(c.ImGuiKey_KeypadEnter, false));
-    if (c.ImGui_IsKeyPressedEx(c.ImGuiKey_F11, false) or alt_enter) ctx.act(.toggle_fullscreen);
-    if (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_Comma)) ctx.act(if (ctx.st.settings.open) .close_settings else .open_settings);
-    if (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_K)) {
-        palette.commands_first = false;
-        ctx.act(if (ctx.st.palette.open) .close_palette else .open_palette);
-    }
+    if (alt_enter) ctx.act(.toggle_fullscreen);
     // Ctrl+Shift+P: a mesma paleta, com as ações primeiro.
     if (ctrl and shift and c.ImGui_IsKeyPressed(c.ImGuiKey_P)) {
         palette.commands_first = true;
         ctx.act(if (ctx.st.palette.open) .close_palette else .open_palette);
     }
     vim.keys(ctx);
-    if (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_F) and !ctx.st.settings.open) search.toggle();
-    if (c.ImGui_IsKeyPressed(c.ImGuiKey_F2) or (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_T)))
-        ctx.act(.{ .next_theme = if (shift) -1 else 1 });
-    if (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_Tab)) ctx.act(.{ .next_tab = if (shift) -1 else 1 });
-    if (ctrl and c.ImGui_IsKeyPressed(c.ImGuiKey_W)) ctx.act(.{ .close_tab = ctx.st.tab });
-    // Caixa de entrada e mensagens salvas (ui/inbox.zig, ui/saved.zig).
-    if (ctrl and !shift and c.ImGui_IsKeyPressed(c.ImGuiKey_I) and !ctx.st.settings.open) ctx.act(.toggle_inbox);
-    if (ctrl and shift and c.ImGui_IsKeyPressed(c.ImGuiKey_S) and !ctx.st.settings.open) ctx.act(.toggle_saved);
     if (io.*.KeyAlt) {
         const keys = [_]c_int{ c.ImGuiKey_1, c.ImGuiKey_2, c.ImGuiKey_3, c.ImGuiKey_4, c.ImGuiKey_5, c.ImGuiKey_6, c.ImGuiKey_7, c.ImGuiKey_8, c.ImGuiKey_9 };
         for (keys, 0..) |k, i| if (c.ImGui_IsKeyPressed(k)) ctx.act(.{ .focus_tab = i });

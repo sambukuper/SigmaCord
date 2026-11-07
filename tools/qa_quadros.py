@@ -97,12 +97,12 @@ open_apps = []
 
 class App:
     def __init__(self, binary, pics):
-        self.tmp = tempfile.mkdtemp(prefix="larper-quadros.")
-        keep = {k: v for k, v in os.environ.items() if k not in ("WAYLAND_DISPLAY", "LARPER_TOKEN", "DBUS_SESSION_BUS_ADDRESS")}
-        keep.update(DISPLAY=DISP, SDL_VIDEO_DRIVER="x11", LARPER_RENDERER="software", SDL_AUDIODRIVER="dummy",
+        self.tmp = tempfile.mkdtemp(prefix="sigma-quadros.")
+        keep = {k: v for k, v in os.environ.items() if k not in ("WAYLAND_DISPLAY", "SIGMACORD_TOKEN", "DBUS_SESSION_BUS_ADDRESS")}
+        keep.update(DISPLAY=DISP, SDL_VIDEO_DRIVER="x11", SIGMACORD_RENDERER="software", SDL_AUDIODRIVER="dummy",
                     XDG_CONFIG_HOME=self.tmp + "/c", XDG_CACHE_HOME=self.tmp + "/k", XDG_RUNTIME_DIR=self.tmp, HOME=self.tmp)
         if not pics:
-            keep["LARPER_NO_PICS"] = "1"
+            keep["SIGMACORD_NO_PICS"] = "1"
         self.log_path = self.tmp + "/log"
         self.log = open(self.log_path, "w")
         self.proc = subprocess.Popen([binary, "--demo", "--no-live", "--stats"], env=keep, stdout=self.log, stderr=self.log)

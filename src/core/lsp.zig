@@ -242,7 +242,7 @@ pub fn validLang(lang: []const u8) bool {
     return true;
 }
 
-/// `file://<pasta vazia>/larpercord-composer.zig`: documento virtual, nada em
+/// `file://<pasta vazia>/sigmacord-composer.zig`: documento virtual, nada em
 /// disco (o texto vai no didOpen). Tem de ser `file:` porque o clangd, entre
 /// outros, recusa qualquer outro esquema. A pasta é a do próprio servidor.
 pub fn documentUri(out: []u8, dir: []const u8, ext: []const u8) []const u8 {
@@ -256,10 +256,10 @@ pub fn documentUri(out: []u8, dir: []const u8, ext: []const u8) []const u8 {
             'A'...'Z', 'a'...'z', '0'...'9', '/', '.', '_', '-', '~', ':' => w.writeByte(ch) catch break :write,
             else => w.print("%{X:0>2}", .{ch}) catch break :write,
         };
-        w.print("/larpercord-composer.{s}", .{ext}) catch break :write;
+        w.print("/sigmacord-composer.{s}", .{ext}) catch break :write;
         return w.buffered();
     }
-    return "file:///larpercord-composer";
+    return "file:///sigmacord-composer";
 }
 
 /// `PATH` é separado por `:` e por `;` no Windows.
@@ -447,7 +447,7 @@ pub fn writeInitialize(out: *std.ArrayList(u8), gpa: std.mem.Allocator, id: i64)
     var b: std.ArrayList(u8) = .empty;
     defer b.deinit(gpa);
     try b.print(gpa,
-        \\{{"jsonrpc":"2.0","id":{d},"method":"initialize","params":{{"processId":null,"clientInfo":{{"name":"larperCord"}},"rootUri":null,"rootPath":null,"workspaceFolders":null,"capabilities":{{"general":{{"positionEncodings":["utf-16"]}},"textDocument":{{"synchronization":{{"didSave":false,"willSave":false}},"publishDiagnostics":{{"versionSupport":true}}}},"workspace":{{"configuration":false,"workspaceFolders":false}}}}}}}}
+        \\{{"jsonrpc":"2.0","id":{d},"method":"initialize","params":{{"processId":null,"clientInfo":{{"name":"SigmaCord"}},"rootUri":null,"rootPath":null,"workspaceFolders":null,"capabilities":{{"general":{{"positionEncodings":["utf-16"]}},"textDocument":{{"synchronization":{{"didSave":false,"willSave":false}},"publishDiagnostics":{{"versionSupport":true}}}},"workspace":{{"configuration":false,"workspaceFolders":false}}}}}}}}
     , .{id});
     try frame(out, gpa, b.items);
 }
@@ -935,8 +935,8 @@ test "etiquetas" {
     try t.expect(!validLang("Zig"));
     try t.expect(!validLang(""));
     var buf: [64]u8 = undefined;
-    try t.expectEqualStrings("file:///tmp/a%20b/larpercord-composer.zig", documentUri(&buf, "/tmp/a b", "zig"));
-    try t.expectEqualStrings("file:///C:/x/larpercord-composer.c", documentUri(&buf, "C:\\x", "c"));
+    try t.expectEqualStrings("file:///tmp/a%20b/sigmacord-composer.zig", documentUri(&buf, "/tmp/a b", "zig"));
+    try t.expectEqualStrings("file:///C:/x/sigmacord-composer.c", documentUri(&buf, "C:\\x", "c"));
 }
 
 test "liberação de plugin vale só para aquele argv" {

@@ -1,5 +1,5 @@
 /* Não é do RNNoise: o melhor caminho que este processador e o sistema aguentam
-   (dnn_x86.h). LARPER_RNNOISE_ARCH força um mais baixo, para testar. */
+   (dnn_x86.h). SIGMACORD_RNNOISE_ARCH força um mais baixo, para testar. */
 #include <cpuid.h>
 #include <stdlib.h>
 
@@ -21,7 +21,7 @@ static int detect(void) {
 
 int rnn_select_arch(void) {
     int arch = detect();
-    const char *force = getenv("LARPER_RNNOISE_ARCH");
+    const char *force = getenv("SIGMACORD_RNNOISE_ARCH");
     if (force && force[0] >= '0' && force[0] - '0' < arch) arch = force[0] - '0';
     return arch;
 }

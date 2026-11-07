@@ -82,9 +82,9 @@ fn inlineLoaded(app: *App) bool {
     return imageReady(app, "demo:emoji:900101:0", 1) and imageReady(app, "demo:emoji:900102:0", 1);
 }
 fn inlineSpans(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     // Na tela e na busca o texto continua `:nome:`; os IDs saem do texto do Discord.
-    if (std.mem.indexOf(u8, m.msg.content, ":larper:") == null or std.mem.indexOf(u8, m.msg.content, "<:") != null) return false;
+    if (std.mem.indexOf(u8, m.msg.content, ":sigma:") == null or std.mem.indexOf(u8, m.msg.content, "<:") != null) return false;
     var n: usize = 0;
     for (m.spans) |sp| if (sp.emoji != 0) {
         n += 1;
@@ -93,10 +93,10 @@ fn inlineSpans(app: *App) bool {
 }
 var inline_h: f32 = 0;
 fn saveInlineHeight(app: *App) void {
-    inline_h = (findMsg(app, "<:larper:900101>") orelse return).height;
+    inline_h = (findMsg(app, "<:sigma:900101>") orelse return).height;
 }
 fn heightStable(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     return inline_h > 0 and m.height == inline_h;
 }
 fn inlineBoxSize(app: *App) bool {
@@ -138,40 +138,40 @@ fn customReaction(m: *StoredMessage, id: Id) ?*const types.Reaction {
     for (m.reactionSlice()) |*r| if (r.custom == id) return r;
     return null;
 }
-fn tChipLarper(app: *App, b: []u8) []const u8 {
-    const m = findMsg(app, "<:larper:900101>") orelse return "";
+fn tChipSigma(app: *App, b: []u8) []const u8 {
+    const m = findMsg(app, "<:sigma:900101>") orelse return "";
     for (m.reactionSlice(), 0..) |*r, i| if (r.custom == 900101) return std.fmt.bufPrint(b, "chip:{d}:{d}", .{ m.msg.id, i }) catch "";
     return "";
 }
 fn reactionsArrived(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     const a = customReaction(m, 900101) orelse return false;
     const anim = customReaction(m, 900104) orelse return false;
     return a.count == 3 and !a.me and anim.animated and imageReady(app, "demo:emoji:900101:0", 1);
 }
 fn reacted(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     const a = customReaction(m, 900101) orelse return false;
-    return a.count == 4 and a.me and std.mem.eql(u8, a.text(), "larper");
+    return a.count == 4 and a.me and std.mem.eql(u8, a.text(), "sigma");
 }
 fn unreacted(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     const a = customReaction(m, 900101) orelse return false;
     return a.count == 3 and !a.me;
 }
 fn tChipAddInline(app: *App, b: []u8) []const u8 {
-    const m = findMsg(app, "<:larper:900101>") orelse return "";
+    const m = findMsg(app, "<:sigma:900101>") orelse return "";
     return std.fmt.bufPrint(b, "chip-add:{d}", .{m.msg.id}) catch "";
 }
 fn tHoverInline(app: *App, b: []u8) []const u8 {
-    const m = findMsg(app, "<:larper:900101>") orelse return "";
+    const m = findMsg(app, "<:sigma:900101>") orelse return "";
     return std.fmt.bufPrint(b, "msg:{d}", .{m.msg.id}) catch "";
 }
 fn tPickCafe(_: *App, _: []u8) []const u8 {
     return "emoji-custom:900105";
 }
 fn reactedViaPicker(app: *App) bool {
-    const m = findMsg(app, "<:larper:900101>") orelse return false;
+    const m = findMsg(app, "<:sigma:900101>") orelse return false;
     const a = customReaction(m, 900105) orelse return false;
     return a.me and a.count == 1 and app.st.popup == .none;
 }
@@ -247,7 +247,7 @@ fn serversTab(_: *App) bool {
     return qa.find("emoji-custom:900101") != null;
 }
 fn localInserted(app: *App) bool {
-    return std.mem.indexOf(u8, input(app), ":larper:") != null and app.st.popup == .none;
+    return std.mem.indexOf(u8, input(app), ":sigma:") != null and app.st.popup == .none;
 }
 fn lockedStays(app: *App) bool {
     return app.st.popup == .emoji and app.st.toast.is_error and std.mem.indexOf(u8, app.st.toast.text(), "Nitro") != null;
@@ -276,9 +276,9 @@ fn sentHasRaw(app: *App, want: []const u8) bool {
     const m = lastSent(app) orelse return false;
     return !m.pending and std.mem.indexOf(u8, m.msg.editable(), want) != null;
 }
-fn sentLarper(app: *App) bool {
+fn sentSigma(app: *App) bool {
     const m = lastSent(app) orelse return false;
-    return sentHasRaw(app, "<:larper:900101>") and std.mem.indexOf(u8, m.msg.content, ":larper:") != null and qa.find("emoji-inline:900101") != null;
+    return sentHasRaw(app, "<:sigma:900101>") and std.mem.indexOf(u8, m.msg.content, ":sigma:") != null and qa.find("emoji-inline:900101") != null;
 }
 fn sentOtherGuild(app: *App) bool {
     return sentHasRaw(app, "<:hypr_rice:900201>");
@@ -354,10 +354,10 @@ fn unicodeInserted(app: *App) bool {
     return std.mem.eql(u8, input(app), "😂 ");
 }
 fn customInserted(app: *App) bool {
-    return std.mem.eql(u8, input(app), ":larper: ");
+    return std.mem.eql(u8, input(app), ":sigma: ");
 }
 fn customSent(app: *App) bool {
-    return sentHasRaw(app, "<:larper:900101>");
+    return sentHasRaw(app, "<:sigma:900101>");
 }
 fn lockedInList(app: *App) bool {
     return autocomplete.open() and app.st.toast.is_error and std.mem.eql(u8, input(app), ":hypr");
@@ -378,7 +378,7 @@ fn newLineWithList(app: *App) bool {
 /// Na bateria geral os plugins já estão carregados; sozinho, carrega um.
 fn ensureCommand(app: *App) void {
     if (app.plugins.n_commands > 0) return;
-    const src = "larper.command('/qaemoji', function() end)";
+    const src = "sigma.command('/qaemoji', function() end)";
     _ = c.SDL_CreateDirectory("qa-out/plugins");
     _ = c.SDL_SaveFile("qa-out/plugins/qaemoji.lua", src.ptr, src.len);
     app.plugins.reload();
@@ -413,10 +413,10 @@ pub const ops = [_]Op{
 
     s("reações personalizadas"),
     .{ .expect = .{ .name = "reação personalizada com imagem", .check = reactionsArrived, .timeout_ms = 3000 } },
-    dyn(tChipLarper),
+    dyn(tChipSigma),
     expect("reagir com emoji personalizado", reacted),
     .{ .shot = "61-emoji-reacao" },
-    dyn(tChipLarper),
+    dyn(tChipSigma),
     expect("tirar a reação personalizada", unreacted),
     .{ .hover = .{ .dyn = tHoverInline } },
     .{ .wait = 80 },
@@ -464,7 +464,7 @@ pub const ops = [_]Op{
     expect("emoji deste servidor entra como :nome:", localInserted),
     click("composer"),
     key(c.ImGuiKey_Enter),
-    .{ .expect = .{ .name = "enviar vira <:nome:id> e aparece como imagem", .check = sentLarper, .timeout_ms = 3000 } },
+    .{ .expect = .{ .name = "enviar vira <:nome:id> e aparece como imagem", .check = sentSigma, .timeout_ms = 3000 } },
     .{ .run = nitroOn },
     click("composer-emoji"),
     click("emoji-tab:1"),

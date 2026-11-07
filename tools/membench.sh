@@ -3,18 +3,18 @@
 # do orçamento. Sempre na demonstração (--demo: nunca conecta na conta) e com a
 # configuração isolada numa pasta temporária.
 #   tools/membench.sh [orçamento_em_MB]   (padrão: 60)
-#   LARPER_BIN=caminho  mede esse executável em vez de compilar
+#   SIGMACORD_BIN=caminho  mede esse executável em vez de compilar
 #   THEMES="classico terminal"  só esses temas; REPS=3 rodadas de cada
 # A janela flutua com tamanho fixo (1280x800): o que entra na tela muda a RAM, e
 # num workspace com outras janelas o tamanho variava de uma rodada para outra.
 # No Hyprland ela abre num workspace escondido; em outros ambientes ela aparece
 # por alguns segundos. O "CPU parado" conta o GIF que a demonstração deixa na tela
-# (~2%); com LARPER_NO_PICS=1 no ambiente dá para ver o app sem nada se mexendo.
+# (~2%); com SIGMACORD_NO_PICS=1 no ambiente dá para ver o app sem nada se mexendo.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 budget="${1:-60}"
-if [ -z "${LARPER_BIN:-}" ]; then zig build -Doptimize=ReleaseFast; fi
-bin="${LARPER_BIN:-$PWD/zig-out/bin/larpercord}"
+if [ -z "${SIGMACORD_BIN:-}" ]; then zig build -Doptimize=ReleaseFast; fi
+bin="${SIGMACORD_BIN:-$PWD/zig-out/bin/sigmacord}"
 themes="${THEMES:-classico vidro terminal subsolo orbital editorial bolhas zen papel escritorio cupertino}"
 reps="${REPS:-1}"
 tmp="$(mktemp -d)"
@@ -22,7 +22,7 @@ trap 'rm -rf "$tmp"' EXIT
 cat >"$tmp/run.sh" <<EOF
 #!/bin/sh
 echo \$\$ >"\$1"; shift
-unset LARPER_TOKEN
+unset SIGMACORD_TOKEN
 export XDG_CONFIG_HOME="$tmp/cfg" XDG_CACHE_HOME="\${XDG_CACHE_HOME:-\$HOME/.cache}"
 exec "\$@" >/dev/null 2>&1
 EOF
@@ -33,7 +33,7 @@ for t in $themes; do
     for _ in $(seq 1 "$reps"); do
         rm -f "$tmp/pid"
         if command -v hyprctl >/dev/null && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-            hyprctl dispatch exec "[workspace special:larper silent; float; size 1280 800] $tmp/run.sh $tmp/pid $bin --demo --theme $t --no-live" >/dev/null
+            hyprctl dispatch exec "[workspace special:sigma silent; float; size 1280 800] $tmp/run.sh $tmp/pid $bin --demo --theme $t --no-live" >/dev/null
         else
             "$tmp/run.sh" "$tmp/pid" "$bin" --demo --theme "$t" --no-live &
         fi

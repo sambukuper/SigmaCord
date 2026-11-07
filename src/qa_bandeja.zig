@@ -1,6 +1,6 @@
 //! QA das listas flutuantes (ui/dropdown.zig), do fechar para a bandeja e do
 //! pedido de reinício. Aqui a bandeja é de mentira (`tray.fake`): o ícone de
-//! verdade, o menu e o segundo larperCord quem testa é tools/qa_bandeja.py, com
+//! verdade, o menu e o segundo SigmaCord quem testa é tools/qa_bandeja.py, com
 //! processos reais e um painel falso no D-Bus.
 //!
 //! `QA_SUITE=bandeja` roda isto. As baterias `bandeja-*` terminam com o app

@@ -1,7 +1,7 @@
 // orbital — console de bordo no meio do nada: campo de estrelas e um sistema de
 // órbitas atrás de painéis translúcidos, tipografia técnica e uma faixa de
 // servidores no rodapé. No claro vira carta celeste: tinta sobre papel.
-theme "orbital" description="Console de bordo: grafite, menta, numeração de sistemas e servidores no rodapé." description-en="Ship console: graphite, mint, system numbering and servers in the bottom strip." author="larperCord" preview=glass
+theme "orbital" description="Console de bordo: grafite, menta, numeração de sistemas e servidores no rodapé." description-en="Ship console: graphite, mint, system numbering and servers in the bottom strip." author="SigmaCord" preview=glass
 
 options {
     option "estrelas" label="Campo de estrelas" description="Estrelas paradas atrás dos painéis (geradas uma vez, não gastam nada)." label-en="Starfield" description-en="Still stars behind the panels (generated once, costs nothing)." default=#true

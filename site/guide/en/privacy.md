@@ -9,7 +9,7 @@
 - It's wiped from memory when the app exits.
 - It's stored in the system keyring when possible. Without one, it goes in a file with `chmod 600`, and the app warns you if the file is readable by others.
 - With "Remember" on, it's only saved after Discord accepts it.
-- `LARPER_VOICE_DEBUG` and `LARPER_DEBUG_MEDIA` never print tokens or keys.
+- `SIGMACORD_VOICE_DEBUG` and `SIGMACORD_DEBUG_MEDIA` never print tokens or keys.
 
 It's only sent to Discord.
 
@@ -21,7 +21,7 @@ Like the official client, the app tells Discord what you've read, at most once p
 
 | What | Where | Control |
 |---|---|---|
-| Message cache | `~/.cache/larpercord/messages`, folders 700, files 600 | 200 messages per channel, 50 MB cap. Turn it off and erase it in Settings → Privacy |
+| Message cache | `~/.cache/sigmacord/messages`, folders 700, files 600 | 200 messages per channel, 50 MB cap. Turn it off and erase it in Settings → Privacy |
 | Drafts | `drafts.kdl`, `chmod 600` | Sending a message clears its draft |
 | Saved messages and notes | `saved-<account>.json` | Up to 500. Nothing goes to Discord |
 | Alert words, filters, ignored people | `settings.kdl` | Nobody is told |
@@ -54,9 +54,9 @@ Plugins run with your account, so only use files you've read and understand. The
 - A plugin never sees your token or your email.
 - No file, process or socket access. `io`, `os.execute`, `os.remove`, `os.getenv`, `require`, `package`, `debug`, `coroutine`, `load`, `loadfile`, `dofile`, `collectgarbage` and `string.dump` don't exist.
 - About 5 million instructions per call and 8 MB of memory per plugin, on a thread of their own.
-- `larper.send` only works directly from a gesture on that plugin (its command, keybind, button or menu entry), because automatic replies would turn your account into a self-bot.
-- The only network is `larper.http`: HTTPS only, to hosts the plugin declares and you approve one by one in Settings → Plugins, with no cookies, token or Discord headers. Nothing goes out until you approve. A plugin with the `links` capability can also open an address in your browser, when you click something of its own, and its card says so.
-- A plugin's data stays in `~/.config/larpercord/plugin-data/`, separate per plugin and account, readable only by you. The plugins that come with the app don't keep the text of messages after they're deleted.
+- `sigma.send` only works directly from a gesture on that plugin (its command, keybind, button or menu entry), because automatic replies would turn your account into a self-bot.
+- The only network is `sigma.http`: HTTPS only, to hosts the plugin declares and you approve one by one in Settings → Plugins, with no cookies, token or Discord headers. Nothing goes out until you approve. A plugin with the `links` capability can also open an address in your browser, when you click something of its own, and its card says so.
+- A plugin's data stays in `~/.config/sigmacord/plugin-data/`, separate per plugin and account, readable only by you. The plugins that come with the app don't keep the text of messages after they're deleted.
 
 The details are in [Lua plugins](page:plugins).
 
@@ -66,7 +66,7 @@ Hides your email and username in settings. It doesn't hide anything else on scre
 
 ## Reporting a problem
 
-Open an issue on [GitHub](https://github.com/RshaCuDeVidro/larperCord/issues). If it involves leaking a token or anything sensitive, don't include real tokens in the report.
+Open an issue on [GitHub](https://github.com/sambukuper/SigmaCord/issues). If it involves leaking a token or anything sensitive, don't include real tokens in the report.
 
 ## If Discord locks your account
 
@@ -86,4 +86,4 @@ If it happens, reset your password from discord.com. If the account stays locked
 
 The Windows build isn't signed, so SmartScreen warns about it. A scanner may also call it a Discord token stealer, likely because a Discord client is full of the same words a stealer has, such as "token" and "Authorization". One sandbox scored version 0.5.0 that way from a pattern rule, while its behavior report showed no credential access and, in demo mode, no network at all.
 
-The token only goes to Discord, and it stays in the system keyring or, without one, in a private file. The code is public, so you can read it or build it yourself. Only download larperCord from this repository.
+The token only goes to Discord, and it stays in the system keyring or, without one, in a private file. The code is public, so you can read it or build it yourself. Only download SigmaCord from this repository.

@@ -1,7 +1,8 @@
-name: linux-portable
-# O binário de Linux das releases: compilado num Ubuntu antigo, porque é a glibc
-# de onde ele nasce que decide em quais distros ele abre, e aberto em várias antes
-# de valer. O atestado prova que o arquivo saiu deste código.
+name: release-builds
+# Os binários das releases, todos daqui (nenhum build local): o de Linux num
+# Ubuntu antigo, porque é a glibc de onde ele nasce que decide em quais distros
+# ele abre, aberto em várias antes de valer; o de Windows cruzado do Linux.
+# O atestado prova que cada arquivo saiu deste código.
 on:
   workflow_dispatch:
   push:
@@ -29,7 +30,7 @@ jobs:
         run: PKG_CONFIG_PATH=$PWD/.deps/linux/lib/pkgconfig zig build -Dcpu=baseline -Dportable=true
       - name: O que o binário exige
         run: |
-          bin=zig-out/bin/larpercord
+          bin=zig-out/bin/sigmacord
           ls -l "$bin"
           objdump -p "$bin" | grep NEEDED
           max=$(objdump -T "$bin" | grep -oE 'GLIBC_[0-9.]+' | sort -t. -k2 -n | uniq | tail -1)
@@ -38,8 +39,32 @@ jobs:
           if objdump -p "$bin" | grep -qE 'NEEDED +lib(SDL3|curl|ssl|crypto)'; then echo "SDL3, curl e OpenSSL deviam estar dentro"; exit 1; fi
       - uses: actions/upload-artifact@v4
         with:
-          name: larpercord-linux-x86_64
-          path: zig-out/bin/larpercord
+          name: sigmacord-linux-x86_64
+          path: zig-out/bin/sigmacord
+          if-no-files-found: error
+
+  # O .exe de Windows sai do Linux também: as DLLs vêm de tools/windows_deps.sh.
+  windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0
+      - run: tools/windows_deps.sh
+      - name: Compilar
+        run: zig build -Dtarget=x86_64-windows-gnu -p out/win
+      - name: O que saiu
+        run: |
+          ls -l out/win/bin
+          test -f out/win/bin/sigmacord.exe
+          test -f out/win/bin/SDL3.dll
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sigmacord-windows-x86_64
+          path: |
+            out/win/bin/sigmacord.exe
+            out/win/bin/*.dll
           if-no-files-found: error
 
   # Abre de verdade: sem GPU, só com as bibliotecas que um desktop dessas distros já tem.
@@ -63,24 +88,24 @@ jobs:
         run: ${{ matrix.install }}
       - uses: actions/download-artifact@v4
         with:
-          name: larpercord-linux-x86_64
+          name: sigmacord-linux-x86_64
       - name: Abrir na demonstração e conferir o TLS
         env:
           SDL_VIDEO_DRIVER: offscreen
           SDL_AUDIODRIVER: dummy
-          LARPER_RENDERER: software
+          SIGMACORD_RENDERER: software
           HOME: /tmp/home
         run: |
           mkdir -p "$HOME"
-          chmod +x larpercord
-          ./larpercord --help > /dev/null
-          ./larpercord --demo --shot /tmp/demo.png
+          chmod +x sigmacord
+          ./sigmacord --help > /dev/null
+          ./sigmacord --demo --shot /tmp/demo.png
           test "$(stat -c %s /tmp/demo.png)" -gt 10000
           # O mesmo curl do app, com os certificados desta distro. Nunca no Discord.
-          ./larpercord --tls-check https://github.com/
+          ./sigmacord --tls-check https://github.com/
 
   attest:
-    needs: test
+    needs: [test, windows]
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     permissions:
@@ -90,7 +115,13 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: larpercord-linux-x86_64
+          name: sigmacord-linux-x86_64
+      - uses: actions/download-artifact@v4
+        with:
+          name: sigmacord-windows-x86_64
+          path: win
       - uses: actions/attest-build-provenance@v2
         with:
-          subject-path: larpercord
+          subject-path: |
+            sigmacord
+            win/sigmacord.exe

@@ -1,4 +1,4 @@
-//! JSON <-> Lua: `larper.json` e o arquivo do armazenamento de cada plugin.
+//! JSON <-> Lua: `sigma.json` e o arquivo do armazenamento de cada plugin.
 //! Roda em C, fora do gancho de instruções: os limites vêm do tamanho (texto
 //! limitado por quem chama, memória do Lua limitada pelo alocador) e da
 //! profundidade (`max_depth`), então não há como travar aqui dentro.

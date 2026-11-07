@@ -5,7 +5,7 @@
 -- @version 1.0.0
 -- @capabilities rewrite
 
-larper.rewrite({
+sigma.rewrite({
   -- Campanhas e anúncios, em qualquer site.
   { strip_params = { "utm_*", "fbclid", "gclid", "gclsrc", "dclid", "gbraid", "wbraid", "msclkid", "yclid", "twclid", "ttclid",
     "igshid", "igsh", "mc_cid", "mc_eid", "_hsenc", "_hsmi", "__hssc", "__hstc", "__hsfp", "hsCtaTracking", "vero_id", "vero_conv",

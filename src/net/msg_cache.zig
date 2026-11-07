@@ -2,7 +2,7 @@
 //! para a conversa aparecer na hora ao abrir (o histórico de verdade chega
 //! depois e substitui) e para a busca local funcionar sem rede.
 //!
-//! Fica em $XDG_CACHE_HOME/larpercord/messages/<conta>/<canal>.lcm (formato
+//! Fica em $XDG_CACHE_HOME/sigmacord/messages/<conta>/<canal>.lcm (formato
 //! em core/cache_format.zig). Pastas com permissão 700 e arquivos com 600:
 //! só o seu usuário lê. Teto de `total_cap` somando tudo (as conversas
 //! esquecidas há mais tempo saem primeiro) e de `channel_msgs` por canal.
@@ -63,7 +63,7 @@ pub fn init(qa: bool) void {
     else blk: {
         var hb: [400]u8 = undefined;
         const base = sys.cacheHome(&hb) orelse break :blk "";
-        break :blk std.fmt.bufPrint(&root_buf, "{s}/larpercord/messages", .{base}) catch "";
+        break :blk std.fmt.bufPrint(&root_buf, "{s}/sigmacord/messages", .{base}) catch "";
     };
     root_len = r.len;
 }
@@ -105,7 +105,7 @@ fn channelPath(buf: []u8, ch: Id, suffix: []const u8) ?[:0]const u8 {
 }
 
 /// Cria a pasta da conta (e as de cima), uma vez por conta. As nossas
-/// (…/larpercord, …/messages e a da conta) ficam só para o dono; as que já
+/// (…/sigmacord, …/messages e a da conta) ficam só para o dono; as que já
 /// existiam fora delas (o ~/.cache) não mudam de permissão.
 fn ensureDirs() bool {
     if (dirs_ok) return true;

@@ -22,31 +22,31 @@ local function horaEm(fuso)
   return os.date("!%H:%M", os.time() + fuso * 3600)
 end
 
-larper.command("/hora", function(args)
+sigma.command("/hora", function(args)
   if args == "" then
     local partes = { "aqui " .. os.date("%H:%M") }
     for _, nome in ipairs(resumo) do
       local cidade, fuso = achar(nome)
       partes[#partes + 1] = cidade .. " " .. horaEm(fuso)
     end
-    larper.notify(table.concat(partes, " · "))
+    sigma.notify(table.concat(partes, " · "))
     return
   end
   local cidade, fuso = achar(args)
   if cidade then
-    larper.notify(cidade .. ": " .. horaEm(fuso))
+    sigma.notify(cidade .. ": " .. horaEm(fuso))
   else
-    larper.notify("Não conheço \"" .. args .. "\". Acrescente no começo de relogio.lua")
+    sigma.notify("Não conheço \"" .. args .. "\". Acrescente no começo de relogio.lua")
   end
 end)
 
-larper.command("/horario", function(args)
+sigma.command("/horario", function(args)
   local cidade, fuso = achar(args)
   if not cidade then
-    larper.notify("Use assim: /horario tokyo")
+    sigma.notify("Use assim: /horario tokyo")
     return
   end
-  larper.send(nil, "🕒 Agora em " .. cidade .. ": **" .. horaEm(fuso) .. "**")
+  sigma.send(nil, "🕒 Agora em " .. cidade .. ": **" .. horaEm(fuso) .. "**")
 end)
 
 local inicio = nil
@@ -54,13 +54,13 @@ local inicio = nil
 local function cronometro()
   if not inicio then
     inicio = os.time()
-    larper.notify("⏱ Cronômetro valendo")
+    sigma.notify("⏱ Cronômetro valendo")
     return
   end
   local total = os.time() - inicio
   inicio = nil
-  larper.notify(string.format("⏱ %d min %02d s", total // 60, total % 60))
+  sigma.notify(string.format("⏱ %d min %02d s", total // 60, total % 60))
 end
 
-larper.command("/cronometro", cronometro)
-larper.keybind("ctrl+alt+t", cronometro)
+sigma.command("/cronometro", cronometro)
+sigma.keybind("ctrl+alt+t", cronometro)

@@ -4,7 +4,7 @@
 const std = @import("std");
 const c = @import("c");
 const App = @import("app.zig").App;
-const larper_ime_scale = &@import("app.zig").larper_ime_scale;
+const sigma_ime_scale = &@import("app.zig").sigma_ime_scale;
 const R = @import("qa_runner.zig");
 const Op = R.Op;
 const qa = @import("ui/qa.zig");
@@ -414,7 +414,7 @@ fn debugFileHasLine(_: *App) bool {
     var size: usize = 0;
     const data = c.SDL_LoadFile((debug_log.path() orelse return false).ptr, &size) orelse return false;
     defer c.SDL_free(data);
-    return std.mem.indexOf(u8, @as([*]const u8, @ptrCast(data))[0..size], "registro ligado: larperCord") != null;
+    return std.mem.indexOf(u8, @as([*]const u8, @ptrCast(data))[0..size], "registro ligado: SigmaCord") != null;
 }
 fn debugOff(_: *App) bool {
     return !@import("platform/debug_log.zig").isOn();
@@ -461,7 +461,7 @@ const ffmpeg_mod = @import("platform/ffmpeg.zig");
 const ffmpeg_get = @import("net/ffmpeg_get.zig");
 
 fn ffmpegMissing(_: *App) void {
-    // A bateria roda com LARPER_NO_FFMPEG, para isto não depender da máquina.
+    // A bateria roda com SIGMACORD_NO_FFMPEG, para isto não depender da máquina.
     ffmpeg_get.qa_no_network = true;
     _ = ffmpeg_mod.get();
 }
@@ -786,7 +786,7 @@ fn raiseWindow(app: *App) void {
 /// (O cursor começa um pouco antes da marcação da caixa.)
 fn imeInPlace(app: *App) bool {
     const k = app.uiScale();
-    if (@abs(larper_ime_scale.* - k) > 0.01) return false;
+    if (@abs(sigma_ime_scale.* - k) > 0.01) return false;
     if (c.SDL_GetKeyboardFocus() == null) return true;
     var r: c.SDL_Rect = undefined;
     var cursor: c_int = 0;

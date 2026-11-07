@@ -3,7 +3,7 @@
 //! Ordem de busca (o último com o mesmo nome vence):
 //!   1. temas embutidos no executável
 //!   2. ./themes            (ao rodar de dentro do repositório)
-//!   3. $XDG_CONFIG_HOME/larpercord/themes  (ou ~/.config/larpercord/themes)
+//!   3. $XDG_CONFIG_HOME/sigmacord/themes  (ou ~/.config/sigmacord/themes)
 //!
 //! As pastas são vigiadas com inotify: salvar um .kdl recarrega na hora.
 const std = @import("std");
@@ -314,7 +314,7 @@ fn isDir(path: [:0]const u8) bool {
 fn configDir(gpa: std.mem.Allocator) ?[:0]u8 {
     var hb: [512]u8 = undefined;
     const base = sys.configHome(&hb) orelse return null;
-    return std.fmt.allocPrintSentinel(gpa, "{s}/larpercord/themes", .{base}, 0) catch null;
+    return std.fmt.allocPrintSentinel(gpa, "{s}/sigmacord/themes", .{base}, 0) catch null;
 }
 
 fn walDir(buf: []u8) ?[:0]const u8 {

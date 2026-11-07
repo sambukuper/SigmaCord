@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>larperCord: um cliente nativo de Discord cuja interface inteira é um arquivo</title>
+<title>SigmaCord: um cliente nativo de Discord cuja interface inteira é um arquivo</title>
 <meta name="description" content="Cliente nativo e não oficial de Discord em Zig. Cerca de 130 MB de RAM com uma conta real, 0% de CPU parado e a interface inteira descrita em temas KDL que recarregam ao salvar. Voz, plugins em Lua, busca offline.">
 <meta name="color-scheme" content="dark light">
-<link rel="canonical" href="https://rshacudevidro.github.io/larperCord/pt/">
-<link rel="alternate" hreflang="en" href="https://rshacudevidro.github.io/larperCord/">
-<link rel="alternate" hreflang="pt-BR" href="https://rshacudevidro.github.io/larperCord/pt/">
+<link rel="canonical" href="https://sambukuper.github.io/SigmaCord/pt/">
+<link rel="alternate" hreflang="en" href="https://sambukuper.github.io/SigmaCord/">
+<link rel="alternate" hreflang="pt-BR" href="https://sambukuper.github.io/SigmaCord/pt/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="larperCord: um cliente nativo de Discord cuja interface inteira é um arquivo">
+<meta property="og:title" content="SigmaCord: um cliente nativo de Discord cuja interface inteira é um arquivo">
 <meta property="og:description" content="Cliente nativo e não oficial de Discord em Zig. Cerca de 130 MB de RAM com uma conta real, 0% de CPU parado e a interface inteira descrita em temas KDL que recarregam ao salvar. Voz, plugins em Lua, busca offline.">
-<meta property="og:image" content="https://rshacudevidro.github.io/larperCord/assets/og.png">
+<meta property="og:image" content="https://sambukuper.github.io/SigmaCord/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="../assets/icon-live.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/icon-32.png">
@@ -26,13 +26,13 @@
 <body>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <header class="topnav">
-  <a class="brand" href="../pt/" aria-label="larperCord"><svg class="ma" viewBox="100 110 1200 900" aria-hidden="true" focusable="false"><defs><clipPath id="ma-bn"><path d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/></clipPath><clipPath id="ma-ln"><path d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/></clipPath><clipPath id="ma-en"><path d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></clipPath><linearGradient id="ma-lensn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b0a44"/><stop offset=".55" stop-color="#0c0316"/><stop offset="1" stop-color="#040108"/></linearGradient></defs><g class="ma-rig"><path class="ma-ghost ma-g1" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-ghost ma-g2" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g clip-path="url(#ma-bn)"><path class="ma-edge" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-core" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z" transform="translate(12.5 45) scale(0.95)"/><path class="ma-shade" d="M150 690 C230 810 330 870 470 900 L440 980 L100 980 L100 690 Z"/></g><path class="ma-line" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g class="ma-eyes"><path class="ma-white" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-white" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/><g clip-path="url(#ma-en)"><ellipse class="ma-iris" cx="520" cy="634" rx="30" ry="36"/><ellipse class="ma-iris" cx="908" cy="538" rx="30" ry="36"/></g><path class="ma-lid" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-lid" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></g><path class="ma-mouth ma-ink" d="M728 742 C830 722 922 700 980 652 C988 668 980 680 962 690 C900 722 822 742 732 750 Z"/><g class="ma-shades"><path class="ma-arm" d="M345 596 L196 566"/><path class="ma-arm" d="M1066 458 L1196 424"/><path class="ma-arm" d="M655 554 Q680 528 702 544"/><path class="ma-lens" fill="url(#ma-lensn)" d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path class="ma-lens" fill="url(#ma-lensn)" d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/><g clip-path="url(#ma-ln)"><path class="ma-tint" d="M300 640 L1100 450 L1100 520 L300 700 Z"/><path class="ma-glare" d="M250 760 L350 760 L620 420 L520 420 Z M400 760 L440 760 L710 420 L670 420 Z"/></g></g><path class="ma-spark" d="M1095 160 C1105 250 1120 282 1240 296 C1130 310 1112 340 1110 436 C1100 340 1080 322 940 322 C1060 306 1088 272 1095 160 Z"/></g></svg><span data-brand>larperCord</span></a>
+  <a class="brand" href="../pt/" aria-label="SigmaCord"><svg class="ma" viewBox="100 110 1200 900" aria-hidden="true" focusable="false"><defs><clipPath id="ma-bn"><path d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/></clipPath><clipPath id="ma-ln"><path d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/></clipPath><clipPath id="ma-en"><path d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></clipPath><linearGradient id="ma-lensn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b0a44"/><stop offset=".55" stop-color="#0c0316"/><stop offset="1" stop-color="#040108"/></linearGradient></defs><g class="ma-rig"><path class="ma-ghost ma-g1" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-ghost ma-g2" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g clip-path="url(#ma-bn)"><path class="ma-edge" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-core" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z" transform="translate(12.5 45) scale(0.95)"/><path class="ma-shade" d="M150 690 C230 810 330 870 470 900 L440 980 L100 980 L100 690 Z"/></g><path class="ma-line" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g class="ma-eyes"><path class="ma-white" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-white" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/><g clip-path="url(#ma-en)"><ellipse class="ma-iris" cx="520" cy="634" rx="30" ry="36"/><ellipse class="ma-iris" cx="908" cy="538" rx="30" ry="36"/></g><path class="ma-lid" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-lid" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></g><path class="ma-mouth ma-ink" d="M728 742 C830 722 922 700 980 652 C988 668 980 680 962 690 C900 722 822 742 732 750 Z"/><g class="ma-shades"><path class="ma-arm" d="M345 596 L196 566"/><path class="ma-arm" d="M1066 458 L1196 424"/><path class="ma-arm" d="M655 554 Q680 528 702 544"/><path class="ma-lens" fill="url(#ma-lensn)" d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path class="ma-lens" fill="url(#ma-lensn)" d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/><g clip-path="url(#ma-ln)"><path class="ma-tint" d="M300 640 L1100 450 L1100 520 L300 700 Z"/><path class="ma-glare" d="M250 760 L350 760 L620 420 L520 420 Z M400 760 L440 760 L710 420 L670 420 Z"/></g></g><path class="ma-spark" d="M1095 160 C1105 250 1120 282 1240 296 C1130 310 1112 340 1110 436 C1100 340 1080 322 940 322 C1060 306 1088 272 1095 160 Z"/></g></svg><span data-brand>SigmaCord</span></a>
   <nav aria-label="Principal">
     <a href="#themes">Temas</a>
     <a href="#playground">Playground</a>
     <a href="#features">Recursos</a>
     <a href="../pt/guide/getting-started.html">Guia</a>
-    <a href="https://github.com/RshaCuDeVidro/larperCord" rel="noopener">★ Dar estrela no GitHub</a>
+    <a href="https://github.com/sambukuper/SigmaCord" rel="noopener">★ Dar estrela no GitHub</a>
   </nav>
   <a class="kofi-mini" href="https://ko-fi.com/M7E72A1EGZ" target="_blank" rel="noopener"><img src="../assets/kofi6.png" alt="Me pague um café no ko-fi.com" width="580" height="146"></a>
   <a class="lang" href="../" hreflang="en" lang="en">English</a>
@@ -62,14 +62,14 @@
       <button type="button" class="mascot" data-next-theme aria-label="Próximo tema"><svg class="ma" viewBox="100 110 1200 900" aria-hidden="true" focusable="false"><defs><clipPath id="ma-bh"><path d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/></clipPath><clipPath id="ma-lh"><path d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/></clipPath><clipPath id="ma-eh"><path d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></clipPath><linearGradient id="ma-lensh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b0a44"/><stop offset=".55" stop-color="#0c0316"/><stop offset="1" stop-color="#040108"/></linearGradient></defs><g class="ma-rig"><path class="ma-ghost ma-g1" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-ghost ma-g2" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g clip-path="url(#ma-bh)"><path class="ma-edge" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-core" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z" transform="translate(12.5 45) scale(0.95)"/><path class="ma-shade" d="M150 690 C230 810 330 870 470 900 L440 980 L100 980 L100 690 Z"/></g><path class="ma-line" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g class="ma-eyes"><path class="ma-white" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-white" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/><g clip-path="url(#ma-eh)"><ellipse class="ma-iris" cx="520" cy="634" rx="30" ry="36"/><ellipse class="ma-iris" cx="908" cy="538" rx="30" ry="36"/></g><path class="ma-lid" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-lid" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></g><path class="ma-mouth ma-ink" d="M728 742 C830 722 922 700 980 652 C988 668 980 680 962 690 C900 722 822 742 732 750 Z"/><g class="ma-shades"><path class="ma-arm" d="M345 596 L196 566"/><path class="ma-arm" d="M1066 458 L1196 424"/><path class="ma-arm" d="M655 554 Q680 528 702 544"/><path class="ma-lens" fill="url(#ma-lensh)" d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path class="ma-lens" fill="url(#ma-lensh)" d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/><g clip-path="url(#ma-lh)"><path class="ma-tint" d="M300 640 L1100 450 L1100 520 L300 700 Z"/><path class="ma-glare" d="M250 760 L350 760 L620 420 L520 420 Z M400 760 L440 760 L710 420 L670 420 Z"/></g></g><path class="ma-spark" d="M1095 160 C1105 250 1120 282 1240 296 C1130 310 1112 340 1110 436 C1100 340 1080 322 940 322 C1060 306 1088 272 1095 160 Z"/></g></svg></button>
       <div class="morph-scene" aria-hidden="true"><div class="morph-sway"><div class="morph-tilt"><div class="morph-app"></div></div></div></div>
       <p class="morph-hud"><b data-morph-file></b><span data-morph-desc></span></p>
-      <div class="tabs" role="tablist" aria-label="Tema desta página"><button type="button" role="tab" data-apply="larper" class="tab"><i>0</i>larper</button><button type="button" role="tab" data-apply="classico" class="tab"><i>1</i>classico</button><button type="button" role="tab" data-apply="vidro" class="tab"><i>2</i>vidro</button><button type="button" role="tab" data-apply="terminal" class="tab"><i>3</i>terminal</button><button type="button" role="tab" data-apply="subsolo" class="tab"><i>4</i>subsolo</button><button type="button" role="tab" data-apply="orbital" class="tab"><i>5</i>orbital</button><button type="button" role="tab" data-apply="editorial" class="tab"><i>6</i>editorial</button><button type="button" role="tab" data-apply="bolhas" class="tab"><i>7</i>bolhas</button><button type="button" role="tab" data-apply="zen" class="tab"><i>8</i>zen</button><button type="button" role="tab" data-apply="papel" class="tab"><i>9</i>papel</button><button type="button" role="tab" data-apply="escritorio" class="tab"><i>10</i>escritorio</button><button type="button" role="tab" data-apply="cupertino" class="tab"><i>11</i>cupertino</button></div>
+      <div class="tabs" role="tablist" aria-label="Tema desta página"><button type="button" role="tab" data-apply="sigma" class="tab"><i>0</i>sigma</button><button type="button" role="tab" data-apply="classico" class="tab"><i>1</i>classico</button><button type="button" role="tab" data-apply="vidro" class="tab"><i>2</i>vidro</button><button type="button" role="tab" data-apply="terminal" class="tab"><i>3</i>terminal</button><button type="button" role="tab" data-apply="subsolo" class="tab"><i>4</i>subsolo</button><button type="button" role="tab" data-apply="orbital" class="tab"><i>5</i>orbital</button><button type="button" role="tab" data-apply="editorial" class="tab"><i>6</i>editorial</button><button type="button" role="tab" data-apply="bolhas" class="tab"><i>7</i>bolhas</button><button type="button" role="tab" data-apply="zen" class="tab"><i>8</i>zen</button><button type="button" role="tab" data-apply="papel" class="tab"><i>9</i>papel</button><button type="button" role="tab" data-apply="escritorio" class="tab"><i>10</i>escritorio</button><button type="button" role="tab" data-apply="cupertino" class="tab"><i>11</i>cupertino</button></div>
     </div>
   </div>
   <div class="stage">
     <p class="stage-head">E esse é o app de verdade. Mesmos dados, mesmo binário:</p>
     <div class="stage-float"><div class="stage-tilt">
       <span class="sticker">NÃO É A DISCORD INC.</span>
-      <div class="window"><div class="winbar" aria-hidden="true"><i></i><i></i><i></i><span data-win-title></span></div><div class="shots"><img data-hero-shot decoding="async" src="../assets/shots/pt/larper.webp" alt="O app larperCord mostrando uma conversa" width="1280" height="800"><img class="shot-next" decoding="async" alt="" width="1280" height="800"><i class="shot-laser"></i></div></div>
+      <div class="window"><div class="winbar" aria-hidden="true"><i></i><i></i><i></i><span data-win-title></span></div><div class="shots"><img data-hero-shot decoding="async" src="../assets/shots/pt/sigma.webp" alt="O app SigmaCord mostrando uma conversa" width="1280" height="800"><img class="shot-next" decoding="async" alt="" width="1280" height="800"><i class="shot-laser"></i></div></div>
     </div></div>
     <p class="stage-note" data-stage-note></p>
     <dl class="stats">
@@ -97,13 +97,13 @@
       <div class="units" data-units="290" role="img" aria-label="Discord Phoenix: cerca de 290 MB de RAM, 58 quadradinhos"></div>
     </div>
     <div class="bar-row">
-      <div class="bar-label us"><strong>~130&nbsp;MB</strong><span>larperCord, conta real</span></div>
-      <div class="units us" data-units="130" role="img" aria-label="larperCord com uma conta real: cerca de 130 MB de RAM, 26 quadradinhos"></div>
+      <div class="bar-label us"><strong>~130&nbsp;MB</strong><span>SigmaCord, conta real</span></div>
+      <div class="units us" data-units="130" role="img" aria-label="SigmaCord com uma conta real: cerca de 130 MB de RAM, 26 quadradinhos"></div>
     </div>
       </div>
   <div class="table-scroll reveal">
   <table class="facts">
-    <thead><tr><th></th><th>Vesktop (Electron)</th><th>Discord Phoenix (Rust)</th><th>larperCord</th></tr></thead>
+    <thead><tr><th></th><th>Vesktop (Electron)</th><th>Discord Phoenix (Rust)</th><th>SigmaCord</th></tr></thead>
     <tbody>
       <tr><th>RAM (PSS)</th><td>1,279 MB</td><td>~290 MB</td><td class="us">~130 MB com conta real</td></tr>
       <tr><th>CPU parado</th><td>12–47%</td><td>0.1%</td><td class="us">0–0.4%</td></tr>
@@ -111,7 +111,7 @@
     </tbody>
   </table>
   </div>
-  <p class="foot reveal">larperCord: 125–140&nbsp;MB no uso normal de uma conta e cerca de 70&nbsp;MB logo depois de abrir. O seu depende dos seus servidores, membros e imagens. O CPU parado foi medido nos 11 temas, com a reprodução automática de GIFs desligada, e um GIF animado na tela custa cerca de 2,5%. Cerca de 35&nbsp;MB do PSS são o driver da NVIDIA, as bibliotecas e as fontes. Vesktop: média desde a abertura, medida com <code>ps</code>. Os dois no mesmo PC: Arch Linux, Hyprland, i5-2400S, GTX 1050 Ti, 1280×800. Discord Phoenix: não medido por nós e não é um teste lado a lado. É uma versão inicial para Windows 11, de um print do Gerenciador de Tarefas <a href="https://x.com/svishnevskiy/status/2118081920194203799">postado pelo CTO do Discord</a>. <a href="../pt/guide/performance.html">Como foi medido →</a></p>
+  <p class="foot reveal">SigmaCord: 125–140&nbsp;MB no uso normal de uma conta e cerca de 70&nbsp;MB logo depois de abrir. O seu depende dos seus servidores, membros e imagens. O CPU parado foi medido nos 11 temas, com a reprodução automática de GIFs desligada, e um GIF animado na tela custa cerca de 2,5%. Cerca de 35&nbsp;MB do PSS são o driver da NVIDIA, as bibliotecas e as fontes. Vesktop: média desde a abertura, medida com <code>ps</code>. Os dois no mesmo PC: Arch Linux, Hyprland, i5-2400S, GTX 1050 Ti, 1280×800. Discord Phoenix: não medido por nós e não é um teste lado a lado. É uma versão inicial para Windows 11, de um print do Gerenciador de Tarefas <a href="https://x.com/svishnevskiy/status/2118081920194203799">postado pelo CTO do Discord</a>. <a href="../pt/guide/performance.html">Como foi medido →</a></p>
   <span class="close">}</span>
 </section>
 
@@ -288,18 +288,18 @@
   <h2 class="h reveal">Lua, <em>numa jaula.</em></h2>
   <div class="split reveal">
     <div>
-      <p class="lede" style="margin-top:0">Coloque um <code>.lua</code> em <code>~/.config/larpercord/plugins/</code> para somar painéis, entradas no botão direito, notas embaixo das mensagens, comandos e atalhos, sem recompilar nada. Anti-golpe, radar de CVE, cartões do GitHub, o que perdi, tradução, lembretes, destaques, links limpos, e links e arquivos vêm com o app.</p>
+      <p class="lede" style="margin-top:0">Coloque um <code>.lua</code> em <code>~/.config/sigmacord/plugins/</code> para somar painéis, entradas no botão direito, notas embaixo das mensagens, comandos e atalhos, sem recompilar nada. Anti-golpe, radar de CVE, cartões do GitHub, o que perdi, tradução, lembretes, destaques, links limpos, e links e arquivos vêm com o app.</p>
       <div class="code" data-lang="lua"><span class="code-lang">lua</span><button class="copy" type="button" data-copy>copy</button><pre><code><span class="t-c">-- @name CVE notes</span>
 <span class="t-c">-- @capabilities messages, decorate, http</span>
 <span class="t-c">-- @hosts cveawg.mitre.org</span>
-<span class="t-p">larper.on</span>(<span class="t-s">"message"</span>, <span class="t-k">function</span>(msg)
+<span class="t-p">sigma.on</span>(<span class="t-s">"message"</span>, <span class="t-k">function</span>(msg)
   <span class="t-k">local</span> id = msg.content:upper():match(<span class="t-s">"CVE%-%d+%-%d+"</span>)
   <span class="t-k">if</span> <span class="t-k">not</span> id <span class="t-k">then</span> <span class="t-k">return</span> <span class="t-k">end</span>
-  <span class="t-p">larper.http</span>.get(<span class="t-s">"https://cveawg.mitre.org/api/cve/"</span> .. id, <span class="t-k">function</span>(res)
-    <span class="t-k">local</span> cve = res.ok <span class="t-k">and</span> <span class="t-p">larper.json</span>.decode(res.body)
+  <span class="t-p">sigma.http</span>.get(<span class="t-s">"https://cveawg.mitre.org/api/cve/"</span> .. id, <span class="t-k">function</span>(res)
+    <span class="t-k">local</span> cve = res.ok <span class="t-k">and</span> <span class="t-p">sigma.json</span>.decode(res.body)
     <span class="t-k">local</span> cna = cve <span class="t-k">and</span> cve.containers <span class="t-k">and</span> cve.containers.cna
     <span class="t-k">if</span> cna <span class="t-k">and</span> cna.title <span class="t-k">then</span>
-      <span class="t-p">larper.decorate</span>(msg.id, { note = id .. <span class="t-s">": "</span> .. cna.title })
+      <span class="t-p">sigma.decorate</span>(msg.id, { note = id .. <span class="t-s">": "</span> .. cna.title })
     <span class="t-k">end</span>
   <span class="t-k">end</span>)
 <span class="t-k">end</span>, { contains = { <span class="t-s">"cve-"</span> } })</code></pre></div>
@@ -309,10 +309,10 @@
       <li><strong>Sem arquivos, sem processos, sem sockets.</strong> <code>io</code>, <code>os.execute</code>, <code>require</code>, <code>load</code> e <code>debug</code> simplesmente não existem. A única rede é HTTPS para hosts que você aprova um a um, sem o seu token nem cookies.</li>
       <li><strong>Cerca de 5 milhões de instruções por chamada.</strong> Um <code>while true do end</code> é parado e não congela o app. O <code>pcall</code> não segura esse erro.</li>
       <li><strong>8&nbsp;MB por plugin.</strong> Cada um roda num Lua separado. Depois de 10 erros, ele é parado.</li>
-      <li><strong><code>larper.send</code> só funciona a partir de um gesto seu.</strong> Responder sozinho transformaria a conta num self-bot, então isso é bloqueado de propósito. <a href="../pt/guide/plugins.html">API de plugins →</a></li>
+      <li><strong><code>sigma.send</code> só funciona a partir de um gesto seu.</strong> Responder sozinho transformaria a conta num self-bot, então isso é bloqueado de propósito. <a href="../pt/guide/plugins.html">API de plugins →</a></li>
     </ul>
   </div>
-  <div class="window reveal" style="margin-top:28px"><div class="winbar" aria-hidden="true"><i></i><i></i><i></i><span>larperCord</span></div><img src="../assets/shots/pt/f-vitrine.webp" width="1280" height="800" loading="lazy" decoding="async" alt="larperCord na demonstração: um link de golpe marcado em vermelho, um CVE com a severidade, um cartão do GitHub e um painel resumindo as não lidas"></div>
+  <div class="window reveal" style="margin-top:28px"><div class="winbar" aria-hidden="true"><i></i><i></i><i></i><span>SigmaCord</span></div><img src="../assets/shots/pt/f-vitrine.webp" width="1280" height="800" loading="lazy" decoding="async" alt="SigmaCord na demonstração: um link de golpe marcado em vermelho, um CVE com a severidade, um cartão do GitHub e um painel resumindo as não lidas"></div>
   <p class="foot reveal">Os dados são da demonstração, mas as notas de CVE e do GitHub são respostas de verdade desses serviços. Nada sai antes de você aprovar o host no cartão do plugin.</p>
   <ul class="ticks two reveal" style="margin-top:20px">
     <li><strong>Anti-golpe.</strong> Links de Nitro grátis, <code>dlscord-nitro.ru</code>, endereços em outro alfabeto, um link que mostra um site e abre outro: tudo em vermelho. Roda no seu computador, sem rede.</li>
@@ -379,7 +379,7 @@
 
 <div class="warn-band reveal">
   Clientes de terceiros violam os Termos de Uso do Discord.
-  <small>Sua conta pode ser bloqueada: use por sua conta e risco, de preferência com uma conta secundária. O larperCord não tem relação com a Discord Inc. Com <code>--demo</code>, o app roda com dados falsos e não conecta em nada.</small>
+  <small>Sua conta pode ser bloqueada: use por sua conta e risco, de preferência com uma conta secundária. O SigmaCord não tem relação com a Discord Inc. Com <code>--demo</code>, o app roda com dados falsos e não conecta em nada.</small>
 </div>
 
 <section class="node" id="download" style="padding-top:clamp(40px,6vw,72px)">
@@ -389,20 +389,20 @@
   <div class="dl-grid reveal">
     <div class="dl-card" data-os="linux">
       <h3>Linux <small>x86_64</small></h3>
-      <a class="btn" href="https://github.com/RshaCuDeVidro/larperCord/releases/latest/download/larpercord-linux-x86_64" data-asset="larpercord-linux-x86_64">Baixar para Linux ↓</a>
+      <a class="btn" href="https://github.com/sambukuper/SigmaCord/releases/latest/download/sigmacord-linux-x86_64" data-asset="sigmacord-linux-x86_64">Baixar para Linux ↓</a>
       <p>Um arquivo só, que roda em distros de 2022 para cá (glibc 2.34). Antes de cada versão, ele é aberto em Ubuntu, Debian, Fedora, openSUSE e Arch. Marque como executável com <code>chmod +x</code> e rode.</p>
       <p>Ou instale, listando as bibliotecas que faltam:</p>
-      <code class="dl-cmd">curl -fsSL https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/main/install.sh | sh</code>
+      <code class="dl-cmd">curl -fsSL https://raw.githubusercontent.com/sambukuper/SigmaCord/main/install.sh | sh</code>
     </div>
     <div class="dl-card" data-os="windows">
       <h3>Windows <small>10 / 11, x64</small></h3>
-      <a class="btn" href="https://github.com/RshaCuDeVidro/larperCord/releases/latest/download/larpercord-windows-x86_64.zip" data-asset="larpercord-windows-x86_64.zip">Baixar para Windows ↓</a>
-      <p>Descompacte e abra o <code>larpercord.exe</code>. O programa ainda não tem assinatura de código, então o Windows pode avisar na primeira vez.</p>
+      <a class="btn" href="https://github.com/sambukuper/SigmaCord/releases/latest/download/sigmacord-windows-x86_64.zip" data-asset="sigmacord-windows-x86_64.zip">Baixar para Windows ↓</a>
+      <p>Descompacte e abra o <code>sigmacord.exe</code>. O programa ainda não tem assinatura de código, então o Windows pode avisar na primeira vez.</p>
       <p>Ou instale para o seu usuário, no PowerShell:</p>
-      <code class="dl-cmd">irm https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/main/install.ps1 | iex</code>
+      <code class="dl-cmd">irm https://raw.githubusercontent.com/sambukuper/SigmaCord/main/install.ps1 | iex</code>
     </div>
   </div>
-  <p class="foot reveal"><span id="dl-version"></span><a href="https://github.com/RshaCuDeVidro/larperCord/releases">Todas as versões e checksums</a> · <a href="https://github.com/RshaCuDeVidro/larperCord/blob/main/CHANGELOG.pt-BR.md">O que mudou</a></p>
+  <p class="foot reveal"><span id="dl-version"></span><a href="https://github.com/sambukuper/SigmaCord/releases">Todas as versões e checksums</a> · <a href="https://github.com/sambukuper/SigmaCord/blob/main/CHANGELOG.pt-BR.md">O que mudou</a></p>
   <span class="close">}</span>
   <script>
   (function () {
@@ -414,7 +414,7 @@
       if (card.previousElementSibling) card.parentNode.insertBefore(card, card.previousElementSibling);
     }
     // Só enfeite: os botões funcionam sem isso, até com a API fora do ar.
-    fetch('https://api.github.com/repos/RshaCuDeVidro/larperCord/releases/latest').then(function (r) { return r.ok ? r.json() : null; }).then(function (rel) {
+    fetch('https://api.github.com/repos/sambukuper/SigmaCord/releases/latest').then(function (r) { return r.ok ? r.json() : null; }).then(function (rel) {
       if (!rel) return;
       document.getElementById('dl-version').textContent = rel.tag_name + ' · ';
       (rel.assets || []).forEach(function (a) {
@@ -439,11 +439,11 @@
 <span class="t-k">zig</span> build <span class="t-p">-Doptimize</span>=ReleaseFast
 
 <span class="t-c"># Modo demonstração: dados falsos, não conecta em nada</span>
-<span class="t-k">./zig-out/bin/larpercord</span> <span class="t-p">--demo</span> <span class="t-p">--theme</span> subsolo</code></pre></div>
+<span class="t-k">./zig-out/bin/sigmacord</span> <span class="t-p">--demo</span> <span class="t-p">--theme</span> subsolo</code></pre></div>
       <p class="foot">Prefere não compilar? <a href="#download">Baixe</a> para Linux ou Windows.</p>
       <div class="cta" style="margin-top:20px">
         <a class="btn primary" href="../pt/guide/getting-started.html">Primeiros passos →</a>
-        <a class="btn" href="https://github.com/RshaCuDeVidro/larperCord">★ Dar estrela no GitHub</a>
+        <a class="btn" href="https://github.com/sambukuper/SigmaCord">★ Dar estrela no GitHub</a>
       </div>
     </div>
     <div>
@@ -459,11 +459,11 @@
   <div class="tip-grid">
     <div>
       <h2 class="h reveal">Deixe o mascote <em>cafeinado.</em></h2>
-      <p class="lead reveal">O larperCord é grátis e não tem anúncio. Ele roda com cerca de 130 MB de RAM. Quem desenvolve roda a café.</p>
+      <p class="lead reveal">O SigmaCord é grátis e não tem anúncio. Ele roda com cerca de 130 MB de RAM. Quem desenvolve roda a café.</p>
       <div class="reveal"><a class="kofi-sticker" href="https://ko-fi.com/M7E72A1EGZ" target="_blank" rel="noopener"><img src="../assets/kofi6.png" alt="Me pague um café no ko-fi.com" width="580" height="146" loading="lazy" decoding="async" decoding="async"></a></div>
     </div>
     <div class="receipt reveal" aria-hidden="true">
-      <p class="rc-head">larperCord<br><small>recibo, sessão parada</small></p>
+      <p class="rc-head">SigmaCord<br><small>recibo, sessão parada</small></p>
       <dl>
         <div><dt>anúncios</dt><dd>0</dd></div>
         <div><dt>telemetria</dt><dd>0</dd></div>
@@ -480,7 +480,7 @@
 
 <footer class="colophon">
   <div>
-    <p><strong style="color:var(--text)">larperCord</strong> v0.6.1</p>
+    <p><strong style="color:var(--text)">SigmaCord</strong> v0.6.1</p>
     <p>Projeto independente. Não tem relação nem aval da Discord Inc. “Discord” é uma marca de seu dono.</p>
     <p>Licença GPL-3.0. O código de terceiros segue as licenças próprias.</p>
   </div>
@@ -500,7 +500,7 @@
     <a href="../pt/guide/privacy.html">Privacidade e segurança</a>
     <a href="../pt/guide/status.html">Estado e roteiro</a>
     <a href="../pt/guide/contributing.html">Contribuir</a>
-    <a href="https://github.com/RshaCuDeVidro/larperCord/tree/main/third_party">Avisos de terceiros</a>
+    <a href="https://github.com/sambukuper/SigmaCord/tree/main/third_party">Avisos de terceiros</a>
   </div>
 </footer>
 </main>
@@ -512,7 +512,7 @@
   <button type="button" class="buddy" data-next-theme aria-label="Próximo tema"><svg class="ma" viewBox="100 110 1200 900" aria-hidden="true" focusable="false"><defs><clipPath id="ma-bb"><path d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/></clipPath><clipPath id="ma-lb"><path d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/></clipPath><clipPath id="ma-eb"><path d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></clipPath><linearGradient id="ma-lensb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b0a44"/><stop offset=".55" stop-color="#0c0316"/><stop offset="1" stop-color="#040108"/></linearGradient></defs><g class="ma-rig"><path class="ma-ghost ma-g1" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-ghost ma-g2" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g clip-path="url(#ma-bb)"><path class="ma-edge" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><path class="ma-core" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z" transform="translate(12.5 45) scale(0.95)"/><path class="ma-shade" d="M150 690 C230 810 330 870 470 900 L440 980 L100 980 L100 690 Z"/></g><path class="ma-line" d="M340 258 L568 188 L625 268 Q700 262 778 268 L838 182 Q960 200 1048 248 C1180 420 1260 620 1262 812 C1180 880 1080 920 985 945 L930 830 Q700 850 482 802 L428 938 C320 910 220 870 148 830 C150 620 220 420 340 258 Z"/><g class="ma-eyes"><path class="ma-white" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-white" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/><g clip-path="url(#ma-eb)"><ellipse class="ma-iris" cx="520" cy="634" rx="30" ry="36"/><ellipse class="ma-iris" cx="908" cy="538" rx="30" ry="36"/></g><path class="ma-lid" d="M399.4 612.4 L592.6 581.2 C580.6 636.4 550.6 673.6 485.8 675.4 C436.6 675.4 404.2 649.6 399.4 612.4 Z"/><path class="ma-lid" d="M771.8 539.0 L993.8 488.0 C1004.6 539.0 981.8 582.2 923.0 583.4 C858.2 583.4 794.6 575.0 771.8 539.0 Z"/></g><path class="ma-mouth ma-ink" d="M728 742 C830 722 922 700 980 652 C988 668 980 680 962 690 C900 722 822 742 732 750 Z"/><g class="ma-shades"><path class="ma-arm" d="M345 596 L196 566"/><path class="ma-arm" d="M1066 458 L1196 424"/><path class="ma-arm" d="M655 554 Q680 528 702 544"/><path class="ma-lens" fill="url(#ma-lensb)" d="M338 600 L660 548 C640 640 590 702 482 705 C400 705 346 662 338 600 Z"/><path class="ma-lens" fill="url(#ma-lensb)" d="M698 540 L1068 455 C1086 540 1048 612 950 614 C842 614 736 600 698 540 Z"/><g clip-path="url(#ma-lb)"><path class="ma-tint" d="M300 640 L1100 450 L1100 520 L300 700 Z"/><path class="ma-glare" d="M250 760 L350 760 L620 420 L520 420 Z M400 760 L440 760 L710 420 L670 420 Z"/></g></g><path class="ma-spark" d="M1095 160 C1105 250 1120 282 1240 296 C1130 310 1112 340 1110 436 C1100 340 1080 322 940 322 C1060 306 1088 272 1095 160 Z"/></g></svg></button>
   <i class="sb-prog" aria-hidden="true"></i>
   <span class="sb-dot" aria-hidden="true"></span>
-  <button type="button" class="sb-btn" data-next-theme title="F2"><span data-theme-name>larper</span></button>
+  <button type="button" class="sb-btn" data-next-theme title="F2"><span data-theme-name>sigma</span></button>
   <button type="button" class="sb-btn" data-toggle-mode><span data-mode-name>dark</span></button>
   <span class="sb-spacer"></span>
   <button type="button" class="sb-btn sb-keys" data-open-palette><kbd>Ctrl</kbd><kbd>K</kbd> paleta</button>

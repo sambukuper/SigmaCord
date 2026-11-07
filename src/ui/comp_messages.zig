@@ -342,7 +342,7 @@ pub fn messages(ctx: *d.Ctx, n: *const kdl.Node, r_in: d.Rect) void {
 const scrollbar_zone: f32 = 14;
 /// A conversa cuja barra de rolagem está sendo arrastada.
 var bar_drag: types.Id = 0;
-extern fn larper_scrollbar_held() bool;
+extern fn sigma_scrollbar_held() bool;
 
 /// O histórico de um canal, com rolagem própria. `region` é o nome da
 /// região do ImGui (um por painel: os IDs dos botões ficam separados).
@@ -534,7 +534,7 @@ pub fn history(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect, ch_id: Id, region: [*
     // Arrastando a barra de rolagem desta conversa. Quem diz é o ImGui, não a posição do mouse: o
     // arraste vale até soltar, com o mouse em qualquer lugar, e um clique perto da borda não conta.
     // A alça de redimensionar painéis fica colada na barra: puxar ela não rola a conversa.
-    if (larper_scrollbar_held() and (bar_drag == ch_id or !@import("resize.zig").over(ctx))) {
+    if (sigma_scrollbar_held() and (bar_drag == ch_id or !@import("resize.zig").over(ctx))) {
         bar_drag = ch_id;
         if (@abs(s - sc.pos) > 1) {
             sc.pos = s;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Gera assets/logo.svg (símbolo + nome) e assets/icon.svg a partir de
-assets/logo-mark.svg, com o texto "larperCord" convertido em curvas (Inter)."""
+assets/logo-mark.svg, com o texto "SigmaCord" convertido em curvas (Inter)."""
 import re, sys
 from pathlib import Path
 from fontTools.ttLib import TTFont
@@ -39,12 +39,12 @@ s = H / VB[3]
 MW = VB[2] * s
 size = 92
 base = H / 2 + size * 0.36
-p1, w1 = word("larper", MW + 22, base, size)
+p1, w1 = word("sigma", MW + 22, base, size)
 p2, w2 = word("Cord", MW + 22 + w1 + size * 0.01, base, size)
 W = int(MW + 22 + w1 + w2 + 24)
 for theme, ink in (("", "#F4F1FF"), ("-light", "#17112E")):
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 {W} {H}" width="{W}" height="{H}">
-  <title>larperCord</title>
+  <title>SigmaCord</title>
   {defs.replace('id="lc-grad"', 'id="lc-grad"').replace("</defs>", f'''  <linearGradient id="lc-word" gradientUnits="userSpaceOnUse" x1="{MW + 22 + w1:.0f}" y1="0" x2="{W:.0f}" y2="{H}">
       <stop offset="0" stop-color="#A855FF"/><stop offset="1" stop-color="#F03CFF"/>
     </linearGradient>
@@ -60,7 +60,7 @@ for theme, ink in (("", "#F4F1FF"), ("-light", "#17112E")):
 
 # Ícone do app: o símbolo num quadrado arredondado escuro.
 icon = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512">
-  <title>larperCord</title>
+  <title>SigmaCord</title>
   {defs.replace("</defs>", '''  <radialGradient id="lc-bg" cx="0.3" cy="0.2" r="0.95">
       <stop offset="0" stop-color="#2A1F55"/><stop offset="1" stop-color="#0E0B1A"/>
     </radialGradient>

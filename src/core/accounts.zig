@@ -2,14 +2,14 @@
 //! no menu: ID, nome e avatar vistos no READY. O token de cada conta fica
 //! no chaveiro do sistema (net/accounts_store.zig), nunca aqui.
 //!
-//! Arquivo (~/.config/larpercord/accounts, permissão 600), uma linha por
+//! Arquivo (~/.config/sigmacord/accounts, permissão 600), uma linha por
 //! registro, campos separados por tabulação:
 //!
 //!   active  <id>
 //!   account <id> <legado 0|1> <avatar> <nome>
 //!
 //! "Legado": o token é a entrada antiga, de antes das várias contas
-//! (`secret-tool … service larpercord` ou ~/.config/larpercord/token).
+//! (`secret-tool … service sigmacord` ou ~/.config/sigmacord/token).
 const std = @import("std");
 const Id = @import("types.zig").Id;
 
@@ -108,7 +108,7 @@ pub const List = struct {
     }
 
     pub fn write(l: *const List, out: *std.ArrayList(u8), gpa: std.mem.Allocator) !void {
-        try out.appendSlice(gpa, "# contas do larperCord (os tokens ficam no chaveiro do sistema, nunca aqui)\n");
+        try out.appendSlice(gpa, "# contas do SigmaCord (os tokens ficam no chaveiro do sistema, nunca aqui)\n");
         if (l.active != 0) try out.print(gpa, "active\t{d}\n", .{l.active});
         for (l.items[0..l.len]) |*a| try out.print(gpa, "account\t{d}\t{s}\t{s}\t{s}\n", .{ a.id, if (a.legacy) "1" else "0", a.avatar(), a.name() });
     }

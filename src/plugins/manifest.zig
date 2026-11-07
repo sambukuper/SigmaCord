@@ -230,7 +230,7 @@ pub fn isDiscord(h: []const u8) bool {
 pub const Url = struct { host: []const u8, rest: []const u8 };
 
 /// `https://nome/caminho?busca`, sem usuário, sem porta e sem espaços nem
-/// caracteres de controle (quem chama codifica o texto: larper.urlencode).
+/// caracteres de controle (quem chama codifica o texto: sigma.urlencode).
 pub fn parseHttps(url: []const u8) ?Url {
     const scheme = "https://";
     if (url.len > 2048 or url.len <= scheme.len) return null;
@@ -255,7 +255,7 @@ test "cabeçalho completo nos dois idiomas" {
         \\-- @capabilities menu, panel storage
         \\
         \\-- @hosts ignorado.com
-        \\larper.notify("oi")
+        \\sigma.notify("oi")
         \\-- @name Depois do código não vale
     );
     try std.testing.expect(!m.legacy);
@@ -271,7 +271,7 @@ test "cabeçalho completo nos dois idiomas" {
 }
 
 test "sem cabeçalho é plugin antigo, com a API de antes" {
-    const m = parse("-- só um comentário\nlarper.notify('oi')\n-- @name tarde demais");
+    const m = parse("-- só um comentário\nsigma.notify('oi')\n-- @name tarde demais");
     try std.testing.expect(m.legacy);
     try std.testing.expect(m.has(.messages) and m.has(.send) and m.has(.notify) and m.has(.lsp));
     try std.testing.expect(!m.has(.storage) and !m.has(.http) and !m.has(.panel));

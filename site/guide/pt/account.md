@@ -9,10 +9,10 @@ O token nunca fica no código, e nunca vai para logs nem mensagens de erro. Ele 
 
 1. **O chaveiro do sistema** (recomendado):
    ```bash
-   secret-tool store --label='larperCord' service larpercord   # cole o token quando pedir
+   secret-tool store --label='SigmaCord' service sigmacord   # cole o token quando pedir
    ```
-2. A variável de ambiente `LARPER_TOKEN`.
-3. O arquivo `~/.config/larpercord/token`, que precisa ter `chmod 600`. Se outros usuários conseguirem ler, o app avisa.
+2. A variável de ambiente `SIGMACORD_TOKEN`.
+3. O arquivo `~/.config/sigmacord/token`, que precisa ter `chmod 600`. Se outros usuários conseguirem ler, o app avisa.
 
 ## A tela de login
 
@@ -26,14 +26,14 @@ A tela de login também lista as contas guardadas, então dá para entrar em out
 
 | O quê | Onde |
 |---|---|
-| Cada token lembrado | Uma entrada própria do chaveiro (`service larpercord-account account <ID>`). Sem chaveiro: `~/.config/larpercord/tokens/<ID>` com `chmod 600` |
-| A lista de contas (só ID, nome e foto) | `~/.config/larpercord/accounts` |
+| Cada token lembrado | Uma entrada própria do chaveiro (`service sigmacord-account account <ID>`). Sem chaveiro: `~/.config/sigmacord/tokens/<ID>` com `chmod 600` |
+| A lista de contas (só ID, nome e foto) | `~/.config/sigmacord/accounts` |
 
 A entrada do chaveiro da primeira seção continua valendo para a conta que já estava nela.
 
 ## Sair
 
-Configurações → **Sair**. Para forçar o modo demonstração mesmo com um token salvo, rode `larpercord --demo`.
+Configurações → **Sair**. Para forçar o modo demonstração mesmo com um token salvo, rode `sigmacord --demo`.
 
 ## O que passa pela rede
 

@@ -10,7 +10,7 @@ const Event = @import("event.zig").Event;
 const event = @import("event.zig");
 const Id = types.Id;
 
-/// LARPER_READ_DEBUG: conta no log por que cada canal ficou não lido (só IDs).
+/// SIGMACORD_READ_DEBUG: conta no log por que cada canal ficou não lido (só IDs).
 pub var read_debug = false;
 
 /// Strings que chegam em eventos são alocadas com o c_allocator (podem vir

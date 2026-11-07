@@ -1,6 +1,6 @@
 # Chamadas de voz
 
-O larperCord entra em canais de voz de verdade do Discord, com criptografia de ponta a ponta. Tudo que é de voz roda numa thread própria, criada só quando você entra numa call. Fora de uma call, o módulo não usa CPU e o app não inicializa o áudio, a não ser que você abra Configurações → Voz, que lê o microfone para o medidor enquanto estiver aberta.
+O SigmaCord entra em canais de voz de verdade do Discord, com criptografia de ponta a ponta. Tudo que é de voz roda numa thread própria, criada só quando você entra numa call. Fora de uma call, o módulo não usa CPU e o app não inicializa o áudio, a não ser que você abra Configurações → Voz, que lê o microfone para o medidor enquanto estiver aberta.
 
 ## Usando
 
@@ -44,7 +44,7 @@ Alguns detalhes que deram trabalho para acertar:
 - A folga contra o jitter só entra no começo de cada fala e dentro das pausas de quem fala. Aplicá-la sempre que a fila esvaziava causava buracos audíveis.
 - O relógio RTP separa a pausa de quem fala de um pacote atrasado: o número de sequência só anda com pacote, o relógio anda sempre. A porta de ruído fechando não é rede ruim.
 - Quando uma fila vai secar, a ocultação do Opus preenche e vai a zero, então uma parada nunca corta no meio da onda. Áudio que não continua de onde parou começa do último valor tocado.
-- `zig build voz-rede` passa Opus de verdade por redes ruins simuladas e compara a lógica de reprodução, contando buracos e estalos. `LARPER_VOZ_FALA` escolhe um arquivo de fala e `LARPER_VOZ_WAV` grava a saída para ouvir.
+- `zig build voz-rede` passa Opus de verdade por redes ruins simuladas e compara a lógica de reprodução, contando buracos e estalos. `SIGMACORD_VOZ_FALA` escolhe um arquivo de fala e `SIGMACORD_VOZ_WAV` grava a saída para ouvir.
 - Quem já está numa call pode chegar antes de o DAVE existir, então essas pessoas são guardadas e adicionadas quando ele começa.
 
 ## Limites hoje
@@ -57,7 +57,7 @@ Alguns detalhes que deram trabalho para acertar:
 ## Depuração
 
 ```bash
-LARPER_VOICE_DEBUG=1 larpercord
+SIGMACORD_VOICE_DEBUG=1 sigmacord
 ```
 
 Isso imprime opcodes, códigos de fechamento e eventos do DAVE, além do nível do microfone e dos quadros enviados. Nunca imprime o token nem chaves.
@@ -65,7 +65,7 @@ Isso imprime opcodes, códigos de fechamento e eventos do DAVE, além do nível 
 Para testar só a conexão, o `--voice-test` entra num canal por 25 segundos, **sempre mudo**:
 
 ```bash
-LARPER_TOKEN=... larpercord --voice-test GUILD_ID CHANNEL_ID
+SIGMACORD_TOKEN=... sigmacord --voice-test GUILD_ID CHANNEL_ID
 ```
 
 O protocolo segue a documentação de voz do Discord e a [documentação do protocolo DAVE](https://daveprotocol.com).

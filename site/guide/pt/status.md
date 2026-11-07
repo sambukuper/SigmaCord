@@ -1,6 +1,6 @@
 # Estado e roadmap
 
-O larperCord é um projeto jovem: versão 0.6.0, com o primeiro commit em 2 de novembro de 2026. Dá para usar, mas não está completo.
+O SigmaCord é um projeto jovem: versão 0.6.0, com o primeiro commit em 2 de novembro de 2026. Dá para usar, mas não está completo.
 
 ## O que funciona hoje
 

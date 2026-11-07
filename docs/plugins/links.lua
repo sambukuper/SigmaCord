@@ -5,7 +5,7 @@
 -- @version 1.0.0
 -- @capabilities messages, panel, links, timers
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX_ITEMS = 200
 
 -- Só existe enquanto o painel está aberto. Fechou: some da memória.
@@ -17,7 +17,7 @@ local waiting = false
 
 local function when(t)
   if os.date("%Y%m%d", t) == os.date("%Y%m%d") then return os.date("%H:%M", t) end
-  return os.date(larper.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
 end
 
 local function size_text(n)
@@ -68,12 +68,12 @@ end
 
 local function scan()
   if not open then return end
-  if larper.messages({ limit = 500, files = true }, collect) then
+  if sigma.messages({ limit = 500, files = true }, collect) then
     waiting = false
   elseif not waiting then
     -- Pediu cedo demais: tenta de novo daqui a pouco.
     waiting = true
-    larper.after(0.6, function()
+    sigma.after(0.6, function()
       waiting = false
       scan()
     end)
@@ -94,15 +94,15 @@ render = function()
         subtitle = sub,
         meta = when(it.time),
         key = "i" .. i,
-        on_click = function() larper.jump(it.channel, it.id) end,
+        on_click = function() sigma.jump(it.channel, it.id) end,
         actions = {
-          { label = tr("Abrir", "Open"), key = "open" .. i, on_click = function() larper.open(it.url) end },
-          { label = tr("Copiar", "Copy"), key = "copy" .. i, on_click = function() larper.copy(it.url) end },
+          { label = tr("Abrir", "Open"), key = "open" .. i, on_click = function() sigma.open(it.url) end },
+          { label = tr("Copiar", "Copy"), key = "copy" .. i, on_click = function() sigma.copy(it.url) end },
         },
       }
     end
   end
-  larper.panel.set({
+  sigma.panel.set({
     title = tr("Links e arquivos", "Links and files"),
     { type = "input", key = "search", placeholder = tr("Buscar", "Search"), value = query, on_change = function(v)
       query = v:lower()
@@ -126,7 +126,7 @@ render = function()
   })
 end
 
-larper.on("panel", function(state)
+sigma.on("panel", function(state)
   open = state
   if open then
     scan()
@@ -136,13 +136,13 @@ larper.on("panel", function(state)
   end
 end)
 
-larper.on("channel", scan)
+sigma.on("channel", scan)
 
 -- Editaram: o que estava na lista pode nem existir mais.
-larper.on("edit", scan)
+sigma.on("edit", scan)
 
 -- Apagaram: sai na hora, sem guardar o link de ninguém.
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   if not open then return end
   local keep = {}
   for _, it in ipairs(found) do
@@ -154,9 +154,9 @@ larper.on("delete", function(d)
   end
 end)
 
-larper.command("/links", function()
-  larper.panel.open()
+sigma.command("/links", function()
+  sigma.panel.open()
 end)
 
-larper.on("lang", function() render() end)
+sigma.on("lang", function() render() end)
 render()

@@ -1,6 +1,6 @@
 # Erros no código (LSP)
 
-Enquanto você digita um bloco de código na caixa de texto, o larperCord pode mostrar os erros que
+Enquanto você digita um bloco de código na caixa de texto, o SigmaCord pode mostrar os erros que
 um [servidor de linguagem](https://microsoft.github.io/language-server-protocol/) encontra nele.
 Nada vem embutido no app e nada é baixado: o servidor é um programa seu, e só roda para uma
 linguagem que você ligou. Com tudo desligado (o padrão), não há thread, processo filho nem memória
@@ -60,12 +60,12 @@ O app guarda o seu token do Discord, então o servidor roda com o mínimo possí
 - **Texto:** só o que você está digitando na sua caixa de texto, só o bloco sob o cursor. Nunca as
   mensagens dos outros, nem mais nada do app.
 - **Ambiente:** só `PATH` e `HOME` (no Windows, também `SystemRoot`, `SystemDrive`, `USERPROFILE`,
-  `APPDATA`, `LOCALAPPDATA`, `TEMP`, `TMP`, `PATHEXT`). O `LARPER_TOKEN` e o resto do seu ambiente
+  `APPDATA`, `LOCALAPPDATA`, `TEMP`, `TMP`, `PATHEXT`). O `SIGMACORD_TOKEN` e o resto do seu ambiente
   não chegam até ele.
-- **Pasta:** ele roda numa pasta própria (`~/.cache/larpercord/lsp-scratch`). O que um servidor
+- **Pasta:** ele roda numa pasta própria (`~/.cache/sigmacord/lsp-scratch`). O que um servidor
   deixou ali é apagado antes do próximo início, menos subpastas que não estão vazias: o app não entra
   nelas, então um link deixado ali não o faz apagar mais nada. `rootUri` e `workspaceFolders` são `null`, e o documento é um virtual,
-  `file://<essa pasta vazia>/larpercord-composer.<ext>`, que nunca existe em disco (servidores como o clangd só aceitam `file:`). Nada do que você digita é gravado em disco, e seus projetos
+  `file://<essa pasta vazia>/sigmacord-composer.<ext>`, que nunca existe em disco (servidores como o clangd só aceitam `file:`). Nada do que você digita é gravado em disco, e seus projetos
   ficam de fora. Isso também quer dizer que um servidor que espera um projeto (imports, arquivo de
   build) só vê um arquivo isolado, então os erros são só daquele trecho.
 - **Arquivos abertos:** no Linux, os soquetes e arquivos do app são fechados no filho.
@@ -80,13 +80,13 @@ ler seus arquivos, inclusive onde o app guarda o token. Só ligue servidores em 
 Um plugin Lua pode propor um servidor, por exemplo para uma linguagem que o app não lista:
 
 ```lua
-larper.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
+sigma.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
 ```
 
 A proposta aparece na mesma página das Configurações, com o comando inteiro, desligada. Ela só roda
 depois que você liga, e a decisão vale para aquele plugin, linguagem e comando exatos: se o plugin
 mudar o comando, ela volta a ficar desligada. Veja
-[plugins.pt-BR.md](plugins.pt-BR.md#larperlsplinguagem-argv).
+[plugins.pt-BR.md](plugins.pt-BR.md#sigmalsplinguagem-argv).
 
 Se a linguagem tem os dois, o seu comando vale.
 

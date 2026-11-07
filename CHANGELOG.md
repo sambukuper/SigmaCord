@@ -1,5 +1,19 @@
 # What changed in each version
 
+## 0.7.0
+
+**SigmaCord**
+- This is the first release under the SigmaCord name. Everything was renamed: the window, the tray, the installer, the binary (`sigmacord`), the config folder (`~/.config/sigmacord`, was `~/.config/larpercord`), the environment variables (`SIGMACORD_TOKEN`, was `LARPER_TOKEN`) and the plugin API (`sigma.notify`, `sigma.send` and so on, was `larper.*`). Move your old `~/.config/larpercord` folder to `~/.config/sigmacord` to keep your settings, themes and plugins.
+
+**Keybinds**
+- Configurable keybinds: Settings → Keybinds lists every action with its key, click it and press a new combination to change it, and the × next to it goes back to the default. Assigning a key another action already uses moves it off that action.
+- The microphone mute and the deafen toggles finally have keys, `Ctrl+Shift+M` and `Ctrl+Shift+D`, and both are rebindable like everything else.
+- The command palette, search, settings, fullscreen, next theme, inbox, saved messages and the tab actions are all in the same list. The fixed extras (Ctrl+Shift+P, interface zoom, Alt+1…9, Alt+Enter) stay as they were.
+- The rule is the same one plugins already had: letters and digits need Ctrl, Alt or Super, F1–F24 can go alone, and while you're typing in a text box only binds with a modifier fire.
+
+**Builds**
+- Both release binaries now come from GitHub Actions: Linux portable and Windows cross-compiled, each with a build attestation. Nothing is built locally anymore; the release script only downloads, checks and signs.
+
 ## 0.6.1
 
 **More languages and screens**
@@ -44,7 +58,7 @@
 - Installed through a package manager, the app tells you to update through it.
 
 **Project**
-- larperCord is now licensed under GPL-3.0.
+- SigmaCord is now licensed under GPL-3.0.
 
 ## 0.6.0
 
@@ -59,7 +73,7 @@
 - Highlights shows how many you haven't seen, can mute a channel, follows edits, and can use desktop notifications.
 - Bookmarks, the word filter, snippets, timestamps, stats and the demo plugins no longer come with the app: the first two became built-in features. If you have them they keep working, and a button archives them to `plugins/antigos/`. Nothing is deleted.
 - A bundled plugin with a newer version shows an update button on its card, and keeps your file as `.bak`.
-- New for plugin authors: options on the card (`larper.settings`, `select`, `toggle`), second lists and toolbar buttons on menus, suggestions in the message box (`larper.completions`), rules for what you send (`larper.rewrite`), `larper.copy`, `larper.open`, a number on the panel tab, red notes, the `edit`, `dismiss` and `hosts` events, a `contains` filter that keeps messages away from Lua, and attachments, replies, mentions and the read position in `larper.messages`.
+- New for plugin authors: options on the card (`sigma.settings`, `select`, `toggle`), second lists and toolbar buttons on menus, suggestions in the message box (`sigma.completions`), rules for what you send (`sigma.rewrite`), `sigma.copy`, `sigma.open`, a number on the panel tab, red notes, the `edit`, `dismiss` and `hosts` events, a `contains` filter that keeps messages away from Lua, and attachments, replies, mentions and the read position in `sigma.messages`.
 - A plugin that falls behind loses messages instead of holding up the others, and its card says so. Each plugin has its own limit of desktop notifications, so a noisy one doesn't eat a reminder's.
 - The card warns about a plugin that reads messages and can also send something out.
 - Closing a translation with its × no longer makes the next "Translate" do nothing.
@@ -88,7 +102,7 @@
 ## 0.5.0
 
 **Windows**
-- larperCord now runs on Windows 10 and 11, built from the same code.
+- SigmaCord now runs on Windows 10 and 11, built from the same code.
 - Tokens stay in Windows Credential Manager.
 
 **Updates**

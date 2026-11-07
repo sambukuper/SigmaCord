@@ -1,7 +1,7 @@
 // editorial — uma revista impressa: papel com grão, masthead centrado em serifa
 // entre réguas de jornal, colunas separadas por fios finos, colaboradores à
 // esquerda e o índice de canais à direita. No escuro, a edição noturna.
-theme "editorial" description="Revista impressa: masthead em serifa, conversa em coluna central e índice à direita." description-en="Print magazine: serif masthead, conversation column in the middle and an index on the right." author="larperCord" preview=mirror
+theme "editorial" description="Revista impressa: masthead em serifa, conversa em coluna central e índice à direita." description-en="Print magazine: serif masthead, conversation column in the middle and an index on the right." author="SigmaCord" preview=mirror
 
 options {
     option "manchete" label="Masthead" description="O cabeçalho grande com o nome da revista e os servidores." label-en="Masthead" description-en="The big header with the magazine name and servers." default=#true
@@ -89,7 +89,7 @@ layout {
                     span "Nº 08" en="No. 08" font="Liberation Serif" size=15 weight=italic color=accent
                     span "EDIÇÃO" en="ISSUE" tracking=3 size=9
                 }
-                label flex=1 text="larperCord" font="Liberation Serif" size=56 weight=bold color=text align=center tracking=-0.8
+                label flex=1 text="SigmaCord" font="Liberation Serif" size=56 weight=bold color=text align=center tracking=-0.8
                 label width=240 text="REVISTA DE CONVERSA" text-en="A MAGAZINE OF TALK" tracking=2.5 size=9 weight=semibold color=muted align=right
             }
             rule height=11 kind=double color=text ornament=star ornament-color=accent ornament-size=11

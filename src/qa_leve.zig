@@ -4,7 +4,7 @@ const c = @import("c");
 const App = @import("app.zig").App;
 const Op = @import("qa_runner.zig").Op;
 
-extern fn larper_font_index_size(font: *c.ImFont, size: f32) c_int;
+extern fn sigma_font_index_size(font: *c.ImFont, size: f32) c_int;
 
 /// Logo depois de abrir: nenhuma miniatura interpretada ainda.
 fn previewsNotBuilt(app: *App) bool {
@@ -28,7 +28,7 @@ fn emojiIndexSmall(app: *App) bool {
     const font = app.uiFamily("Inter").get(.regular);
     const emoji = "\u{1F600}";
     _ = c.ImFont_CalcTextSizeAEx(font, 17, std.math.floatMax(f32), 0, emoji.ptr, emoji.ptr + emoji.len, null);
-    const n = larper_font_index_size(font, 17);
+    const n = sigma_font_index_size(font, 17);
     return n > 0 and n < 0x8000;
 }
 

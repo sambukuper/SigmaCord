@@ -5,15 +5,15 @@
 -- @version 1.0.0
 -- @capabilities messages, decorate, menu, panel, storage, settings, notify, timers
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX_HITS = 100
 
 -- Só onde e quem, nunca o texto de ninguém.
-local hits = larper.storage.get("hits") or {}
-local trusted = larper.storage.get("trusted") or {}
-local mark_ip = larper.storage.get("mark_ip")
+local hits = sigma.storage.get("hits") or {}
+local trusted = sigma.storage.get("trusted") or {}
+local mark_ip = sigma.storage.get("mark_ip")
 if mark_ip == nil then mark_ip = true end
-local notify_now = larper.storage.get("notify") or false
+local notify_now = sigma.storage.get("notify") or false
 
 -- O que já está na tela nesta sessão, para não refazer a nota.
 local marked = {}
@@ -448,13 +448,13 @@ local function analyze(content)
 end
 
 local function save()
-  larper.storage.set("hits", hits)
-  larper.storage.set("trusted", trusted)
+  sigma.storage.set("hits", hits)
+  sigma.storage.set("trusted", trusted)
 end
 
 local function when(t)
   if os.date("%Y%m%d", t) == os.date("%Y%m%d") then return os.date("%H:%M", t) end
-  return os.date(larper.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
 end
 
 local render
@@ -465,7 +465,7 @@ local function forget_host(host)
     if h.host == host or h.host:sub(-#host - 1) == "." .. host then
       if marked[h.id] then
         marked[h.id] = nil
-        larper.undecorate(h.id)
+        sigma.undecorate(h.id)
       end
     else
       keep[#keep + 1] = h
@@ -505,14 +505,14 @@ local function examine(m, live)
     end
     if marked[m.id] then
       marked[m.id] = nil
-      larper.undecorate(m)
+      sigma.undecorate(m)
     end
     return
   end
   local note = "⚠ " .. tr("Possível golpe: ", "Possible scam: ") .. reason_text(key, brand) .. " (" .. host .. ")"
   if marked[m.id] ~= note then
     marked[m.id] = note
-    larper.decorate(m, { note = note, style = "danger" })
+    sigma.decorate(m, { note = note, style = "danger" })
   end
   if not at then
     table.insert(hits, 1, { id = m.id, channel = m.channel.id, channel_name = m.channel.name, author = m.author.name,
@@ -521,34 +521,34 @@ local function examine(m, live)
     if live and not panel_open then unseen = unseen + 1 end
     save()
     render()
-    if live and notify_now then larper.notify(note) end
+    if live and notify_now then sigma.notify(note) end
   end
 end
 
 -- As já carregadas no canal aberto: golpe chega também com o app fechado.
 local waiting = false
 local function scan()
-  local asked = larper.messages({ limit = 200, contains = { "://" } }, function(list)
+  local asked = sigma.messages({ limit = 200, contains = { "://" } }, function(list)
     for _, m in ipairs(list) do examine(m, false) end
   end)
   if not asked and not waiting then
     waiting = true
-    larper.after(0.6, function()
+    sigma.after(0.6, function()
       waiting = false
       scan()
     end)
   end
 end
 
-larper.on("message", function(m) examine(m, true) end, { contains = { "://" } })
-larper.on("edit", function(m) examine(m, false) end)
-larper.on("channel", function()
+sigma.on("message", function(m) examine(m, true) end, { contains = { "://" } })
+sigma.on("edit", function(m) examine(m, false) end)
+sigma.on("channel", function()
   scan()
   -- O histórico do canal chega um pouco depois de abrir.
-  larper.after(1.5, scan)
+  sigma.after(1.5, scan)
 end)
 
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   marked[d.id] = nil
   dismissed[d.id] = nil
   local at = find_hit(d.id)
@@ -559,21 +559,21 @@ larper.on("delete", function(d)
   end
 end)
 
-larper.on("dismiss", function(d)
+sigma.on("dismiss", function(d)
   dismissed[d.id] = true
   marked[d.id] = nil
 end)
 
-larper.menu("message", { pt = "Não é golpe", en = "Not a scam" }, function(m)
+sigma.menu("message", { pt = "Não é golpe", en = "Not a scam" }, function(m)
   local key, _, host = analyze(m.content)
   if not key then
-    larper.notify(tr("Essa mensagem não está marcada", "That message isn't marked"))
+    sigma.notify(tr("Essa mensagem não está marcada", "That message isn't marked"))
     return
   end
   trust(host)
   marked[m.id] = nil
-  larper.undecorate(m)
-  larper.notify(tr("Não vou mais marcar ", "I won't mark this again: ") .. host)
+  sigma.undecorate(m)
+  sigma.notify(tr("Não vou mais marcar ", "I won't mark this again: ") .. host)
 end)
 
 render = function()
@@ -584,7 +584,7 @@ render = function()
       subtitle = reason_text(h.why, h.brand) .. "  ·  " .. h.author .. "  ·  #" .. h.channel_name,
       meta = when(h.time),
       key = h.id,
-      on_click = function() larper.jump(h.channel, h.id) end,
+      on_click = function() sigma.jump(h.channel, h.id) end,
       actions = { { label = tr("Não é golpe", "Not a scam"), key = "ok" .. h.id, on_click = function() trust(h.host) end } },
     }
   end
@@ -619,10 +619,10 @@ render = function()
     tree[#tree + 1] = { type = "heading", text = tr("Endereços que não são golpe", "Addresses that aren't scams") }
     tree[#tree + 1] = { type = "list", key = "trusted", items = rows }
   end
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
-larper.on("panel", function(open)
+sigma.on("panel", function(open)
   panel_open = open
   if open and unseen > 0 then
     unseen = 0
@@ -630,35 +630,35 @@ larper.on("panel", function(open)
   end
 end)
 
-larper.command("/scam", function()
+sigma.command("/scam", function()
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
 local function options()
-  larper.settings.set({
+  sigma.settings.set({
     { type = "toggle", key = "mark_ip", label = tr("Marcar links para um IP", "Mark links to an IP"),
       hint = tr("Em servidores de segurança isso é comum: desligue se atrapalhar. Rede local nunca é marcada.", "It's common in security servers: turn it off if it gets in the way. Local networks are never marked."),
       value = mark_ip,
       on_change = function(on)
         mark_ip = on
-        larper.storage.set("mark_ip", on)
+        sigma.storage.set("mark_ip", on)
       end },
     { type = "toggle", key = "notify", label = tr("Avisar na hora", "Notify right away"),
       hint = tr("Sem isto, só a nota na mensagem e o número no painel.", "Without this, just the note on the message and the number on the panel."),
       value = notify_now,
       on_change = function(on)
         notify_now = on
-        larper.storage.set("notify", on)
+        sigma.storage.set("notify", on)
       end },
   })
 end
 
-larper.on("lang", function()
+sigma.on("lang", function()
   options()
   render()
   scan()
 end)
 options()
 render()
-larper.after(1, scan)
+sigma.after(1, scan)

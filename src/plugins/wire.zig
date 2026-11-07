@@ -15,7 +15,7 @@ pub const Where = struct {
     guild_name: []const u8 = "",
 };
 
-/// Um arquivo anexado (só com `larper.messages({files=true})`).
+/// Um arquivo anexado (só com `sigma.messages({files=true})`).
 pub const FileRef = struct { name: []const u8, url: []const u8, size: u32 = 0 };
 
 /// Uma mensagem como o plugin vê (nunca o que foi apagado, nem o texto de antes
@@ -38,11 +38,11 @@ pub const Message = struct {
     files: []const FileRef = &.{},
     /// A que mensagem esta responde (0 = nenhuma).
     reply_to: u64 = 0,
-    /// Fala com a pessoa: menção, cargo dela, @everyone. Só em larper.messages.
+    /// Fala com a pessoa: menção, cargo dela, @everyone. Só em sigma.messages.
     mentions_me: bool = false,
 };
 
-/// Tem algum destes pedaços, sem ligar para maiúsculas? (`contains` de larper.on e larper.messages.)
+/// Tem algum destes pedaços, sem ligar para maiúsculas? (`contains` de sigma.on e sigma.messages.)
 pub fn hasAny(text: []const u8, needles: []const []u8) bool {
     for (needles) |n| {
         if (std.ascii.findIgnoreCase(text, n) != null) return true;
@@ -116,7 +116,7 @@ pub const Keybind = struct {
     alt: bool = false,
     super: bool = false,
     key: i32 = 0,
-    /// Posição da função em registry.larper.keys.
+    /// Posição da função em registry.sigma.keys.
     slot: u32 = 0,
     label_buf: [40]u8 = undefined,
     label_len: u8 = 0,
@@ -126,7 +126,7 @@ pub const Keybind = struct {
     }
 };
 
-/// Servidor de linguagem proposto com larper.lsp. Só uma proposta: quem decide
+/// Servidor de linguagem proposto com sigma.lsp. Só uma proposta: quem decide
 /// rodar é a pessoa, em Configurações (ui/settings_lsp.zig).
 pub const LspServer = struct { lang: lsp_core.Short, cmd: lsp_core.Command };
 
@@ -138,7 +138,7 @@ pub const MenuChoice = struct { value: []u8, pt: []u8, en: []u8 };
 /// Entrada num menu de botão direito.
 pub const MenuEntry = struct {
     kind: MenuKind,
-    /// Posição da função em registry.larper.menus.
+    /// Posição da função em registry.sigma.menus.
     slot: u32,
     pt: []u8,
     en: []u8,
@@ -176,7 +176,7 @@ pub const MenuEntry = struct {
     }
 };
 
-/// Uma sugestão de `larper.completions`: fica toda na interface, para a busca
+/// Uma sugestão de `sigma.completions`: fica toda na interface, para a busca
 /// andar a cada tecla sem chamar o plugin.
 pub const Completion = struct { name: []u8, text: []u8, hint: []u8 };
 
@@ -359,7 +359,7 @@ pub const StartArgs = struct {
 };
 
 /// O que a pessoa fez em algo do plugin. Só `token` diferente de 0 libera o que
-/// pede um gesto (larper.send, larper.insert, larper.jump, abrir o painel).
+/// pede um gesto (sigma.send, sigma.insert, sigma.jump, abrir o painel).
 pub const Gesture = union(enum) {
     command: struct { name: []u8, args: []u8 },
     key: u32,

@@ -6,7 +6,7 @@
 -- @capabilities menu, decorate, http, notify, storage, settings, composer
 -- @hosts api.mymemory.translated.net
 
-local tr = larper.tr
+local tr = sigma.tr
 local HOST = "api.mymemory.translated.net"
 -- O serviço aceita até 500 bytes de cada vez.
 local MAX = 480
@@ -34,11 +34,11 @@ local by_code = { zh = "zh-CN" }
 for _, l in ipairs(LANGS) do by_code[l.code:lower()] = l.code end
 
 -- "auto": o idioma do app, e descobrir sozinho o idioma de origem.
-local target = larper.storage.get("target") or "auto"
-local source = larper.storage.get("source") or "auto"
+local target = sigma.storage.get("target") or "auto"
+local source = sigma.storage.get("source") or "auto"
 
 local function target_code()
-  return target == "auto" and larper.lang() or target
+  return target == "auto" and sigma.lang() or target
 end
 
 local function cut(text)
@@ -63,9 +63,9 @@ end
 -- Chama done(tradução), ou done(nil, "same") ou done(nil, "fail", detalhe).
 local function fetch(text, code, done)
   local from = source == "auto" and "Autodetect" or source
-  local url = "https://" .. HOST .. "/get?q=" .. larper.urlencode(text) .. "&langpair=" .. larper.urlencode(from .. "|" .. code)
-  larper.http.get(url, function(res)
-    local data = res.ok and larper.json.decode(res.body) or nil
+  local url = "https://" .. HOST .. "/get?q=" .. sigma.urlencode(text) .. "&langpair=" .. sigma.urlencode(from .. "|" .. code)
+  sigma.http.get(url, function(res)
+    local data = res.ok and sigma.json.decode(res.body) or nil
     local out = data and data.responseData and data.responseData.translatedText
     -- O serviço responde 200 até quando recusa: o motivo fica em responseStatus, e
     -- o aviso dele vem no lugar da tradução. Nunca é para mostrar esse aviso.
@@ -81,8 +81,8 @@ local function fetch(text, code, done)
 end
 
 local function can_ask()
-  if larper.http.allowed(HOST) then return true end
-  larper.notify(tr("Aprove " .. HOST .. " em Configurações → Plugins", "Approve " .. HOST .. " in Settings → Plugins"))
+  if sigma.http.allowed(HOST) then return true end
+  sigma.notify(tr("Aprove " .. HOST .. " em Configurações → Plugins", "Approve " .. HOST .. " in Settings → Plugins"))
   return false
 end
 
@@ -93,13 +93,13 @@ local asked = {}
 local serial = 0
 
 -- O × da nota: da próxima vez, "Traduzir" traduz de novo em vez de só tirar.
-larper.on("dismiss", function(d)
+sigma.on("dismiss", function(d)
   shown[d.id] = nil
   asked[d.id] = nil
 end)
 
 local function already(code)
-  if target == "auto" and code == larper.lang() then
+  if target == "auto" and code == sigma.lang() then
     return tr("Essa mensagem já está no seu idioma", "That message is already in your language")
   end
   return tr("Essa mensagem já está nesse idioma", "That message is already in that language")
@@ -109,37 +109,37 @@ local function request(m, code)
   if not can_ask() then return end
   local text, partial = cut(clean(m.content))
   if text:gsub("%s", "") == "" then
-    larper.notify(tr("Essa mensagem não tem texto", "That message has no text"))
+    sigma.notify(tr("Essa mensagem não tem texto", "That message has no text"))
     return
   end
   serial = serial + 1
   local mine = serial
   asked[m.id] = mine
-  larper.decorate(m, { note = tr("Traduzindo…", "Translating…") })
+  sigma.decorate(m, { note = tr("Traduzindo…", "Translating…") })
   fetch(text, code, function(out, why, detail)
     if asked[m.id] ~= mine then return end
     asked[m.id] = nil
     if why == "same" then
       shown[m.id] = true
-      larper.decorate(m, { note = already(code) })
+      sigma.decorate(m, { note = already(code) })
     elseif why then
       shown[m.id] = nil
-      larper.decorate(m, { note = tr("Não consegui traduzir", "Couldn't translate") .. (detail and " (" .. detail .. ")" or "") })
+      sigma.decorate(m, { note = tr("Não consegui traduzir", "Couldn't translate") .. (detail and " (" .. detail .. ")" or "") })
     else
       shown[m.id] = true
       if partial then out = out .. " […]" end
       -- O idioma só aparece quando não é o de sempre.
-      local tag = code ~= larper.lang() and code:upper() .. " · " or ""
-      larper.decorate(m, { note = "🌐 " .. tag .. out })
+      local tag = code ~= sigma.lang() and code:upper() .. " · " or ""
+      sigma.decorate(m, { note = "🌐 " .. tag .. out })
     end
   end)
 end
 
-larper.menu("message", { pt = "Traduzir", en = "Translate" }, function(m)
+sigma.menu("message", { pt = "Traduzir", en = "Translate" }, function(m)
   if shown[m.id] or asked[m.id] then
     shown[m.id] = nil
     asked[m.id] = nil
-    larper.undecorate(m)
+    sigma.undecorate(m)
     return
   end
   request(m, target_code())
@@ -151,27 +151,27 @@ for _, l in ipairs(LANGS) do
 end
 
 -- Só esta mensagem: a escolha da página continua como está.
-larper.menu("message", { pt = "Traduzir para…", en = "Translate to…" }, function(m, code)
+sigma.menu("message", { pt = "Traduzir para…", en = "Translate to…" }, function(m, code)
   request(m, code)
 end, { choices = choices })
 
 -- /tr es bom dia: a tradução vai para a caixa, e quem envia é você.
-larper.command("/tr", function(args)
+sigma.command("/tr", function(args)
   local first, rest = args:match("^(%S+)%s+(.+)$")
   local code = first and by_code[first:lower()]
   local text = code and rest or args
   if text == "" then
-    larper.notify(tr("Use assim: /tr es bom dia", "Use it like this: /tr es good morning"))
+    sigma.notify(tr("Use assim: /tr es bom dia", "Use it like this: /tr es good morning"))
     return
   end
   if not can_ask() then return end
   fetch(cut(clean(text)), code or target_code(), function(out, why, detail)
     if why == "same" then
-      larper.notify(tr("Esse texto já está nesse idioma", "That text is already in that language"))
+      sigma.notify(tr("Esse texto já está nesse idioma", "That text is already in that language"))
     elseif why then
-      larper.notify(tr("Não consegui traduzir", "Couldn't translate") .. (detail and " (" .. detail .. ")" or ""))
+      sigma.notify(tr("Não consegui traduzir", "Couldn't translate") .. (detail and " (" .. detail .. ")" or ""))
     else
-      larper.insert(out)
+      sigma.insert(out)
     end
   end)
 end)
@@ -184,19 +184,19 @@ local function options()
     to[#to + 1] = { value = l.code, label = label }
     from[#from + 1] = { value = l.code, label = label }
   end
-  larper.settings.set({
+  sigma.settings.set({
     { type = "select", key = "target", label = tr("Traduzir para", "Translate to"), value = target, options = to,
       on_change = function(v)
         target = v
-        larper.storage.set("target", v)
+        sigma.storage.set("target", v)
       end },
     { type = "select", key = "source", label = tr("Idioma original", "Original language"), value = source, options = from,
       on_change = function(v)
         source = v
-        larper.storage.set("source", v)
+        sigma.storage.set("source", v)
       end },
   })
 end
 
-larper.on("lang", options)
+sigma.on("lang", options)
 options()

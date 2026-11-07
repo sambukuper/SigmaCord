@@ -9,7 +9,7 @@
 - É apagado da memória quando o app fecha.
 - É guardado no chaveiro do sistema quando possível. Sem chaveiro, vai para um arquivo com `chmod 600`, e o app avisa se o arquivo puder ser lido por outros.
 - Com "Lembrar" ligado, ele só é salvo depois que o Discord o aceita.
-- `LARPER_VOICE_DEBUG` e `LARPER_DEBUG_MEDIA` nunca imprimem tokens nem chaves.
+- `SIGMACORD_VOICE_DEBUG` e `SIGMACORD_DEBUG_MEDIA` nunca imprimem tokens nem chaves.
 
 Ele só é enviado ao Discord.
 
@@ -21,7 +21,7 @@ Como o cliente oficial, o app avisa o Discord do que você leu, no máximo uma v
 
 | O quê | Onde | Controle |
 |---|---|---|
-| Cache de mensagens | `~/.cache/larpercord/messages`, pastas 700, arquivos 600 | 200 mensagens por canal, teto de 50 MB. Dá para desligar e apagar em Configurações → Privacidade |
+| Cache de mensagens | `~/.cache/sigmacord/messages`, pastas 700, arquivos 600 | 200 mensagens por canal, teto de 50 MB. Dá para desligar e apagar em Configurações → Privacidade |
 | Rascunhos | `drafts.kdl`, `chmod 600` | Enviar uma mensagem apaga o rascunho dela |
 | Mensagens salvas e anotações | `saved-<conta>.json` | Até 500. Nada vai para o Discord |
 | Palavras de alerta, filtros, pessoas ignoradas | `settings.kdl` | Ninguém é avisado |
@@ -54,9 +54,9 @@ Os plugins rodam com a sua conta, então só use arquivos que você leu e entend
 - Um plugin nunca vê o seu token nem o seu e-mail.
 - Sem acesso a arquivos, programas nem sockets. `io`, `os.execute`, `os.remove`, `os.getenv`, `require`, `package`, `debug`, `coroutine`, `load`, `loadfile`, `dofile`, `collectgarbage` e `string.dump` não existem.
 - Cerca de 5 milhões de instruções por chamada e 8 MB de memória por plugin, numa thread só deles.
-- O `larper.send` só funciona direto de um gesto naquele plugin (comando, atalho, botão ou entrada de menu dele), porque respostas automáticas transformariam a sua conta num self-bot.
-- A única rede é o `larper.http`: só HTTPS, para hosts que o plugin declara e você aprova um a um em Configurações → Plugins, sem cookies, token nem cabeçalhos do Discord. Nada sai antes de você aprovar. Um plugin com a capacidade `links` também pode abrir um endereço no navegador, quando você clica em algo dele, e o cartão dele diz isso.
-- Os dados de um plugin ficam em `~/.config/larpercord/plugin-data/`, separados por plugin e por conta, e só você lê. Os plugins que vêm com o app não guardam o texto de mensagens depois que elas são apagadas.
+- O `sigma.send` só funciona direto de um gesto naquele plugin (comando, atalho, botão ou entrada de menu dele), porque respostas automáticas transformariam a sua conta num self-bot.
+- A única rede é o `sigma.http`: só HTTPS, para hosts que o plugin declara e você aprova um a um em Configurações → Plugins, sem cookies, token nem cabeçalhos do Discord. Nada sai antes de você aprovar. Um plugin com a capacidade `links` também pode abrir um endereço no navegador, quando você clica em algo dele, e o cartão dele diz isso.
+- Os dados de um plugin ficam em `~/.config/sigmacord/plugin-data/`, separados por plugin e por conta, e só você lê. Os plugins que vêm com o app não guardam o texto de mensagens depois que elas são apagadas.
 
 Os detalhes estão em [Plugins em Lua](page:plugins).
 
@@ -66,7 +66,7 @@ Esconde o seu e-mail e o seu nome de usuário nas configurações. Não esconde 
 
 ## Relatando um problema
 
-Abra uma issue no [GitHub](https://github.com/RshaCuDeVidro/larperCord/issues). Se o problema envolve vazamento de token ou qualquer coisa sensível, não inclua tokens reais no relato.
+Abra uma issue no [GitHub](https://github.com/sambukuper/SigmaCord/issues). Se o problema envolve vazamento de token ou qualquer coisa sensível, não inclua tokens reais no relato.
 
 ## Se o Discord bloquear a sua conta
 
@@ -86,4 +86,4 @@ Se acontecer, redefina a senha pelo discord.com. Se a conta continuar bloqueada,
 
 A versão para Windows não é assinada, então o SmartScreen avisa. Um antivírus também pode chamá-la de ladrão de token do Discord, provavelmente porque um cliente de Discord está cheio das mesmas palavras que um ladrão tem, como "token" e "Authorization". Um sandbox deu essa nota à versão 0.5.0 por causa de uma regra de padrões, e o relatório de comportamento dele não mostrou acesso a credenciais e, no modo de demonstração, nenhuma conexão.
 
-O token só vai para o Discord e fica no chaveiro do sistema ou, sem chaveiro, num arquivo privado. O código é público, então dá para ler ou compilar você mesmo. Baixe o larperCord só deste repositório.
+O token só vai para o Discord e fica no chaveiro do sistema ou, sem chaveiro, num arquivo privado. O código é público, então dá para ler ou compilar você mesmo. Baixe o SigmaCord só deste repositório.

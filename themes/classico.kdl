@@ -1,7 +1,7 @@
 // classico — o layout que todo mundo conhece, nas cores do seu pywal.
 // Exclusivo: banner do servidor no topo da lista de canais. As superfícies têm
 // um degradê discreto e fios finos: continua familiar, mas sem cara de chapado.
-theme "classico" description="O layout familiar, nas cores do seu wallpaper, com banner do servidor." description-en="The familiar layout, in your wallpaper's colors, with a server banner." author="larperCord" preview=classic
+theme "classico" description="O layout familiar, nas cores do seu wallpaper, com banner do servidor." description-en="The familiar layout, in your wallpaper's colors, with a server banner." author="SigmaCord" preview=classic
 palette "wal"
 
 options {

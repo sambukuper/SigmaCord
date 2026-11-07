@@ -1,6 +1,6 @@
 //! Rascunho por canal: o texto digitado e não enviado fica guardado quando
 //! se troca de canal e volta quando se volta. Sobrevive a fechar o app
-//! (~/.config/larpercord/drafts.kdl, ao lado do settings.kdl, só para o
+//! (~/.config/sigmacord/drafts.kdl, ao lado do settings.kdl, só para o
 //! usuário: chmod 600). Enviar apaga.
 const std = @import("std");
 const c = @import("c");
@@ -68,7 +68,7 @@ pub const Drafts = struct {
 
     /// `draft "500005" "texto"` por linha (o ID vai como texto).
     pub fn write(dr: *const Drafts, out: *std.ArrayList(u8), gpa: std.mem.Allocator) !void {
-        try out.appendSlice(gpa, "// rascunhos do larperCord: o que foi digitado e não enviado\n");
+        try out.appendSlice(gpa, "// rascunhos do SigmaCord: o que foi digitado e não enviado\n");
         for (dr.map.keys(), dr.map.values()) |ch, text| {
             try out.print(gpa, "draft \"{d}\" ", .{ch});
             try quoted(out, gpa, text);

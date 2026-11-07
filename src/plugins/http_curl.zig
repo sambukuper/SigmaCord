@@ -102,7 +102,7 @@ fn perform(req: *wire.HttpReq, out: *std.ArrayList(u8), status: *u16) !void {
     defer c.curl_easy_cleanup(h);
     var sink: Sink = .{ .gpa = req.gpa, .out = out };
     var ua_buf: [64]u8 = undefined;
-    const ua = std.fmt.bufPrintSentinel(&ua_buf, "larperCord/{s} (plugin)", .{version}, 0) catch "larperCord";
+    const ua = std.fmt.bufPrintSentinel(&ua_buf, "SigmaCord/{s} (plugin)", .{version}, 0) catch "SigmaCord";
     var url_buf: [2400]u8 = undefined;
     var url: [:0]const u8 = req.url;
     var plain_qa = false;

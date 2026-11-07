@@ -42,7 +42,7 @@
       case "topbar":
         return '<div class="p-top"><span></span></div>';
       case "logo":
-        return '<div class="p-logo">larperCord</div>';
+        return '<div class="p-logo">SigmaCord</div>';
       case "label":
         return '<div class="p-label" style="font-size:' + Math.max(n.fs || 12, 11) + 'px">' + (n.t || "") + "</div>";
       default:
@@ -153,13 +153,13 @@
   fit();
   addEventListener("resize", fit);
 
-  var first = html.dataset.theme === "larper" ? "orbital" : html.dataset.theme;
+  var first = html.dataset.theme === "sigma" ? "orbital" : html.dataset.theme;
   place(first);
   Object.keys(panels).forEach(function (key) { panels[key].wasLive = true; });
 
   document.addEventListener("lc-cycle", function (e) { morphTo(e.detail); });
   document.addEventListener("lc-rendered", function () {
-    if (html.dataset.theme !== "larper") morphTo(html.dataset.theme);
+    if (html.dataset.theme !== "sigma") morphTo(html.dataset.theme);
     else if (shownName && !busy) place(shownName);
   });
 

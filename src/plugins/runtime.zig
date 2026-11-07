@@ -33,7 +33,7 @@ const max_keys = 32;
 const max_lsp = 8;
 const max_menus = 4;
 const max_choices = 16;
-/// larper.completions: quantas, e quanto texto ao todo (fica na memória da interface).
+/// sigma.completions: quantas, e quanto texto ao todo (fica na memória da interface).
 const max_completions = 256;
 const completions_bytes = 256 * 1024;
 const max_timers = 64;
@@ -43,7 +43,7 @@ pub const mem_cap = 8 * 1024 * 1024;
 const hook_every = 1000;
 /// Erros seguidos (fora o de travar) antes de o plugin ser parado.
 const max_errors = 10;
-/// larper.send por gesto.
+/// sigma.send por gesto.
 const max_sends = 5;
 /// Eventos esperando: uma rajada de mensagens não cresce sem limite. Gestos da
 /// pessoa nunca são jogados fora.
@@ -51,21 +51,21 @@ const max_events = 4096;
 const max_out = 16 * 1024;
 /// O que um plugin pode pedir à interface numa chamada só.
 const max_cmds_per_call = 4096;
-/// larper.storage: tamanho total (chaves e valores em JSON).
+/// sigma.storage: tamanho total (chaves e valores em JSON).
 pub const storage_cap = 1024 * 1024;
 const storage_flush_ms = 1500;
-/// larper.notify: quantos em 10 s (o resto é ignorado em silêncio).
+/// sigma.notify: quantos em 10 s (o resto é ignorado em silêncio).
 const notify_burst = 20;
-/// larper.every: o menor intervalo. Bem mais que isso seria um plugin ocupado à toa.
+/// sigma.every: o menor intervalo. Bem mais que isso seria um plugin ocupado à toa.
 const every_min_ms = 1000;
 /// Plugin com temporizador longe: a thread confere o relógio de minuto em minuto
 /// (o computador pode ter dormido; esperas longas não contam esse tempo).
 const timer_recheck_ms = 60_000;
-/// larper.messages: quantas por vez, e no máximo uma consulta a cada tanto.
+/// sigma.messages: quantas por vez, e no máximo uma consulta a cada tanto.
 const messages_default = 200;
 const messages_max = 500;
 const messages_gap_ms = 500;
-/// larper.http: limites por plugin.
+/// sigma.http: limites por plugin.
 pub const http_body_max = 64 * 1024;
 const http_per_minute = 30;
 const http_in_flight = 3;
@@ -81,7 +81,7 @@ pub var lang_en: *const fn () bool = &struct {
     }
 }.f;
 
-/// O que `larper.lang()` responde: em japonês, os textos caem no inglês, mas a tradução
+/// O que `sigma.lang()` responde: em japonês, os textos caem no inglês, mas a tradução
 /// precisa saber o idioma de verdade.
 pub var lang_code: *const fn () [*:0]const u8 = &struct {
     fn f() [*:0]const u8 {
@@ -519,7 +519,7 @@ const Call = struct {
     list: ?*const wire.MsgList = null,
     bytes: []const u8 = "",
     flag: bool = false,
-    /// Diferente de 0: é um gesto da pessoa neste plugin (libera larper.send etc.).
+    /// Diferente de 0: é um gesto da pessoa neste plugin (libera sigma.send etc.).
     token: u32 = 0,
     /// A resposta de um pedido feito num gesto: só libera pôr texto na caixa.
     carry: u32 = 0,
@@ -584,7 +584,7 @@ pub const Rt = struct {
     settings_ready: ?*panel.Tree = null,
     /// A árvore sendo montada: as funções dela vão para esta tabela.
     cb_field: [*:0]const u8 = "cb_now",
-    tree_api: []const u8 = "larper.panel.set",
+    tree_api: []const u8 = "sigma.panel.set",
     notify_from: i64 = 0,
     notify_n: u8 = 0,
     messages_at: i64 = 0,
@@ -823,7 +823,7 @@ pub const Rt = struct {
         if (rt.L == null) return;
         if (!rt.protected(.{ .kind = .store_flush })) return;
         if (!rt.w.host.write_data(rt.w.host.ctx, rt.account, rt.name, rt.scratch.items)) {
-            rt.report(tr("larper.storage: não consegui gravar no disco", "larper.storage: couldn't write to disk"));
+            rt.report(tr("sigma.storage: não consegui gravar no disco", "sigma.storage: couldn't write to disk"));
         }
     }
 
@@ -876,7 +876,7 @@ fn raise(L: ?*lua.State, msg: []const u8) noreturn {
 
 fn raiseFmt(L: ?*lua.State, comptime pt: []const u8, comptime en: []const u8, args: anytype) noreturn {
     var buf: [400]u8 = undefined;
-    const msg = (if (lang_en()) std.fmt.bufPrint(&buf, en, args) else std.fmt.bufPrint(&buf, pt, args)) catch "larper";
+    const msg = (if (lang_en()) std.fmt.bufPrint(&buf, en, args) else std.fmt.bufPrint(&buf, pt, args)) catch "sigma";
     raise(L, msg);
 }
 
@@ -929,7 +929,7 @@ fn trampoline(L: ?*lua.State) callconv(.c) c_int {
         setup(L);
         return 0;
     }
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper"); // 2
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma"); // 2
     switch (call.kind) {
         .setup => unreachable,
         .store_load => storageRead(L, plug(L), call.bytes),
@@ -1133,7 +1133,7 @@ fn pushMessage(L: ?*lua.State, m: *const wire.Message) void {
     }
 }
 
-/// Abre só o que o sandbox permite e cria a tabela `larper`.
+/// Abre só o que o sandbox permite e cria a tabela `sigma`.
 fn setup(L: ?*lua.State) void {
     lua.pushcfunction(L, &lua.luaopen_base);
     lua.call(L, 0, 1);
@@ -1246,7 +1246,7 @@ fn setup(L: ?*lua.State) void {
         }
         lua.lua_setfield(L, -2, g.name);
     }
-    lua.lua_setglobal(L, "larper");
+    lua.lua_setglobal(L, "sigma");
     // As funções registradas ficam no registro, longe do script.
     const lists = [_][*:0]const u8{ "message", "edit", "dismiss", "hosts", "ready", "delete", "channel", "lang", "panel", "commands", "keys", "menus", "timers", "http", "msgs", "cb_now", "cb_prev", "opt_now", "opt_prev", "storage" };
     lua.lua_createtable(L, 0, lists.len);
@@ -1254,7 +1254,7 @@ fn setup(L: ?*lua.State) void {
         lua.newtable(L);
         lua.lua_setfield(L, -2, k);
     }
-    lua.lua_setfield(L, lua.REGISTRYINDEX, "larper");
+    lua.lua_setfield(L, lua.REGISTRYINDEX, "sigma");
 }
 
 // --- Funções do Lua ----------------------------------------------------------
@@ -1336,7 +1336,7 @@ fn lXpcall(L: ?*lua.State) callconv(.c) c_int {
 }
 
 fn registryList(L: ?*lua.State, field: [*:0]const u8) void {
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper");
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma");
     _ = lua.lua_getfield(L, -1, field);
 }
 
@@ -1374,7 +1374,7 @@ fn optNeedles(L: ?*lua.State, p: *Rt, opts: c_int, api: []const u8) [][]u8 {
     return list;
 }
 
-/// larper.on("message" | "edit" | "dismiss" | "hosts" | "ready" | "delete" | "channel" | "lang" | "panel", fn, [opções])
+/// sigma.on("message" | "edit" | "dismiss" | "hosts" | "ready" | "delete" | "channel" | "lang" | "panel", fn, [opções])
 /// Em "message" e "edit", {contains={"texto", …}} só chama a função para o que tem um
 /// deles: o resto nem chega ao Lua.
 fn lOn(L: ?*lua.State) callconv(.c) c_int {
@@ -1401,18 +1401,18 @@ fn lOn(L: ?*lua.State) callconv(.c) c_int {
     else if (eql(u8, event, "panel"))
         .{ "panel", &p.n_panel }
     else
-        raise(L, tr("larper.on: evento desconhecido (use \"message\", \"edit\", \"dismiss\", \"hosts\", \"ready\", \"delete\", \"channel\", \"lang\" ou \"panel\")", "larper.on: unknown event (use \"message\", \"edit\", \"dismiss\", \"hosts\", \"ready\", \"delete\", \"channel\", \"lang\" or \"panel\")"));
-    if (eql(u8, event, "message") or eql(u8, event, "edit") or eql(u8, event, "delete")) need(L, p, .messages, "larper.on");
-    if (eql(u8, event, "dismiss")) need(L, p, .decorate, "larper.on");
-    if (eql(u8, event, "hosts")) need(L, p, .http, "larper.on");
-    if (counter.* >= 64) raise(L, tr("larper.on: funções demais para esse evento", "larper.on: too many functions for that event"));
+        raise(L, tr("sigma.on: evento desconhecido (use \"message\", \"edit\", \"dismiss\", \"hosts\", \"ready\", \"delete\", \"channel\", \"lang\" ou \"panel\")", "sigma.on: unknown event (use \"message\", \"edit\", \"dismiss\", \"hosts\", \"ready\", \"delete\", \"channel\", \"lang\" or \"panel\")"));
+    if (eql(u8, event, "message") or eql(u8, event, "edit") or eql(u8, event, "delete")) need(L, p, .messages, "sigma.on");
+    if (eql(u8, event, "dismiss")) need(L, p, .decorate, "sigma.on");
+    if (eql(u8, event, "hosts")) need(L, p, .http, "sigma.on");
+    if (counter.* >= 64) raise(L, tr("sigma.on: funções demais para esse evento", "sigma.on: too many functions for that event"));
     const filters: ?*std.ArrayList([][]u8) = if (eql(u8, event, "message")) &p.msg_filters else if (eql(u8, event, "edit")) &p.edit_filters else null;
     const has_opts = lua.lua_type(L, 3) == lua.TTABLE;
-    if (has_opts and filters == null) raise(L, tr("larper.on: `contains` só vale em \"message\" e \"edit\"", "larper.on: `contains` only works on \"message\" and \"edit\""));
+    if (has_opts and filters == null) raise(L, tr("sigma.on: `contains` só vale em \"message\" e \"edit\"", "sigma.on: `contains` only works on \"message\" and \"edit\""));
     if (filters) |list| {
         // Antes de registrar: um `contains` errado não deixa a função valendo para tudo.
         while (list.items.len > counter.*) wire.freeNeedles(p.gpa(), list.pop().?);
-        const needles = if (has_opts) optNeedles(L, p, 3, "larper.on") else @as([][]u8, &.{});
+        const needles = if (has_opts) optNeedles(L, p, 3, "sigma.on") else @as([][]u8, &.{});
         list.append(p.gpa(), needles) catch {
             wire.freeNeedles(p.gpa(), needles);
             raise(L, tr("sem memória", "out of memory"));
@@ -1434,16 +1434,16 @@ pub fn validCommand(name: []const u8) bool {
     return true;
 }
 
-/// larper.command("/nome", fn(args))
+/// sigma.command("/nome", fn(args))
 fn lCommand(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     const name = lua.checkSlice(L, 1);
     lua.luaL_checktype(L, 2, lua.TFUNCTION);
-    if (!validCommand(name)) raise(L, tr("larper.command: o nome é \"/\" seguido de letras, números, _ ou - (até 32)", "larper.command: the name is \"/\" followed by letters, digits, _ or - (up to 32)"));
+    if (!validCommand(name)) raise(L, tr("sigma.command: o nome é \"/\" seguido de letras, números, _ ou - (até 32)", "sigma.command: the name is \"/\" followed by letters, digits, _ or - (up to 32)"));
     const known = for (p.commands.items) |cmd| {
         if (std.mem.eql(u8, cmd, name)) break true;
     } else false;
-    if (!known and p.commands.items.len >= max_commands) raise(L, tr("larper.command: comandos demais", "larper.command: too many commands"));
+    if (!known and p.commands.items.len >= max_commands) raise(L, tr("sigma.command: comandos demais", "sigma.command: too many commands"));
     registryList(L, "commands");
     lua.lua_pushvalue(L, 1);
     lua.lua_pushvalue(L, 2);
@@ -1491,7 +1491,7 @@ pub fn parseKeys(spec: []const u8, key_name: *[16]u8, key_len: *usize) ?wire.Key
     const fkey = name.len >= 2 and name[0] == 'f' and std.ascii.isDigit(name[1]);
     if (!kb.ctrl and !kb.alt and !kb.super and !fkey) return null;
     // Ctrl+V e cia. acontecem o tempo todo digitando: um atalho aí seria um
-    // "a pessoa pediu" que ela nunca pediu (e libera larper.send).
+    // "a pessoa pediu" que ela nunca pediu (e libera sigma.send).
     if (kb.ctrl and !kb.shift and !kb.alt and !kb.super and name.len == 1 and std.mem.indexOfScalar(u8, "acvxyz", name[0]) != null) return null;
     var n: usize = 0;
     for ([_]struct { on: bool, s: []const u8 }{
@@ -1511,7 +1511,7 @@ pub fn parseKeys(spec: []const u8, key_name: *[16]u8, key_len: *usize) ?wire.Key
     return kb;
 }
 
-/// larper.keybind("ctrl+shift+x", fn)
+/// sigma.keybind("ctrl+shift+x", fn)
 fn lKeybind(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     const spec = lua.checkSlice(L, 1);
@@ -1519,9 +1519,9 @@ fn lKeybind(L: ?*lua.State) callconv(.c) c_int {
     var name: [16]u8 = undefined;
     var len: usize = 0;
     var kb = parseKeys(spec, &name, &len) orelse
-        raise(L, tr("larper.keybind: use algo como \"ctrl+shift+x\" (letras e números pedem Ctrl, Alt ou Super; F1–F24 podem ir sozinhas)", "larper.keybind: use something like \"ctrl+shift+x\" (letters and digits need Ctrl, Alt or Super; F1–F24 can go alone)"));
-    kb.key = p.w.host.key(name[0..len]) orelse raise(L, tr("larper.keybind: tecla desconhecida", "larper.keybind: unknown key"));
-    if (p.keys.items.len >= max_keys) raise(L, tr("larper.keybind: atalhos demais", "larper.keybind: too many keybinds"));
+        raise(L, tr("sigma.keybind: use algo como \"ctrl+shift+x\" (letras e números pedem Ctrl, Alt ou Super; F1–F24 podem ir sozinhas)", "sigma.keybind: use something like \"ctrl+shift+x\" (letters and digits need Ctrl, Alt or Super; F1–F24 can go alone)"));
+    kb.key = p.w.host.key(name[0..len]) orelse raise(L, tr("sigma.keybind: tecla desconhecida", "sigma.keybind: unknown key"));
+    if (p.keys.items.len >= max_keys) raise(L, tr("sigma.keybind: atalhos demais", "sigma.keybind: too many keybinds"));
     registryList(L, "keys");
     const n = lua.lua_rawlen(L, -1);
     lua.lua_pushvalue(L, 2);
@@ -1532,10 +1532,10 @@ fn lKeybind(L: ?*lua.State) callconv(.c) c_int {
     return 0;
 }
 
-/// larper.notify(texto, {desktop=true})
+/// sigma.notify(texto, {desktop=true})
 fn lNotify(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .notify, "larper.notify");
+    need(L, p, .notify, "sigma.notify");
     const text = lua.checkSlice(L, 1);
     var desktop = false;
     if (lua.lua_type(L, 2) == lua.TTABLE) {
@@ -1589,37 +1589,37 @@ fn idArg(L: ?*lua.State, idx: c_int) ?u64 {
     }
 }
 
-/// larper.send(canal, texto): só quando a própria pessoa fez algo no plugin.
+/// sigma.send(canal, texto): só quando a própria pessoa fez algo no plugin.
 fn lSend(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .send, "larper.send");
-    if (p.gesture == 0) raise(L, tr("larper.send só funciona dentro de larper.command, larper.keybind, de um botão ou de um menu do plugin (nunca em resposta automática)", "larper.send only works inside larper.command, larper.keybind, or one of the plugin's buttons or menus (never as an automatic reply)"));
-    const ch = idArg(L, 1) orelse raise(L, tr("larper.send: canal inválido", "larper.send: invalid channel"));
+    need(L, p, .send, "sigma.send");
+    if (p.gesture == 0) raise(L, tr("sigma.send só funciona dentro de sigma.command, sigma.keybind, de um botão ou de um menu do plugin (nunca em resposta automática)", "sigma.send only works inside sigma.command, sigma.keybind, or one of the plugin's buttons or menus (never as an automatic reply)"));
+    const ch = idArg(L, 1) orelse raise(L, tr("sigma.send: canal inválido", "sigma.send: invalid channel"));
     const text = lua.checkSlice(L, 2);
-    if (text.len == 0 or text.len > 2000) raise(L, tr("larper.send: o texto precisa ter de 1 a 2000 bytes", "larper.send: the text must be 1 to 2000 bytes"));
-    if (p.sends >= max_sends) raise(L, tr("larper.send: no máximo 5 mensagens por comando", "larper.send: at most 5 messages per command"));
+    if (text.len == 0 or text.len > 2000) raise(L, tr("sigma.send: o texto precisa ter de 1 a 2000 bytes", "sigma.send: the text must be 1 to 2000 bytes"));
+    if (p.sends >= max_sends) raise(L, tr("sigma.send: no máximo 5 mensagens por comando", "sigma.send: at most 5 messages per command"));
     p.sends += 1;
     _ = p.w.emit(p.run, .{ .send = .{ .channel = ch, .text = p.dupText(L, text), .token = p.gesture } });
     return 0;
 }
 
-/// larper.lsp("zig", {"zls", "--flag"}): propõe um servidor de linguagem. Aqui
+/// sigma.lsp("zig", {"zls", "--flag"}): propõe um servidor de linguagem. Aqui
 /// nada roda: a proposta aparece nas Configurações e só vale depois que a pessoa
 /// ligar, para este plugin, esta linguagem e este argv.
 fn lLsp(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .lsp, "larper.lsp");
+    need(L, p, .lsp, "sigma.lsp");
     const lang = lua.checkSlice(L, 1);
     lua.luaL_checktype(L, 2, lua.TTABLE);
-    if (!lsp_core.validLang(lang)) raise(L, tr("larper.lsp: a linguagem é a etiqueta do bloco: até 16 letras minúsculas, números, _, - ou +", "larper.lsp: the language is the block tag: up to 16 lowercase letters, digits, _, - or +"));
+    if (!lsp_core.validLang(lang)) raise(L, tr("sigma.lsp: a linguagem é a etiqueta do bloco: até 16 letras minúsculas, números, _, - ou +", "sigma.lsp: the language is the block tag: up to 16 lowercase letters, digits, _, - or +"));
     const n = lua.lua_rawlen(L, 2);
-    if (n == 0 or n > lsp_core.max_argv) raise(L, tr("larper.lsp: o comando é uma lista de 1 a 32 textos", "larper.lsp: the command is a list of 1 to 32 strings"));
+    if (n == 0 or n > lsp_core.max_argv) raise(L, tr("sigma.lsp: o comando é uma lista de 1 a 32 textos", "sigma.lsp: the command is a list of 1 to 32 strings"));
     var cmd: lsp_core.Command = .{};
     var i: lua.Integer = 1;
     while (i <= @as(lua.Integer, @intCast(n))) : (i += 1) {
         const kind = lua.lua_rawgeti(L, 2, i);
-        const arg = (if (kind == lua.TSTRING) lua.toSlice(L, -1) else null) orelse raise(L, tr("larper.lsp: o comando é uma lista de textos", "larper.lsp: the command is a list of strings"));
-        if ((i == 1 and arg.len == 0) or !cmd.add(arg)) raise(L, tr("larper.lsp: comando vazio, longo demais ou com um byte nulo", "larper.lsp: command empty, too long or with a null byte"));
+        const arg = (if (kind == lua.TSTRING) lua.toSlice(L, -1) else null) orelse raise(L, tr("sigma.lsp: o comando é uma lista de textos", "sigma.lsp: the command is a list of strings"));
+        if ((i == 1 and arg.len == 0) or !cmd.add(arg)) raise(L, tr("sigma.lsp: comando vazio, longo demais ou com um byte nulo", "sigma.lsp: command empty, too long or with a null byte"));
         lua.pop(L, 1);
     }
     const entry: wire.LspServer = .{ .lang = lsp_core.Short.of(lang), .cmd = cmd };
@@ -1630,7 +1630,7 @@ fn lLsp(L: ?*lua.State) callconv(.c) c_int {
             return 0;
         }
     }
-    if (p.lsp.items.len >= max_lsp) raise(L, tr("larper.lsp: servidores demais", "larper.lsp: too many servers"));
+    if (p.lsp.items.len >= max_lsp) raise(L, tr("sigma.lsp: servidores demais", "sigma.lsp: too many servers"));
     p.lsp.append(p.gpa(), entry) catch raise(L, tr("sem memória", "out of memory"));
     return 0;
 }
@@ -1643,13 +1643,13 @@ fn pushChannel(L: ?*lua.State, p: *Rt) void {
     if (wb.channel == 0) lua.lua_pushnil(L) else pushRef(L, wb.channel, wb.channel_name[0..wb.channel_len]);
 }
 
-/// larper.channel() -> {id, name} ou nil
+/// sigma.channel() -> {id, name} ou nil
 fn lChannel(L: ?*lua.State) callconv(.c) c_int {
     pushChannel(L, plug(L));
     return 1;
 }
 
-/// larper.guild() -> {id, name} ou nil (mensagens diretas)
+/// sigma.guild() -> {id, name} ou nil (mensagens diretas)
 fn lGuild(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     var wb: WhereBuf = undefined;
@@ -1660,13 +1660,13 @@ fn lGuild(L: ?*lua.State) callconv(.c) c_int {
     return 1;
 }
 
-/// larper.lang() -> "pt" ou "en": o idioma da interface.
+/// sigma.lang() -> "pt" ou "en": o idioma da interface.
 fn lLang(L: ?*lua.State) callconv(.c) c_int {
     _ = lua.lua_pushstring(L, lang_code());
     return 1;
 }
 
-/// larper.tr("texto", "text"): o texto no idioma da interface.
+/// sigma.tr("texto", "text"): o texto no idioma da interface.
 fn lTr(L: ?*lua.State) callconv(.c) c_int {
     lua.luaL_checkany(L, 1);
     lua.luaL_checkany(L, 2);
@@ -1678,7 +1678,7 @@ fn lTr(L: ?*lua.State) callconv(.c) c_int {
 
 fn addTimer(L: ?*lua.State, every: bool) c_int {
     const p = plug(L);
-    need(L, p, .timers, if (every) "larper.every" else "larper.after");
+    need(L, p, .timers, if (every) "sigma.every" else "sigma.after");
     var ok: c_int = 0;
     const secs = lua.lua_tonumberx(L, 1, &ok);
     if (ok == 0 or std.math.isNan(secs)) raise(L, tr("o tempo é um número de segundos", "the time is a number of seconds"));
@@ -1686,7 +1686,7 @@ fn addTimer(L: ?*lua.State, every: bool) c_int {
     if (p.timers.items.len >= max_timers) raise(L, tr("temporizadores demais (no máximo 64)", "too many timers (at most 64)"));
     // Um pouco de folga: `after(0)` chamando a si mesmo não vira um laço a toda velocidade.
     const ms: i64 = @intFromFloat(std.math.clamp(secs * 1000, 10, 365.0 * 86400 * 1000));
-    if (every and ms < every_min_ms) raise(L, tr("larper.every: o menor intervalo é 1 segundo", "larper.every: the shortest interval is 1 second"));
+    if (every and ms < every_min_ms) raise(L, tr("sigma.every: o menor intervalo é 1 segundo", "sigma.every: the shortest interval is 1 second"));
     const id = p.next_id;
     p.next_id +%= 1;
     registryList(L, "timers");
@@ -1697,17 +1697,17 @@ fn addTimer(L: ?*lua.State, every: bool) c_int {
     return 1;
 }
 
-/// larper.after(segundos, fn) -> id
+/// sigma.after(segundos, fn) -> id
 fn lAfter(L: ?*lua.State) callconv(.c) c_int {
     return addTimer(L, false);
 }
 
-/// larper.every(segundos, fn) -> id
+/// sigma.every(segundos, fn) -> id
 fn lEvery(L: ?*lua.State) callconv(.c) c_int {
     return addTimer(L, true);
 }
 
-/// larper.cancel(id)
+/// sigma.cancel(id)
 fn lCancel(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     var ok: c_int = 0;
@@ -1741,10 +1741,10 @@ fn storageList(L: ?*lua.State) c_int {
     return lua.lua_gettop(L);
 }
 
-/// larper.storage.get(chave) -> valor (uma cópia: mudar não grava)
+/// sigma.storage.get(chave) -> valor (uma cópia: mudar não grava)
 fn lStoreGet(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .storage, "larper.storage");
+    need(L, p, .storage, "sigma.storage");
     _ = lua.checkSlice(L, 1);
     const t = storageList(L);
     lua.lua_pushvalue(L, 1);
@@ -1753,7 +1753,7 @@ fn lStoreGet(L: ?*lua.State) callconv(.c) c_int {
         return 1;
     }
     const text = lua.toSlice(L, -1).?;
-    json.decode(L, p.gpa(), &p.scratch, text) catch raise(L, tr("larper.storage: valor ilegível", "larper.storage: unreadable value"));
+    json.decode(L, p.gpa(), &p.scratch, text) catch raise(L, tr("sigma.storage: valor ilegível", "sigma.storage: unreadable value"));
     return 1;
 }
 
@@ -1770,12 +1770,12 @@ fn storeTouch(p: *Rt) void {
     p.store_dirty = true;
 }
 
-/// larper.storage.set(chave, valor): nil apaga.
+/// sigma.storage.set(chave, valor): nil apaga.
 fn lStoreSet(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .storage, "larper.storage");
+    need(L, p, .storage, "sigma.storage");
     const key = lua.checkSlice(L, 1);
-    if (key.len == 0 or key.len > 256) raise(L, tr("larper.storage: a chave tem de 1 a 256 bytes", "larper.storage: the key is 1 to 256 bytes"));
+    if (key.len == 0 or key.len > 256) raise(L, tr("sigma.storage: a chave tem de 1 a 256 bytes", "sigma.storage: the key is 1 to 256 bytes"));
     const t = storageList(L);
     const old = storeOld(L, t);
     lua.lua_pushvalue(L, 1);
@@ -1786,9 +1786,9 @@ fn lStoreSet(L: ?*lua.State) callconv(.c) c_int {
         storeTouch(p);
         return 0;
     }
-    const text = encodeValue(L, p, 2, storage_cap, "larper.storage");
+    const text = encodeValue(L, p, 2, storage_cap, "sigma.storage");
     // Sem espaço, o valor antigo continua lá.
-    if ((p.store_bytes -| old) + text.len + key.len > storage_cap) raise(L, tr("larper.storage: cheio (1 MB por plugin)", "larper.storage: full (1 MB per plugin)"));
+    if ((p.store_bytes -| old) + text.len + key.len > storage_cap) raise(L, tr("sigma.storage: cheio (1 MB por plugin)", "sigma.storage: full (1 MB per plugin)"));
     lua.pushSlice(L, text);
     lua.lua_rawset(L, t);
     p.store_bytes = (p.store_bytes -| old) + text.len + key.len;
@@ -1796,16 +1796,16 @@ fn lStoreSet(L: ?*lua.State) callconv(.c) c_int {
     return 0;
 }
 
-/// larper.storage.delete(chave)
+/// sigma.storage.delete(chave)
 fn lStoreDelete(L: ?*lua.State) callconv(.c) c_int {
     lua.lua_settop(L, 1);
     lua.lua_pushnil(L);
     return lStoreSet(L);
 }
 
-/// larper.storage.keys() -> lista de chaves
+/// sigma.storage.keys() -> lista de chaves
 fn lStoreKeys(L: ?*lua.State) callconv(.c) c_int {
-    need(L, plug(L), .storage, "larper.storage");
+    need(L, plug(L), .storage, "sigma.storage");
     const t = storageList(L);
     lua.newtable(L);
     const out = lua.lua_gettop(L);
@@ -1820,11 +1820,11 @@ fn lStoreKeys(L: ?*lua.State) callconv(.c) c_int {
     return 1;
 }
 
-/// larper.storage.clear()
+/// sigma.storage.clear()
 fn lStoreClear(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .storage, "larper.storage");
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper");
+    need(L, p, .storage, "sigma.storage");
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma");
     lua.newtable(L);
     lua.lua_setfield(L, -2, "storage");
     p.store_bytes = 0;
@@ -1849,12 +1849,12 @@ fn storageRead(L: ?*lua.State, p: *Rt, bytes: []const u8) void {
 /// Arquivo que não dá para ler: fica guardado à parte (não some o que a pessoa
 /// tinha) e o plugin começa do zero, com o erro na página.
 fn storageBroken(L: ?*lua.State, p: *Rt) void {
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper");
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma");
     lua.newtable(L);
     lua.lua_setfield(L, -2, "storage");
     p.store_bytes = 0;
     p.w.host.keep_broken_data(p.w.host.ctx, p.account, p.name);
-    p.report(tr("larper.storage: o arquivo estava ilegível; guardei uma cópia .bad e comecei do zero", "larper.storage: the file was unreadable; kept a .bad copy and started empty"));
+    p.report(tr("sigma.storage: o arquivo estava ilegível; guardei uma cópia .bad e comecei do zero", "sigma.storage: the file was unreadable; kept a .bad copy and started empty"));
 }
 
 fn storageWrite(L: ?*lua.State, p: *Rt) void {
@@ -1882,15 +1882,15 @@ fn json_or(L: ?*lua.State, r: anyerror!void) void {
     r catch raise(L, tr("sem memória", "out of memory"));
 }
 
-/// larper.json.encode(valor) -> texto
+/// sigma.json.encode(valor) -> texto
 fn lJsonEncode(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     lua.luaL_checkany(L, 1);
-    lua.pushSlice(L, encodeValue(L, p, 1, storage_cap, "larper.json.encode"));
+    lua.pushSlice(L, encodeValue(L, p, 1, storage_cap, "sigma.json.encode"));
     return 1;
 }
 
-/// larper.json.decode(texto) -> valor, ou nil e o erro
+/// sigma.json.decode(texto) -> valor, ou nil e o erro
 fn lJsonDecode(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     const text = lua.checkSlice(L, 1);
@@ -1903,11 +1903,11 @@ fn lJsonDecode(L: ?*lua.State) callconv(.c) c_int {
     return 1;
 }
 
-/// larper.urlencode(texto): pronto para ir numa URL.
+/// sigma.urlencode(texto): pronto para ir numa URL.
 fn lUrlencode(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
     const text = lua.checkSlice(L, 1);
-    if (text.len > 64 * 1024) raise(L, tr("larper.urlencode: texto longo demais", "larper.urlencode: text too long"));
+    if (text.len > 64 * 1024) raise(L, tr("sigma.urlencode: texto longo demais", "sigma.urlencode: text too long"));
     p.scratch.clearRetainingCapacity();
     const a = p.gpa();
     for (text) |ch| {
@@ -2114,10 +2114,10 @@ fn treeChildrenAs(L: ?*lua.State, p: *Rt, tree: *panel.Tree, t: c_int, depth: u8
     return first;
 }
 
-/// larper.panel.set({ title = "…", {type="text", text="…"}, … })
+/// sigma.panel.set({ title = "…", {type="text", text="…"}, … })
 fn lPanelSet(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .panel, "larper.panel");
+    need(L, p, .panel, "sigma.panel");
     lua.luaL_checktype(L, 1, lua.TTABLE);
     if (p.wip) |old| {
         old.destroy();
@@ -2126,9 +2126,9 @@ fn lPanelSet(L: ?*lua.State) callconv(.c) c_int {
     const tree = panel.Tree.create(p.gpa()) catch raise(L, tr("sem memória", "out of memory"));
     p.wip = tree;
     p.cb_field = "cb_now";
-    p.tree_api = "larper.panel.set";
+    p.tree_api = "sigma.panel.set";
     // As funções da árvore passada continuam valendo até a próxima troca.
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper");
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma");
     _ = lua.lua_getfield(L, -1, "cb_now");
     lua.lua_setfield(L, -2, "cb_prev");
     lua.newtable(L);
@@ -2143,13 +2143,13 @@ fn lPanelSet(L: ?*lua.State) callconv(.c) c_int {
     return 0;
 }
 
-/// larper.settings.set({ {type="select", key=, label=, value=, options={…}, on_change=fn}, … })
+/// sigma.settings.set({ {type="select", key=, label=, value=, options={…}, on_change=fn}, … })
 /// Aparece no cartão do plugin em Configurações → Plugins, enquanto ele está ligado.
-/// Quem guarda o valor é o plugin. Tem as próprias funções: um larper.panel.set
+/// Quem guarda o valor é o plugin. Tem as próprias funções: um sigma.panel.set
 /// não mata as daqui, nem o contrário.
 fn lSettingsSet(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .settings, "larper.settings");
+    need(L, p, .settings, "sigma.settings");
     lua.luaL_checktype(L, 1, lua.TTABLE);
     if (p.wip) |old| {
         old.destroy();
@@ -2159,8 +2159,8 @@ fn lSettingsSet(L: ?*lua.State) callconv(.c) c_int {
     p.wip = tree;
     tree.settings = true;
     p.cb_field = "opt_now";
-    p.tree_api = "larper.settings.set";
-    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "larper");
+    p.tree_api = "sigma.settings.set";
+    _ = lua.lua_getfield(L, lua.REGISTRYINDEX, "sigma");
     _ = lua.lua_getfield(L, -1, "opt_now");
     lua.lua_setfield(L, -2, "opt_prev");
     lua.newtable(L);
@@ -2175,9 +2175,9 @@ fn lSettingsSet(L: ?*lua.State) callconv(.c) c_int {
 
 fn panelShow(L: ?*lua.State, open: bool) c_int {
     const p = plug(L);
-    need(L, p, .panel, "larper.panel");
+    need(L, p, .panel, "sigma.panel");
     // Abrir na cara da pessoa só quando foi ela quem pediu.
-    if (open and p.gesture == 0) raise(L, tr("larper.panel.open só funciona num comando, atalho, botão ou menu do plugin", "larper.panel.open only works inside one of the plugin's commands, keybinds, buttons or menus"));
+    if (open and p.gesture == 0) raise(L, tr("sigma.panel.open só funciona num comando, atalho, botão ou menu do plugin", "sigma.panel.open only works inside one of the plugin's commands, keybinds, buttons or menus"));
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .panel_show = .{ .open = open, .token = p.gesture } });
     return 0;
@@ -2203,16 +2203,16 @@ fn menuChoices(L: ?*lua.State, t: c_int, raw: *[max_choices]RawChoice) usize {
     // A tabela fica na pilha: os textos lidos continuam vivos até o fim da chamada.
     const list = lua.lua_gettop(L);
     const n = lua.lua_rawlen(L, list);
-    if (n > max_choices) raise(L, tr("larper.menu: no máximo 16 escolhas", "larper.menu: at most 16 choices"));
+    if (n > max_choices) raise(L, tr("sigma.menu: no máximo 16 escolhas", "sigma.menu: at most 16 choices"));
     for (raw[0..n], 1..) |*r, i| {
-        if (lua.lua_rawgeti(L, list, @intCast(i)) != lua.TTABLE) raise(L, tr("larper.menu: cada escolha é uma tabela {value=, pt=, en=}", "larper.menu: each choice is a table {value=, pt=, en=}"));
+        if (lua.lua_rawgeti(L, list, @intCast(i)) != lua.TTABLE) raise(L, tr("sigma.menu: cada escolha é uma tabela {value=, pt=, en=}", "sigma.menu: each choice is a table {value=, pt=, en=}"));
         const it = lua.lua_gettop(L);
         var pt = fieldStr(L, it, "pt");
         var en = fieldStr(L, it, "en");
         if (pt.len == 0) pt = en;
         if (en.len == 0) en = pt;
         const value = fieldStr(L, it, "value");
-        if (value.len == 0 or pt.len == 0) raise(L, tr("larper.menu: cada escolha precisa de `value` e de um rótulo", "larper.menu: each choice needs a `value` and a label"));
+        if (value.len == 0 or pt.len == 0) raise(L, tr("sigma.menu: cada escolha precisa de `value` e de um rótulo", "sigma.menu: each choice needs a `value` and a label"));
         r.* = .{ .value = clip(value, 64), .pt = clip(pt, 80), .en = clip(en, 80) };
         lua.pop(L, 1);
     }
@@ -2221,13 +2221,13 @@ fn menuChoices(L: ?*lua.State, t: c_int, raw: *[max_choices]RawChoice) usize {
 
 const RawChoice = struct { value: []const u8, pt: []const u8, en: []const u8 };
 
-/// larper.menu("message" | "user", "rótulo" ou {pt=, en=}, fn(alvo, escolha),
+/// sigma.menu("message" | "user", "rótulo" ou {pt=, en=}, fn(alvo, escolha),
 ///   [{choices={{value=, pt=, en=}, …}, toolbar="🌐"}])
 fn lMenu(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .menu, "larper.menu");
+    need(L, p, .menu, "sigma.menu");
     const kind_s = lua.checkSlice(L, 1);
-    const kind = std.meta.stringToEnum(wire.MenuKind, kind_s) orelse raise(L, tr("larper.menu: use \"message\" ou \"user\"", "larper.menu: use \"message\" or \"user\""));
+    const kind = std.meta.stringToEnum(wire.MenuKind, kind_s) orelse raise(L, tr("sigma.menu: use \"message\" ou \"user\"", "sigma.menu: use \"message\" or \"user\""));
     lua.luaL_checktype(L, 3, lua.TFUNCTION);
     var pt: []const u8 = "";
     var en: []const u8 = "";
@@ -2244,14 +2244,14 @@ fn lMenu(L: ?*lua.State) callconv(.c) c_int {
         },
         else => {},
     }
-    if (pt.len == 0) raise(L, tr("larper.menu: falta o rótulo", "larper.menu: the label is missing"));
-    if (p.menus.items.len >= max_menus) raise(L, tr("larper.menu: no máximo 4 entradas por plugin", "larper.menu: at most 4 entries per plugin"));
+    if (pt.len == 0) raise(L, tr("sigma.menu: falta o rótulo", "sigma.menu: the label is missing"));
+    if (p.menus.items.len >= max_menus) raise(L, tr("sigma.menu: no máximo 4 entradas por plugin", "sigma.menu: at most 4 entries per plugin"));
     var raw: [max_choices]RawChoice = undefined;
     var n_choices: usize = 0;
     var toolbar: []const u8 = "";
     if (lua.lua_type(L, 4) == lua.TTABLE) {
         toolbar = clip(fieldStr(L, 4, "toolbar"), 16);
-        if (toolbar.len > 0 and kind != .message) raise(L, tr("larper.menu: `toolbar` só vale em \"message\"", "larper.menu: `toolbar` only works on \"message\""));
+        if (toolbar.len > 0 and kind != .message) raise(L, tr("sigma.menu: `toolbar` só vale em \"message\"", "sigma.menu: `toolbar` only works on \"message\""));
         n_choices = menuChoices(L, 4, &raw);
     }
     registryList(L, "menus");
@@ -2282,11 +2282,11 @@ fn msgIdArg(L: ?*lua.State, api: []const u8) u64 {
     return id;
 }
 
-/// larper.decorate(mensagem, {badge=, note=, collapse=, label=})
+/// sigma.decorate(mensagem, {badge=, note=, collapse=, label=})
 fn lDecorate(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .decorate, "larper.decorate");
-    const id = msgIdArg(L, "larper.decorate");
+    need(L, p, .decorate, "sigma.decorate");
+    const id = msgIdArg(L, "sigma.decorate");
     lua.luaL_checktype(L, 2, lua.TTABLE);
     p.budgetCmd(L);
     // Lê tudo antes de alocar: o que pode dar erro de Lua vem primeiro.
@@ -2310,32 +2310,32 @@ fn lDecorate(L: ?*lua.State) callconv(.c) c_int {
     return 0;
 }
 
-/// larper.undecorate(mensagem)
+/// sigma.undecorate(mensagem)
 fn lUndecorate(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .decorate, "larper.undecorate");
-    const id = msgIdArg(L, "larper.undecorate");
+    need(L, p, .decorate, "sigma.undecorate");
+    const id = msgIdArg(L, "sigma.undecorate");
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .deco_remove = id });
     return 0;
 }
 
-/// larper.rules({ {word="x", collapse=true, label="…"}, {user="123", badge="…"} })
+/// sigma.rules({ {word="x", collapse=true, label="…"}, {user="123", badge="…"} })
 /// A interface aplica sozinha, sem chamar o plugin a cada mensagem.
 fn lRules(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .decorate, "larper.rules");
+    need(L, p, .decorate, "sigma.rules");
     lua.luaL_checktype(L, 1, lua.TTABLE);
     p.budgetCmd(L);
     const a = p.gpa();
     const n: usize = @intCast(lua.lua_rawlen(L, 1));
-    if (n > deco.max_rules) raise(L, tr("larper.rules: no máximo 256 regras", "larper.rules: at most 256 rules"));
+    if (n > deco.max_rules) raise(L, tr("sigma.rules: no máximo 256 regras", "sigma.rules: at most 256 rules"));
     // Lê tudo antes de alocar: um erro de Lua no meio não deixa nada para trás.
     // (Os textos continuam vivos: estão na tabela, que é o argumento.)
     const Raw = struct { word: []const u8, user: u64, badge: []const u8, note: []const u8, label: []const u8, collapse: bool };
     var raw: [deco.max_rules]Raw = undefined;
     for (raw[0..n], 1..) |*r, i| {
-        if (lua.lua_rawgeti(L, 1, @intCast(i)) != lua.TTABLE) raise(L, tr("larper.rules: cada regra é uma tabela", "larper.rules: each rule is a table"));
+        if (lua.lua_rawgeti(L, 1, @intCast(i)) != lua.TTABLE) raise(L, tr("sigma.rules: cada regra é uma tabela", "sigma.rules: each rule is a table"));
         const t = lua.lua_gettop(L);
         r.* = .{
             .word = std.mem.trim(u8, fieldText(L, t, "word"), " \t\r\n"),
@@ -2383,11 +2383,11 @@ fn dupRule(a: std.mem.Allocator, word: []const u8, badge: []const u8, note: []co
 
 // --- Mensagens, composição e pulo ---------------------------------------------------
 
-/// larper.messages([{channel=id, limit=n}], fn(lista)) -> true, ou false se pediu
+/// sigma.messages([{channel=id, limit=n}], fn(lista)) -> true, ou false se pediu
 /// cedo demais. A interface copia as carregadas e o resultado chega por `fn`.
 fn lMessages(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .messages, "larper.messages");
+    need(L, p, .messages, "sigma.messages");
     var channel: u64 = 0;
     var limit: u32 = messages_default;
     var cb: c_int = 1;
@@ -2396,7 +2396,7 @@ fn lMessages(L: ?*lua.State) callconv(.c) c_int {
         cb = 2;
         files = fieldBool(L, 1, "files");
         const ch_text = fieldText(L, 1, "channel");
-        if (ch_text.len > 0) channel = parseId(ch_text) orelse raise(L, tr("larper.messages: canal inválido", "larper.messages: invalid channel"));
+        if (ch_text.len > 0) channel = parseId(ch_text) orelse raise(L, tr("sigma.messages: canal inválido", "sigma.messages: invalid channel"));
         const n = fieldNum(L, 1, "limit");
         if (n > 0) limit = @intFromFloat(@min(n, messages_max));
     }
@@ -2413,7 +2413,7 @@ fn lMessages(L: ?*lua.State) callconv(.c) c_int {
     lua.lua_pushvalue(L, cb);
     lua.lua_rawseti(L, -2, id);
     p.budgetCmd(L);
-    const needles = if (cb == 2) optNeedles(L, p, 1, "larper.messages") else @as([][]u8, &.{});
+    const needles = if (cb == 2) optNeedles(L, p, 1, "sigma.messages") else @as([][]u8, &.{});
     _ = p.w.emit(p.run, .{ .want_messages = .{ .req = id, .channel = channel, .limit = limit, .files = files, .needles = needles } });
     lua.lua_pushboolean(L, 1);
     return 1;
@@ -2423,39 +2423,39 @@ fn needGesture(L: ?*lua.State, p: *const Rt, api: []const u8) void {
     if (p.gesture == 0) raiseFmt(L, "{s} só funciona num comando, atalho, botão ou menu do plugin", "{s} only works inside one of the plugin's commands, keybinds, buttons or menus", .{api});
 }
 
-/// larper.jump(canal, mensagem): abre o canal e vai até a mensagem.
+/// sigma.jump(canal, mensagem): abre o canal e vai até a mensagem.
 fn lJump(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    needGesture(L, p, "larper.jump");
+    needGesture(L, p, "sigma.jump");
     const ch = idArg(L, 1) orelse 0;
-    const id = idArg(L, 2) orelse raise(L, tr("larper.jump: mensagem inválida", "larper.jump: invalid message"));
-    if (ch == 0) raise(L, tr("larper.jump: falta o canal", "larper.jump: the channel is missing"));
+    const id = idArg(L, 2) orelse raise(L, tr("sigma.jump: mensagem inválida", "sigma.jump: invalid message"));
+    if (ch == 0) raise(L, tr("sigma.jump: falta o canal", "sigma.jump: the channel is missing"));
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .jump = .{ .channel = ch, .id = id, .token = p.gesture } });
     return 0;
 }
 
-/// larper.insert(texto): põe na caixa de mensagem (nunca envia). Só num gesto: um
+/// sigma.insert(texto): põe na caixa de mensagem (nunca envia). Só num gesto: um
 /// plugin em segundo plano escrevendo ali faria a pessoa mandar o que não pediu.
 fn lInsert(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .composer, "larper.insert");
+    need(L, p, .composer, "sigma.insert");
     // A resposta de um pedido feito num gesto também vale: a pessoa pediu, e a caixa
-    // não envia sozinha. Enviar (larper.send) continua pedindo o gesto em si.
+    // não envia sozinha. Enviar (sigma.send) continua pedindo o gesto em si.
     const token = if (p.gesture != 0) p.gesture else p.carry;
-    if (token == 0) needGesture(L, p, "larper.insert");
+    if (token == 0) needGesture(L, p, "sigma.insert");
     const text = lua.checkSlice(L, 1);
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .insert = .{ .text = p.dupText(L, clip(text, 2000)), .token = token } });
     return 0;
 }
 
-/// larper.copy(texto): para a área de transferência. Só num gesto.
+/// sigma.copy(texto): para a área de transferência. Só num gesto.
 fn lCopy(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    needGesture(L, p, "larper.copy");
+    needGesture(L, p, "sigma.copy");
     const text = lua.checkSlice(L, 1);
-    if (text.len == 0 or text.len > 64 * 1024) raise(L, tr("larper.copy: o texto precisa ter de 1 byte a 64 KB", "larper.copy: the text must be 1 byte to 64 KB"));
+    if (text.len == 0 or text.len > 64 * 1024) raise(L, tr("sigma.copy: o texto precisa ter de 1 byte a 64 KB", "sigma.copy: the text must be 1 byte to 64 KB"));
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .copy = .{ .text = p.dupText(L, text), .token = p.gesture } });
     return 0;
@@ -2470,14 +2470,14 @@ pub fn validOpenUrl(url: []const u8) bool {
     return true;
 }
 
-/// larper.open(url): abre no navegador. Só num gesto, e só com a capacidade `links`:
+/// sigma.open(url): abre no navegador. Só num gesto, e só com a capacidade `links`:
 /// um endereço pode levar dados embutidos, então a página avisa quem também lê mensagens.
 fn lOpen(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .links, "larper.open");
-    needGesture(L, p, "larper.open");
+    need(L, p, .links, "sigma.open");
+    needGesture(L, p, "sigma.open");
     const url = lua.checkSlice(L, 1);
-    if (!validOpenUrl(url)) raise(L, tr("larper.open: só endereços http:// ou https://", "larper.open: only http:// or https:// addresses"));
+    if (!validOpenUrl(url)) raise(L, tr("sigma.open: só endereços http:// ou https://", "sigma.open: only http:// or https:// addresses"));
     p.budgetCmd(L);
     _ = p.w.emit(p.run, .{ .open_url = .{ .url = p.dupText(L, url), .token = p.gesture } });
     return 0;
@@ -2487,31 +2487,31 @@ fn validTrigger(s: []const u8) bool {
     return s.len == 1 and std.mem.indexOfScalar(u8, ";!$%&+=?^", s[0]) != null;
 }
 
-/// larper.completions(";", { {name=, text=, hint=}, … }): sugestões na caixa de
+/// sigma.completions(";", { {name=, text=, hint=}, … }): sugestões na caixa de
 /// mensagem ao digitar o gatilho. É uma lista pronta: a busca roda na interface, a
 /// cada tecla, sem chamar o plugin. Escolher põe `text` na caixa; nunca envia.
 fn lCompletions(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .completions, "larper.completions");
+    need(L, p, .completions, "sigma.completions");
     const trig = lua.checkSlice(L, 1);
-    if (!validTrigger(trig)) raise(L, tr("larper.completions: o gatilho é um destes: ; ! $ % & + = ? ^", "larper.completions: the trigger is one of: ; ! $ % & + = ? ^"));
+    if (!validTrigger(trig)) raise(L, tr("sigma.completions: o gatilho é um destes: ; ! $ % & + = ? ^", "sigma.completions: the trigger is one of: ; ! $ % & + = ? ^"));
     lua.luaL_checktype(L, 2, lua.TTABLE);
     p.budgetCmd(L);
     const n: usize = @intCast(lua.lua_rawlen(L, 2));
-    if (n > max_completions) raise(L, tr("larper.completions: no máximo 256 sugestões", "larper.completions: at most 256 suggestions"));
+    if (n > max_completions) raise(L, tr("sigma.completions: no máximo 256 sugestões", "sigma.completions: at most 256 suggestions"));
     // Lê tudo antes de alocar (os textos continuam vivos: estão na tabela).
     const Raw = struct { name: []const u8, text: []const u8, hint: []const u8 };
     var raw: [max_completions]Raw = undefined;
     var total: usize = 0;
     for (raw[0..n], 1..) |*r, i| {
-        if (lua.lua_rawgeti(L, 2, @intCast(i)) != lua.TTABLE) raise(L, tr("larper.completions: cada sugestão é uma tabela {name=, text=}", "larper.completions: each suggestion is a table {name=, text=}"));
+        if (lua.lua_rawgeti(L, 2, @intCast(i)) != lua.TTABLE) raise(L, tr("sigma.completions: cada sugestão é uma tabela {name=, text=}", "sigma.completions: each suggestion is a table {name=, text=}"));
         const t = lua.lua_gettop(L);
         r.* = .{ .name = clip(fieldStr(L, t, "name"), 48), .text = clip(fieldStr(L, t, "text"), 2000), .hint = clip(fieldStr(L, t, "hint"), 48) };
-        if (r.name.len == 0 or r.text.len == 0) raise(L, tr("larper.completions: cada sugestão precisa de `name` e `text`", "larper.completions: each suggestion needs `name` and `text`"));
+        if (r.name.len == 0 or r.text.len == 0) raise(L, tr("sigma.completions: cada sugestão precisa de `name` e `text`", "sigma.completions: each suggestion needs `name` and `text`"));
         total += r.name.len + r.text.len + r.hint.len;
         lua.pop(L, 1);
     }
-    if (total > completions_bytes) raise(L, tr("larper.completions: texto demais (até 256 KB)", "larper.completions: too much text (up to 256 KB)"));
+    if (total > completions_bytes) raise(L, tr("sigma.completions: texto demais (até 256 KB)", "sigma.completions: too much text (up to 256 KB)"));
     const a = p.gpa();
     const set = a.create(wire.CompletionSet) catch return 0;
     const items = a.alloc(wire.Completion, n) catch {
@@ -2534,52 +2534,52 @@ fn completionsFailed(set: *wire.CompletionSet, a: std.mem.Allocator) c_int {
     return 0;
 }
 
-/// Uma regra de larper.rewrite, depois de lida (os textos estão na tabela).
+/// Uma regra de sigma.rewrite, depois de lida (os textos estão na tabela).
 const RawRule = struct { kind: rewrite.Kind, from: []const u8, to: []const u8 };
 
 fn rewriteAdd(L: ?*lua.State, raw: *[rewrite.max_rules]RawRule, n: *usize, r: RawRule) void {
-    if (n.* >= raw.len) raise(L, tr("larper.rewrite: no máximo 256 regras", "larper.rewrite: at most 256 rules"));
+    if (n.* >= raw.len) raise(L, tr("sigma.rewrite: no máximo 256 regras", "sigma.rewrite: at most 256 rules"));
     raw[n.*] = r;
     n.* += 1;
 }
 
-/// larper.rewrite({ {strip_params={"utm_*", "fbclid"}, host="exemplo.com"},
+/// sigma.rewrite({ {strip_params={"utm_*", "fbclid"}, host="exemplo.com"},
 ///   {replace_host="a.com", with="b.com"}, {word="vc", with="você"} })
 /// Regras fixas para o texto que a pessoa envia: o app aplica sozinho, sem o Lua ver
 /// o que ela escreveu. Chamar de novo troca as regras todas.
 fn lRewrite(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .rewrite, "larper.rewrite");
+    need(L, p, .rewrite, "sigma.rewrite");
     lua.luaL_checktype(L, 1, lua.TTABLE);
     p.budgetCmd(L);
     var raw: [rewrite.max_rules]RawRule = undefined;
     var count: usize = 0;
     const total: usize = @intCast(lua.lua_rawlen(L, 1));
-    if (total > rewrite.max_rules) raise(L, tr("larper.rewrite: no máximo 256 regras", "larper.rewrite: at most 256 rules"));
+    if (total > rewrite.max_rules) raise(L, tr("sigma.rewrite: no máximo 256 regras", "sigma.rewrite: at most 256 rules"));
     for (0..total) |i| {
-        if (lua.lua_rawgeti(L, 1, @intCast(i + 1)) != lua.TTABLE) raise(L, tr("larper.rewrite: cada regra é uma tabela", "larper.rewrite: each rule is a table"));
+        if (lua.lua_rawgeti(L, 1, @intCast(i + 1)) != lua.TTABLE) raise(L, tr("sigma.rewrite: cada regra é uma tabela", "sigma.rewrite: each rule is a table"));
         const t = lua.lua_gettop(L);
         const word = fieldStr(L, t, "word");
         const from_host = fieldStr(L, t, "replace_host");
         const with = fieldStr(L, t, "with");
         if (word.len > 0) {
-            if (!rewrite.validWord(word)) raise(L, tr("larper.rewrite: `word` é uma palavra só, sem espaço", "larper.rewrite: `word` is a single word, no spaces"));
-            if (!rewrite.validWith(with)) raise(L, tr("larper.rewrite: `with` tem de 1 a 200 bytes, sem menção nem link", "larper.rewrite: `with` is 1 to 200 bytes, with no mention or link"));
+            if (!rewrite.validWord(word)) raise(L, tr("sigma.rewrite: `word` é uma palavra só, sem espaço", "sigma.rewrite: `word` is a single word, no spaces"));
+            if (!rewrite.validWith(with)) raise(L, tr("sigma.rewrite: `with` tem de 1 a 200 bytes, sem menção nem link", "sigma.rewrite: `with` is 1 to 200 bytes, with no mention or link"));
             rewriteAdd(L, &raw, &count, .{ .kind = .word, .from = word, .to = with });
         } else if (from_host.len > 0) {
-            if (!manifest.validHost(from_host) or !manifest.validHost(with)) raise(L, tr("larper.rewrite: `replace_host` e `with` são só o nome (a.com), sem https:// nem caminho", "larper.rewrite: `replace_host` and `with` are just the name (a.com), no https:// or path"));
+            if (!manifest.validHost(from_host) or !manifest.validHost(with)) raise(L, tr("sigma.rewrite: `replace_host` e `with` são só o nome (a.com), sem https:// nem caminho", "sigma.rewrite: `replace_host` and `with` are just the name (a.com), no https:// or path"));
             rewriteAdd(L, &raw, &count, .{ .kind = .replace_host, .from = from_host, .to = with });
         } else {
             _ = lua.lua_pushstring(L, "strip_params");
-            if (lua.lua_rawget(L, t) != lua.TTABLE) raise(L, tr("larper.rewrite: a regra precisa de `strip_params`, `replace_host` ou `word`", "larper.rewrite: a rule needs `strip_params`, `replace_host` or `word`"));
+            if (lua.lua_rawget(L, t) != lua.TTABLE) raise(L, tr("sigma.rewrite: a regra precisa de `strip_params`, `replace_host` ou `word`", "sigma.rewrite: a rule needs `strip_params`, `replace_host` or `word`"));
             const list = lua.lua_gettop(L);
             const host = fieldStr(L, t, "host");
-            if (host.len > 0 and !manifest.validHost(host)) raise(L, tr("larper.rewrite: `host` é só o nome (a.com)", "larper.rewrite: `host` is just the name (a.com)"));
+            if (host.len > 0 and !manifest.validHost(host)) raise(L, tr("sigma.rewrite: `host` é só o nome (a.com)", "sigma.rewrite: `host` is just the name (a.com)"));
             const m: usize = @intCast(lua.lua_rawlen(L, list));
             for (0..m) |k| {
                 const tp = lua.lua_rawgeti(L, list, @intCast(k + 1));
                 const name = (if (tp == lua.TSTRING) lua.toSlice(L, -1) else null) orelse "";
-                if (!rewrite.validParam(name)) raise(L, tr("larper.rewrite: nome de parâmetro inválido", "larper.rewrite: invalid parameter name"));
+                if (!rewrite.validParam(name)) raise(L, tr("sigma.rewrite: nome de parâmetro inválido", "sigma.rewrite: invalid parameter name"));
                 rewriteAdd(L, &raw, &count, .{ .kind = .strip_param, .from = name, .to = host });
                 lua.pop(L, 1);
             }
@@ -2648,14 +2648,14 @@ fn httpHeaders(L: ?*lua.State, p: *Rt, opts: c_int) [][:0]u8 {
 
 fn httpCall(L: ?*lua.State, post: bool) c_int {
     const p = plug(L);
-    const api = if (post) "larper.http.post" else "larper.http.get";
+    const api = if (post) "sigma.http.post" else "sigma.http.get";
     need(L, p, .http, api);
     const url = lua.checkSlice(L, 1);
     const opts: c_int = if (lua.lua_type(L, 2) == lua.TTABLE) 2 else 0;
     const cb: c_int = if (opts != 0) 3 else 2;
     lua.luaL_checktype(L, cb, lua.TFUNCTION);
     const parsed = manifest.parseHttps(url) orelse
-        raiseFmt(L, "{s}: a URL precisa ser https://nome/caminho, sem porta nem usuário e com o texto codificado (larper.urlencode)", "{s}: the URL must be https://name/path, with no port or user and with the text encoded (larper.urlencode)", .{api});
+        raiseFmt(L, "{s}: a URL precisa ser https://nome/caminho, sem porta nem usuário e com o texto codificado (sigma.urlencode)", "{s}: the URL must be https://name/path, with no port or user and with the text encoded (sigma.urlencode)", .{api});
     if (!p.m.declares(parsed.host)) raiseFmt(L, "{s}: \"{s}\" não está em @hosts no cabeçalho", "{s}: \"{s}\" isn't in @hosts in the manifest", .{ api, parsed.host });
     var body: []const u8 = "";
     if (opts != 0) body = fieldText(L, opts, "body");
@@ -2708,20 +2708,20 @@ fn httpCall(L: ?*lua.State, post: bool) c_int {
     return 0;
 }
 
-/// larper.http.get(url, [opções], fn(resposta))
+/// sigma.http.get(url, [opções], fn(resposta))
 fn lHttpGet(L: ?*lua.State) callconv(.c) c_int {
     return httpCall(L, false);
 }
 
-/// larper.http.post(url, {body=, headers=}, fn(resposta))
+/// sigma.http.post(url, {body=, headers=}, fn(resposta))
 fn lHttpPost(L: ?*lua.State) callconv(.c) c_int {
     return httpCall(L, true);
 }
 
-/// larper.http.allowed("host") -> a pessoa já aprovou?
+/// sigma.http.allowed("host") -> a pessoa já aprovou?
 fn lHttpAllowed(L: ?*lua.State) callconv(.c) c_int {
     const p = plug(L);
-    need(L, p, .http, "larper.http.allowed");
+    need(L, p, .http, "sigma.http.allowed");
     const host = lua.checkSlice(L, 1);
     lua.lua_pushboolean(L, @intFromBool(p.m.declares(host) and p.hostApproved(host)));
     return 1;

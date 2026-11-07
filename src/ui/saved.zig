@@ -1,6 +1,6 @@
 //! Tela "Salvas" (Ctrl+Shift+S ou o botão do cabeçalho): as mensagens
 //! salvas pelo menu do botão direito, cada uma com uma anotação editável.
-//! Também lê e grava o arquivo (~/.config/larpercord/saved-<conta>.json,
+//! Também lê e grava o arquivo (~/.config/sigmacord/saved-<conta>.json,
 //! com permissão 600: são cópias de conversas). Nada disso vai para o Discord.
 const std = @import("std");
 const c = @import("c");

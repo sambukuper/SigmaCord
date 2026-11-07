@@ -2,7 +2,7 @@
 // é transparente: o compositor (Hyprland, KDE…) aplica o blur de verdade.
 // Exclusivo: reflexo de luz no topo de cada cartão, grão de vidro fosco e uma
 // aurora opcional que passa por trás de tudo.
-theme "vidro" description="Cartões de vidro sobre o wallpaper, com blur do compositor e reflexo." description-en="Glass cards over the wallpaper, with compositor blur and a sheen." author="larperCord" preview=glass
+theme "vidro" description="Cartões de vidro sobre o wallpaper, com blur do compositor e reflexo." description-en="Glass cards over the wallpaper, with compositor blur and a sheen." author="SigmaCord" preview=glass
 palette "wal"
 window transparent=#true
 

@@ -14,7 +14,7 @@ const qa = @import("qa.zig");
 
 const max_runs = 12;
 
-extern fn larper_font_ascent(font: *c.ImFont, size: f32) f32;
+extern fn sigma_font_ascent(font: *c.ImFont, size: f32) f32;
 
 const Run = struct {
     text: []const u8,
@@ -87,7 +87,7 @@ fn build(ctx: *const d.Ctx, tx: *const tfx.TextFx, out: *[max_runs]Run, advs: *A
             .color = if (sp.color) |e| e.eval(toks) else base_color,
             .tracking = tracking * d.text_scale,
             .width = trackedWidth(font, size, text, tracking, advs),
-            .ascent = larper_font_ascent(font, d.fontPx(size)),
+            .ascent = sigma_font_ascent(font, d.fontPx(size)),
             .first_adv = first_adv,
         };
     }

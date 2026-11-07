@@ -49,7 +49,7 @@ pub fn logo(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
     d.rect(dl, .{ .x = bx, .y = cy - 9, .w = 22, .h = 16 }, ctx.col(.accent), 7);
     c.ImDrawList_AddTriangleFilled(dl, d.v(bx + 4, cy + 5), d.v(bx + 10, cy + 5), d.v(bx + 2, cy + 11), ctx.col(.accent).u());
     for ([_]f32{ -5, 0, 5 }) |dx| d.circle(dl, bx + 11 + dx, cy - 1, 1.8, ctx.col(.accent_text));
-    d.text(dl, fam.get(.bold), fs, bx + 32, d.centerY(r, fs), ctx.col(.text), "larperCord");
+    d.text(dl, fam.get(.bold), fs, bx + 32, d.centerY(r, fs), ctx.col(.text), "SigmaCord");
 }
 
 pub fn topbar(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {

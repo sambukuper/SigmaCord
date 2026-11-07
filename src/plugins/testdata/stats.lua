@@ -5,17 +5,17 @@
 -- @version 1.0.0
 -- @capabilities messages, panel, timers
 
-local tr = larper.tr
+local tr = sigma.tr
 local open = false
 local last = nil
 local refresh
 
 local function render()
   local tree = { title = tr("Estatísticas do canal", "Channel stats") }
-  local ch = larper.channel()
+  local ch = sigma.channel()
   if not ch then
     tree[#tree + 1] = { type = "text", text = tr("Abra um canal para ver.", "Open a channel to see."), style = "muted" }
-    larper.panel.set(tree)
+    sigma.panel.set(tree)
     return
   end
   tree[#tree + 1] = { type = "heading", text = "#" .. ch.name }
@@ -49,7 +49,7 @@ local function render()
       tree[#tree + 1] = { type = "text", style = "muted", text = tr(last.attachments .. " anexos", last.attachments .. " attachments") }
     end
   end
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
 local function count(list)
@@ -75,31 +75,31 @@ local function count(list)
 end
 
 refresh = function()
-  larper.messages({ limit = 500 }, function(list)
+  sigma.messages({ limit = 500 }, function(list)
     last = count(list)
     render()
   end)
 end
 
-larper.on("panel", function(is_open)
+sigma.on("panel", function(is_open)
   open = is_open
   if open then refresh() end
 end)
 
 -- Trocou de canal com o painel aberto: as mensagens podem ainda estar chegando.
-larper.on("channel", function()
+sigma.on("channel", function()
   if not open then return end
   last = nil
   render()
-  larper.after(0.7, function()
+  sigma.after(0.7, function()
     if open then refresh() end
   end)
 end)
 
-larper.command("/stats", function()
+sigma.command("/stats", function()
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
-larper.on("lang", render)
+sigma.on("lang", render)
 render()

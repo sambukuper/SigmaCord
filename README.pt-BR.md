@@ -1,6 +1,6 @@
 <div align="center">
 
-# larperCord
+# SigmaCord
 
 **Um cliente de Discord nativo, para Linux e Windows, com cerca de 130 MB de RAM, cuja interface inteira é um arquivo de tema.**
 
@@ -8,7 +8,7 @@ Zig · SDL3 · Dear ImGui · FreeType · zero Electron
 
 [English](README.md) · **Português**
 
-![Temas do larperCord](docs/themes.png)
+![Temas do SigmaCord](docs/themes.png)
 
 *O mesmo binário e os mesmos dados, só trocando o arquivo `.kdl`. São 11 temas, cada um em claro e escuro. O último quadro é o `cupertino` no claro.*
 
@@ -38,7 +38,7 @@ Se acontecer, redefina a senha pelo discord.com. Se a conta continuar bloqueada,
 
 A versão para Windows não é assinada, então o SmartScreen avisa. Um antivírus também pode chamá-la de ladrão de token do Discord, provavelmente porque um cliente de Discord está cheio das mesmas palavras que um ladrão tem, como "token" e "Authorization". Um sandbox deu essa nota à versão 0.5.0 por causa de uma regra de padrões, e o relatório de comportamento dele não mostrou acesso a credenciais e, no modo de demonstração, nenhuma conexão.
 
-O token só vai para o Discord e fica no chaveiro do sistema ou, sem chaveiro, num arquivo privado. O código é público, então dá para ler ou compilar você mesmo. Baixe o larperCord só deste repositório.
+O token só vai para o Discord e fica no chaveiro do sistema ou, sem chaveiro, num arquivo privado. O código é público, então dá para ler ou compilar você mesmo. Baixe o SigmaCord só deste repositório.
 
 ## Por quê
 
@@ -48,7 +48,7 @@ O cliente oficial é um navegador inteiro disfarçado de app. No mesmo PC:
 |---|---|---|---|
 | Vesktop (Electron) | **1279 MB** | 12–47%¹ | 287 MB |
 | Discord Phoenix (Rust) | ~290 MB² | 0,1%² | não lançado |
-| **larperCord**, conta real | **~130 MB**³ | **0–0,4%**⁴ | **~15 MB** |
+| **SigmaCord**, conta real | **~130 MB**³ | **0–0,4%**⁴ | **~15 MB** |
 
 <sub>¹ média desde a abertura, medida pelo `ps`. Arch Linux, Hyprland, GTX 1050 Ti, janela de 1280×800, build `ReleaseFast`.
 ² Não medido por nós e não é um teste lado a lado: uma versão inicial para Windows 11, de um print do Gerenciador de Tarefas [postado pelo CTO do Discord](https://x.com/svishnevskiy/status/2118081920194203799). O app ainda não saiu.
@@ -78,10 +78,11 @@ O cliente oficial é um navegador inteiro disfarçado de app. No mesmo PC:
   **seleção de texto** com o mouse entre várias mensagens + `Ctrl+C`; **cartão de perfil** com
   "Mensagem @fulano"; **mensagens diretas**; menções a você em destaque.
 - **Abas de canal**, paleta de comandos com busca aproximada (`Ctrl+K` / `Ctrl+Shift+P`: canais, DMs,
-  servidores, temas, status, marcar como lido e as opções liga/desliga), atalhos de teclado e
+  servidores, temas, status, marcar como lido e as opções liga/desliga), atalhos de teclado
+  configuráveis (Configurações → Atalhos, com teclas para mutar e ensurdecer incluídas) e
   navegação estilo vim opcional (`j`/`k`, `gg`/`G`, `J`/`K` troca de canal, `/` busca).
 - **Painéis do seu tamanho**: arraste a borda da lista de canais, da lista de membros ou dos painéis da tela dividida; duplo clique volta à largura do tema. A escolha fica salva e vale nos outros temas, e a conversa sempre mantém espaço para ser usada.
-- **Plugins em Lua**: arquivos `.lua` em `~/.config/larpercord/plugins/` que somam painéis, entradas no
+- **Plugins em Lua**: arquivos `.lua` em `~/.config/sigmacord/plugins/` que somam painéis, entradas no
   botão direito, notas embaixo das mensagens, comandos e lembretes, numa thread só deles, com limite de
   instruções e de memória: não seguram a interface. Anti-golpe, radar de CVE, cartões do GitHub, o que perdi,
   tradução, lembretes, destaques, links limpos, e links e arquivos vêm com o app. [Guia e API →](docs/plugins.pt-BR.md)
@@ -105,9 +106,9 @@ O cliente oficial é um navegador inteiro disfarçado de app. No mesmo PC:
 - **Caixa de entrada** (`Ctrl+I`): DMs e menções não lidas de todos os servidores, por canal, com
   prévia, ir até a mensagem e "marcar tudo como lido"; aba com as menções recentes do Discord.
 - **Mensagens salvas com anotação** (`Ctrl+Shift+S`, botão direito → Salvar mensagem): só no seu
-  computador, em `~/.config/larpercord/saved-<conta>.json`; nada vai para o Discord.
+  computador, em `~/.config/sigmacord/saved-<conta>.json`; nada vai para o Discord.
 - **Cache local e busca offline.** As últimas 200 mensagens vistas de cada canal ficam em
-  `~/.cache/larpercord/messages` (pastas 700, arquivos 600, teto de 50 MB): a conversa aparece
+  `~/.cache/sigmacord/messages` (pastas 700, arquivos 600, teto de 50 MB): a conversa aparece
   na hora ao abrir e o histórico de verdade chega por cima, sem pular a rolagem. `Ctrl+F` busca
   na memória e no cache, a cada tecla e sem internet, com `from:nome`, `in:canal`, `has:link`,
   `has:imagem` e `has:arquivo`; clicar no resultado pula até a mensagem. Dá para desligar e
@@ -118,7 +119,7 @@ O cliente oficial é um navegador inteiro disfarçado de app. No mesmo PC:
 - **Configurações no estilo Discord** (`Ctrl+,`): 14 páginas, troca de tema com miniaturas,
   cor de destaque/cantos, **cores personalizadas por tema e modo em hex**, escala de fonte,
   modo compacto, reduzir movimento, relógio 12/24 h, spoilers…, salvas em
-  `~/.config/larpercord/settings.kdl`.
+  `~/.config/sigmacord/settings.kdl`.
 - **Markdown do Discord**: **negrito**, *itálico*, ~~riscado~~, `código`, ||spoiler||, menções
   `<@id>`/`<#id>`, links e emoji colorido; blocos de código com realce pela etiqueta (zig, c/cpp,
   js/ts, py, rust, go, sh, json, lua…) e botão "Copiar"; prévia acima da caixa enquanto se digita.
@@ -159,27 +160,27 @@ Todos têm **modo claro e escuro** e **opções próprias** em Configurações �
 
 ## Instalação
 
-**Baixar:** [Linux](https://github.com/RshaCuDeVidro/larperCord/releases/latest/download/larpercord-linux-x86_64) · [Windows](https://github.com/RshaCuDeVidro/larperCord/releases/latest/download/larpercord-windows-x86_64.zip) · [todas as versões](https://github.com/RshaCuDeVidro/larperCord/releases). No Linux, marque o arquivo com `chmod +x` e rode. No Windows, descompacte e abra o `larpercord.exe`; ele ainda não tem assinatura de código, então o Windows pode avisar na primeira vez.
+**Baixar:** [Linux](https://github.com/sambukuper/SigmaCord/releases/latest/download/sigmacord-linux-x86_64) · [Windows](https://github.com/sambukuper/SigmaCord/releases/latest/download/sigmacord-windows-x86_64.zip) · [todas as versões](https://github.com/sambukuper/SigmaCord/releases). No Linux, marque o arquivo com `chmod +x` e rode. No Windows, descompacte e abra o `sigmacord.exe`; ele ainda não tem assinatura de código, então o Windows pode avisar na primeira vez.
 
 A versão para Linux roda em distros de 2022 para cá (glibc 2.34 ou mais nova). SDL3, libcurl e OpenSSL vêm dentro dela. FreeType, fontconfig, libwebp, Opus e zlib vêm do sistema, e uma distro de desktop costuma já ter. Antes de cada versão, ela é aberta em contêineres de Ubuntu 22.04 e 24.04, Debian 12 e 13, Fedora, openSUSE e Arch, na demonstração e sem GPU.
 
-O GitHub Actions compila esse arquivo a partir do código deste repositório. Com o GitHub CLI dá para conferir: `gh attestation verify larpercord-linux-x86_64 --repo RshaCuDeVidro/larperCord`.
+O GitHub Actions compila esse arquivo a partir do código deste repositório. Com o GitHub CLI dá para conferir: `gh attestation verify sigmacord-linux-x86_64 --repo sambukuper/SigmaCord`.
 
 Ou use um script:
 
 **Linux** (x86_64, em `~/.local`, sem sudo):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/sambukuper/SigmaCord/main/install.sh | sh
 ```
 
 **Windows 10/11** (para o seu usuário, sem administrador), no PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/RshaCuDeVidro/larperCord/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/sambukuper/SigmaCord/main/install.ps1 | iex
 ```
 
-Os dois baixam a última [versão publicada](https://github.com/RshaCuDeVidro/larperCord/releases) e conferem com o `SHA256SUMS`. No Linux o script lista as bibliotecas do sistema que faltam. Numa distro de antes de 2022, [compile do código](#compilando). Depois disso, o app se atualiza sozinho: Configurações → Atualizações.
+Os dois baixam a última [versão publicada](https://github.com/sambukuper/SigmaCord/releases) e conferem com o `SHA256SUMS`. No Linux o script lista as bibliotecas do sistema que faltam. Numa distro de antes de 2022, [compile do código](#compilando). Depois disso, o app se atualiza sozinho: Configurações → Atualizações.
 
 ## Conectando sua conta
 
@@ -188,15 +189,15 @@ sair. O app procura nesta ordem:
 
 1. **Chaveiro do sistema** (recomendado):
    ```bash
-   secret-tool store --label='larperCord' service larpercord   # cole o token quando pedir
+   secret-tool store --label='SigmaCord' service sigmacord   # cole o token quando pedir
    ```
-2. A variável `LARPER_TOKEN`
-3. O arquivo `~/.config/larpercord/token`, que precisa ter `chmod 600`
+2. A variável `SIGMACORD_TOKEN`
+3. O arquivo `~/.config/sigmacord/token`, que precisa ter `chmod 600`
 
 Com "Lembrar" no login, cada conta fica numa entrada própria do chaveiro
-(`service larpercord-account account <ID>`; sem chaveiro, `~/.config/larpercord/tokens/<ID>` com
+(`service sigmacord-account account <ID>`; sem chaveiro, `~/.config/sigmacord/tokens/<ID>` com
 `chmod 600`) e aparece no menu do usuário para trocar. A lista (só ID, nome e avatar) fica em
-`~/.config/larpercord/accounts`. A entrada de cima continua valendo para a conta que já estava nela.
+`~/.config/sigmacord/accounts`. A entrada de cima continua valendo para a conta que já estava nela.
 
 `--demo` força o modo demonstração mesmo com token. Ainda não tem: compartilhar tela e câmera, e
 entrar em servidor por convite. Canais sem acesso só mostram um aviso, e as notificações passam pelo
@@ -237,7 +238,7 @@ Opcional: **FFmpeg 7, 8 ou 9** (libavformat 61–63) para tocar vídeo dentro do
 sudo pacman -S zig sdl3 freetype2 fontconfig curl inter-font ttf-jetbrains-mono noto-fonts-emoji
 
 zig build -Doptimize=ReleaseFast
-./zig-out/bin/larpercord --theme vidro
+./zig-out/bin/sigmacord --theme vidro
 ```
 
 | Comando | |
@@ -248,7 +249,7 @@ zig build -Doptimize=ReleaseFast
 | `tools/qa_quadros.py BIN [--slow]` | confere o pulo de quadros e a memória com a janela escondida, com janela de verdade num Xvfb |
 
 ```
-larpercord [--theme NOME] [--demo] [--settings] [--list-themes] [--no-live] [--shot ARQ.png] [--stats]
+sigmacord [--theme NOME] [--demo] [--settings] [--list-themes] [--no-live] [--shot ARQ.png] [--stats]
 ```
 
 Atalhos: `Ctrl+K` paleta · `Ctrl+,` configurações · `Ctrl+I` caixa de entrada · `Ctrl+Shift+S` salvas · `F2` próximo tema · `Ctrl+Tab` abas ·
@@ -299,5 +300,5 @@ gateway falso pelo real não toca na interface.
 
 ## Licença
 
-O larperCord usa a [GNU General Public License v3.0](LICENSE) (`GPL-3.0-only`). O código de terceiros mantém a própria licença, em cada pasta de `third_party/`: Dear ImGui e dear_bindings são MIT, RNNoise é BSD. O arquivo
-`third_party/imgui/misc/freetype/imgui_freetype.cpp` tem alterações marcadas com `[larperCord]`.
+O SigmaCord usa a [GNU General Public License v3.0](LICENSE) (`GPL-3.0-only`). O código de terceiros mantém a própria licença, em cada pasta de `third_party/`: Dear ImGui e dear_bindings são MIT, RNNoise é BSD. O arquivo
+`third_party/imgui/misc/freetype/imgui_freetype.cpp` tem alterações marcadas com `[SigmaCord]`.

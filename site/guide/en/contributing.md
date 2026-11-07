@@ -56,4 +56,4 @@ Built with Zig, SDL3, [Dear ImGui](https://github.com/ocornut/imgui), dear_bindi
 
 ## License
 
-larperCord is licensed under the GPL-3.0. Third-party code in `third_party/` keeps its own license, in each folder's license file.
+SigmaCord is licensed under the GPL-3.0. Third-party code in `third_party/` keeps its own license, in each folder's license file.

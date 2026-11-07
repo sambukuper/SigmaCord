@@ -1,6 +1,6 @@
 # Voice calls
 
-larperCord joins real Discord voice channels, with end-to-end encryption. Everything voice-related runs on its own thread, created only when you join a call. Outside a call, the module uses no CPU and the app doesn't initialize audio, unless you open Settings → Voice, which reads the microphone for its level meter while it's open.
+SigmaCord joins real Discord voice channels, with end-to-end encryption. Everything voice-related runs on its own thread, created only when you join a call. Outside a call, the module uses no CPU and the app doesn't initialize audio, unless you open Settings → Voice, which reads the microphone for its level meter while it's open.
 
 ## Using it
 
@@ -44,7 +44,7 @@ A few details that took work to get right:
 - Jitter margin applies only at the start of each talk spurt and inside a speaker's own pauses. Applying it whenever the queue emptied caused audible gaps.
 - The RTP clock tells a speaker's pause from a late packet: the sequence number only moves with a packet, the clock always moves. A noise gate closing isn't a bad network.
 - When a queue is about to run dry, Opus concealment fills in and fades to zero, so a stall never cuts mid-wave. Audio that doesn't continue from where it stopped starts from the last value played.
-- `zig build voz-rede` runs real Opus through simulated bad networks and compares the playback logic, counting gaps and clicks. `LARPER_VOZ_FALA` picks a speech file and `LARPER_VOZ_WAV` saves the output to listen to.
+- `zig build voz-rede` runs real Opus through simulated bad networks and compares the playback logic, counting gaps and clicks. `SIGMACORD_VOZ_FALA` picks a speech file and `SIGMACORD_VOZ_WAV` saves the output to listen to.
 - People already in a call can arrive before DAVE exists, so they're kept and added when it starts.
 
 ## Limits today
@@ -57,7 +57,7 @@ A few details that took work to get right:
 ## Debugging
 
 ```bash
-LARPER_VOICE_DEBUG=1 larpercord
+SIGMACORD_VOICE_DEBUG=1 sigmacord
 ```
 
 This prints opcodes, close codes and DAVE events, and microphone level and frames sent. It never prints the token or any keys.
@@ -65,7 +65,7 @@ This prints opcodes, close codes and DAVE events, and microphone level and frame
 To test only the connection, `--voice-test` joins a channel for 25 seconds, **always muted**:
 
 ```bash
-LARPER_TOKEN=... larpercord --voice-test GUILD_ID CHANNEL_ID
+SIGMACORD_TOKEN=... sigmacord --voice-test GUILD_ID CHANNEL_ID
 ```
 
 The protocol follows Discord's voice documentation and the [DAVE protocol documentation](https://daveprotocol.com).

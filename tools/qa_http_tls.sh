@@ -5,7 +5,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 command -v openssl >/dev/null && command -v python3 >/dev/null || { echo "precisa de openssl e python3"; exit 1; }
-bin=./.zig-cache/qa/bin/larpercord
+bin=./.zig-cache/qa/bin/sigmacord
 [ -x "$bin" ] || { echo "rode tools/qa.sh antes"; exit 1; }
 dir=$(mktemp -d)
 python3 -I tools/qa_http_tls.py "$dir" &

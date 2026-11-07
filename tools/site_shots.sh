@@ -2,15 +2,15 @@
 # Gera as imagens do site (docs/assets/shots/{en,pt}) sem abrir janela: um print de
 # cada tema em claro e escuro e recortes de recursos, em inglês e em português.
 # Roda em pastas temporárias: não toca no qa-out/ nem nas suas configurações.
-# Precisa de magick e ffmpeg. LARPER_BIN escolhe outro executável.
+# Precisa de magick e ffmpeg. SIGMACORD_BIN escolhe outro executável.
 # O --qa força português e procura os elementos pelos rótulos em português. Para os recortes
-# em inglês, use em LARPER_BIN um build com tools/site_shots-en.patch aplicado (git apply, num
+# em inglês, use em SIGMACORD_BIN um build com tools/site_shots-en.patch aplicado (git apply, num
 # worktree à parte); sem isso eles saem em português.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # A bateria do QA só existe em builds com -Dqa=true.
-[ -n "${LARPER_BIN:-}" ] || zig build -Dqa=true
-bin="${LARPER_BIN:-$PWD/zig-out/bin/larpercord}"
+[ -n "${SIGMACORD_BIN:-}" ] || zig build -Dqa=true
+bin="${SIGMACORD_BIN:-$PWD/zig-out/bin/sigmacord}"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -43,7 +43,7 @@ for lang in en pt; do
     done
 
     # Cenas: a call com o mixer e as configurações.
-    "${base[@]}" LARPER_SCENE=voice timeout 40 "$bin" --lang "$lang" --theme orbital --mode escuro --shot "$w/voz.png" >/dev/null 2>&1
+    "${base[@]}" SIGMACORD_SCENE=voice timeout 40 "$bin" --lang "$lang" --theme orbital --mode escuro --shot "$w/voz.png" >/dev/null 2>&1
     magick "$w/voz.png" -crop 820x470+0+330 +repage -strip -quality 84 "$out/f-voz.webp"
     "${base[@]}" timeout 40 "$bin" --lang "$lang" --theme classico --mode escuro --settings --shot "$w/config.png" >/dev/null 2>&1
     webp "$w/config.png" "$out/f-config.webp" 82
@@ -61,7 +61,7 @@ for lang in en pt; do
     # Os plugins funcionando: as notas de CVE e do GitHub são respostas de verdade desses serviços.
     (cd "$w/run" && "${qa_env[@]}" QA_SUITE=vitrine timeout 60 "$bin" --qa --lang "$lang" --theme classico >"$w/qa-vitrine.log" 2>&1) || true
     crop() { [ -f "$w/run/qa-out/$1" ] || { echo "$lang: sem $1, $3 fica como estava"; return 0; }; magick "$w/run/qa-out/$1" -crop "$2" +repage -strip -quality 84 -define webp:method=6 "$out/$3"; }
-    crop 01-inicio.png 1280x800+0+0 larper.webp
+    crop 01-inicio.png 1280x800+0+0 sigma.webp
     crop 35-tela-dividida.png 1280x740+0+60 f-mosaico.webp
     crop 40-caixa-de-entrada.png 540x760+742+20 f-caixa.webp
     crop 49-busca.png 1020x640+260+40 f-busca.webp
@@ -82,7 +82,7 @@ for lang in en pt; do
     crop voz-pagina.png 800x800+400+0 f-vozcfg.webp
 
     # A tela de login animada (o app grava os quadros sozinho).
-    "${base[@]}" LARPER_RECORD="$w/rec" LARPER_RECORD_FRAMES=150 timeout 60 "$bin" --lang "$lang" --login --mode escuro >/dev/null 2>&1 || true
+    "${base[@]}" SIGMACORD_RECORD="$w/rec" SIGMACORD_RECORD_FRAMES=150 timeout 60 "$bin" --lang "$lang" --login --mode escuro >/dev/null 2>&1 || true
     ffmpeg -y -loglevel error -framerate 30 -i "$w/rec/%04d.png" -c:v libx264 -crf 27 -preset slow \
         -pix_fmt yuv420p -movflags +faststart -an "$out/login.mp4"
     webp "$w/rec/0149.png" "$out/login-poster.webp"

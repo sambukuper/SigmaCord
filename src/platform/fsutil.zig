@@ -7,17 +7,17 @@ const std = @import("std");
 const sys = @import("sys.zig");
 const c = @import("c");
 
-/// $XDG_CONFIG_HOME/larpercord/<nome> (ou ~/.config/larpercord/<nome>);
+/// $XDG_CONFIG_HOME/sigmacord/<nome> (ou ~/.config/sigmacord/<nome>);
 /// `nome` vazio dá a própria pasta.
 pub fn configPath(buf: []u8, name: []const u8) ?[:0]const u8 {
     const sep: []const u8 = if (name.len > 0) "/" else "";
     var hb: [512]u8 = undefined;
     const base = sys.configHome(&hb) orelse return null;
-    return std.fmt.bufPrintSentinel(buf, "{s}/larpercord{s}{s}", .{ base, sep, name }, 0) catch null;
+    return std.fmt.bufPrintSentinel(buf, "{s}/sigmacord{s}{s}", .{ base, sep, name }, 0) catch null;
 }
 
 /// Cria a pasta (e as de cima que faltarem) só para o dono. As nossas
-/// (…/larpercord e o que fica dentro dela) voltam para 700 mesmo se já
+/// (…/sigmacord e o que fica dentro dela) voltam para 700 mesmo se já
 /// existiam; as de fora (o ~/.config, o ~/.cache) não mudam de permissão.
 pub fn ensureDir(dir: []const u8) bool {
     var buf: [512]u8 = undefined;
@@ -31,7 +31,7 @@ pub fn ensureDir(dir: []const u8) bool {
         if (i < dir.len and dir[i] != '/') continue;
         const part = dir[start..i];
         start = i + 1;
-        if (std.mem.eql(u8, std.mem.trimStart(u8, part, "/"), "larpercord")) ours = true;
+        if (std.mem.eql(u8, std.mem.trimStart(u8, part, "/"), "sigmacord")) ours = true;
         const keep = buf[i];
         buf[i] = 0;
         const p: [*:0]const u8 = @ptrCast(&buf);

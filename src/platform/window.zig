@@ -11,7 +11,7 @@ pub const Wake = enum(i32) {
     tick = 3,
     media = 4,
     token = 5,
-    /// Abrir a janela: menu da bandeja ou um segundo larperCord.
+    /// Abrir a janela: menu da bandeja ou um segundo SigmaCord.
     show = 6,
     /// Sair de verdade: menu da bandeja.
     quit = 7,
@@ -29,11 +29,11 @@ pub const Window = struct {
         // Fechar a janela é o app quem decide (ficar na bandeja ou sair). Sem
         // isto o SDL ainda manda um QUIT junto, e QUIT aqui é sempre sair.
         _ = c.SDL_SetHint(c.SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE, "0");
-        _ = c.SDL_SetAppMetadata("larperCord", (@import("build_options").version ++ "\x00").ptr, "dev.larpercord");
+        _ = c.SDL_SetAppMetadata("SigmaCord", (@import("build_options").version ++ "\x00").ptr, "dev.sigmacord");
         if (!c.SDL_Init(c.SDL_INIT_VIDEO)) return error.SdlInit;
         var flags = c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIGH_PIXEL_DENSITY | c.SDL_WINDOW_TRANSPARENT;
-        // LARPER_HIDDEN=1: janela escondida (medir desempenho com a GPU de verdade).
-        if (c.SDL_getenv("LARPER_HIDDEN") != null) flags |= c.SDL_WINDOW_HIDDEN;
+        // SIGMACORD_HIDDEN=1: janela escondida (medir desempenho com a GPU de verdade).
+        if (c.SDL_getenv("SIGMACORD_HIDDEN") != null) flags |= c.SDL_WINDOW_HIDDEN;
         const window = c.SDL_CreateWindow(title, w, h, flags) orelse return error.SdlWindow;
         // On Windows the requested size is in pixels: at 150% the window would open at 2/3 size.
         const s = contentScale(window);
@@ -42,8 +42,8 @@ pub const Window = struct {
             _ = c.SDL_SetWindowIcon(window, icon);
             c.SDL_DestroySurface(icon);
         }
-        // LARPER_RENDERER escolhe o backend do SDL (opengl, vulkan, gpu, software).
-        const renderer = c.SDL_CreateRenderer(window, c.SDL_getenv("LARPER_RENDERER")) orelse return error.SdlRenderer;
+        // SIGMACORD_RENDERER escolhe o backend do SDL (opengl, vulkan, gpu, software).
+        const renderer = c.SDL_CreateRenderer(window, c.SDL_getenv("SIGMACORD_RENDERER")) orelse return error.SdlRenderer;
         _ = c.SDL_SetRenderVSync(renderer, 1);
         _ = c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_NONE);
         const wake_type = c.SDL_RegisterEvents(1);
@@ -140,7 +140,7 @@ pub fn decodeIcon(png: []const u8) ?*c.SDL_Surface {
 fn preferNvidiaEgl() void {
     const vendor_file = "/usr/share/glvnd/egl_vendor.d/10_nvidia.json";
     if (c.SDL_getenv("__EGL_VENDOR_LIBRARY_FILENAMES") != null) return;
-    if (c.SDL_getenv("LARPER_EGL_ALL") != null) return;
+    if (c.SDL_getenv("SIGMACORD_EGL_ALL") != null) return;
     if (!c.SDL_GetPathInfo(vendor_file, null)) return;
 
     var found = false;

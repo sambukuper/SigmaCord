@@ -275,7 +275,7 @@ void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data, SDL_Renderer* 
                 const float* xy = (const float*)(const void*)((const char*)(vtx_buffer + pcmd->VtxOffset) + offsetof(ImDrawVert, pos));
                 const float* uv = (const float*)(const void*)((const char*)(vtx_buffer + pcmd->VtxOffset) + offsetof(ImDrawVert, uv));
                 const SDL_Color* color = (const SDL_Color*)(const void*)((const char*)(vtx_buffer + pcmd->VtxOffset) + offsetof(ImDrawVert, col));
-                // larperCord: só os vértices que este comando usa (a faixa entre
+                // SigmaCord: só os vértices que este comando usa (a faixa entre
                 // o menor e o maior índice, com os índices refeitos a partir do
                 // menor). O original passava todos os vértices restantes da
                 // lista, e a conversão de cor e o SDL percorriam tudo a cada

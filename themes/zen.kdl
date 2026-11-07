@@ -1,7 +1,7 @@
 // zen — foco: uma coluna central, letras maiores, sem avatares. Exclusivo: a
 // faixa de servidores se esconde sozinha e volta quando o mouse chega perto. Ao
 // fundo, areia rastelada de jardim zen, um enso e um grão fino.
-theme "zen" description="Foco: coluna central, letras maiores e a navegação que se esconde sozinha." description-en="Focus: a centered column, bigger text and navigation that hides itself." author="larperCord" preview=zen
+theme "zen" description="Foco: coluna central, letras maiores e a navegação que se esconde sozinha." description-en="Focus: a centered column, bigger text and navigation that hides itself." author="SigmaCord" preview=zen
 palette "wal"
 
 options {

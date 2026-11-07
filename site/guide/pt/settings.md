@@ -1,6 +1,6 @@
 # Configurações e arquivos
 
-Abra as configurações com `Ctrl+,`. As mudanças valem na hora e são salvas em `~/.config/larpercord/settings.kdl`.
+Abra as configurações com `Ctrl+,`. As mudanças valem na hora e são salvas em `~/.config/sigmacord/settings.kdl`.
 
 ## As páginas
 
@@ -37,17 +37,17 @@ Abra as configurações com `Ctrl+,`. As mudanças valem na hora e são salvas e
 
 | Caminho | O que é |
 |---|---|
-| `~/.config/larpercord/settings.kdl` | Configurações, incluindo as opções e cores de cada tema |
-| `~/.config/larpercord/themes/*.kdl` | Seus temas |
-| `~/.config/larpercord/plugins/*.lua` | Seus plugins |
-| `~/.config/larpercord/plugins.kdl` | Quais plugins estão desligados, os hosts aprovados e o painel lateral |
-| `~/.config/larpercord/plugin-data/` | O que cada plugin guarda, por conta |
-| `~/.config/larpercord/drafts.kdl` | Rascunhos não enviados por canal (`chmod 600`) |
-| `~/.config/larpercord/saved-<conta>.json` | Mensagens salvas e anotações |
-| `~/.config/larpercord/accounts` | Contas guardadas: só ID, nome e foto |
-| `~/.config/larpercord/tokens/<ID>` | Tokens lembrados quando não há chaveiro (`chmod 600`) |
-| `~/.config/larpercord/token` | Arquivo de token opcional (`chmod 600`) |
-| `~/.cache/larpercord/messages` | Cache de mensagens: pastas 700, arquivos 600, 200 mensagens por canal, teto de 50 MB |
+| `~/.config/sigmacord/settings.kdl` | Configurações, incluindo as opções e cores de cada tema |
+| `~/.config/sigmacord/themes/*.kdl` | Seus temas |
+| `~/.config/sigmacord/plugins/*.lua` | Seus plugins |
+| `~/.config/sigmacord/plugins.kdl` | Quais plugins estão desligados, os hosts aprovados e o painel lateral |
+| `~/.config/sigmacord/plugin-data/` | O que cada plugin guarda, por conta |
+| `~/.config/sigmacord/drafts.kdl` | Rascunhos não enviados por canal (`chmod 600`) |
+| `~/.config/sigmacord/saved-<conta>.json` | Mensagens salvas e anotações |
+| `~/.config/sigmacord/accounts` | Contas guardadas: só ID, nome e foto |
+| `~/.config/sigmacord/tokens/<ID>` | Tokens lembrados quando não há chaveiro (`chmod 600`) |
+| `~/.config/sigmacord/token` | Arquivo de token opcional (`chmod 600`) |
+| `~/.cache/sigmacord/messages` | Cache de mensagens: pastas 700, arquivos 600, 200 mensagens por canal, teto de 50 MB |
 | `~/.cache/wal/colors` | Só leitura: a paleta do pywal, para os temas que a usam |
 
-Para voltar ao padrão, feche o app e apague `~/.config/larpercord/settings.kdl`.
+Para voltar ao padrão, feche o app e apague `~/.config/sigmacord/settings.kdl`.

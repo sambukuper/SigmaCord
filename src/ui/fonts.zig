@@ -24,14 +24,14 @@ const light_hinting: c_uint = 1 << 3; // ImGuiFreeTypeLoaderFlags_LightHinting
 /// Natural, hastes alinhadas (ForceAutoHint) e encaixe total (ForceAutoHint + MonoHinting).
 const hint_modes = [_]c_uint{ light_hinting, 1 << 2, (1 << 2) | (1 << 4) };
 
-extern fn larper_font_style(font: *c.ImFont, multiply: f32, hint_flags: c_uint) void;
-const match_em: c_uint = 1 << 10; // ImGuiFreeTypeLoaderFlags_LarperMatchEm
+extern fn sigma_font_style(font: *c.ImFont, multiply: f32, hint_flags: c_uint) void;
+const match_em: c_uint = 1 << 10; // ImGuiFreeTypeLoaderFlags_SigmaMatchEm
 
 /// O ImGui avisa quando nenhuma fonte tem uma letra (imgui_draw.cpp), enquanto as fontes reserva
 /// não entraram. Fontes não entram no meio do quadro: aqui só marca, e `loadWanted` carrega.
-extern var larper_glyph_missing: ?*const fn (c_uint) callconv(.c) void;
-extern fn larper_font_source_to(font: *c.ImFont, data: *const anyopaque, font_no: c_int, pos: c_int) void;
-extern var larper_glyph_plain: ?*const fn (c_uint) callconv(.c) c_uint;
+extern var sigma_glyph_missing: ?*const fn (c_uint) callconv(.c) void;
+extern fn sigma_font_source_to(font: *c.ImFont, data: *const anyopaque, font_no: c_int, pos: c_int) void;
+extern var sigma_glyph_plain: ?*const fn (c_uint) callconv(.c) c_uint;
 var scripts_wanted = false;
 var scripts_tried_once = false;
 var missing_buf: [32]u32 = undefined;
@@ -92,8 +92,8 @@ pub const Fonts = struct {
 
     pub fn init(gpa: std.mem.Allocator, atlas: *c.ImFontAtlas) Fonts {
         var f: Fonts = .{ .gpa = gpa, .atlas = atlas };
-        larper_glyph_missing = onGlyphMissing;
-        larper_glyph_plain = onGlyphPlain;
+        sigma_glyph_missing = onGlyphMissing;
+        sigma_glyph_plain = onGlyphPlain;
         if (resolve("emoji", 80, 0)) |m| {
             defer std.heap.c_allocator.free(m.path);
             f.emoji = f.mapPath(m.path) catch null;
@@ -112,7 +112,7 @@ pub const Fonts = struct {
         f.text_weight = weight;
         f.text_mode = mode;
         f.text_hint = hint_modes[@min(mode, hint_modes.len - 1)];
-        for (f.faces.items) |e| larper_font_style(e.font, f.text_weight, f.text_hint);
+        for (f.faces.items) |e| sigma_font_style(e.font, f.text_weight, f.text_hint);
     }
 
     /// Pixels por ponto, a cada quadro. O ImGui só atualiza a fonte "atual", e o texto aqui sai
@@ -178,7 +178,7 @@ pub const Fonts = struct {
         f.cjk[0] = raised;
         // Antes das reservas ficam a fonte principal, o emoji e os símbolos (ver `add`).
         const pos: c_int = 1 + @as(c_int, @intFromBool(f.emoji != null)) + @as(c_int, @intFromBool(f.symbols != null));
-        for (f.faces.items) |e| larper_font_source_to(e.font, raised.data.ptr, raised.index, pos);
+        for (f.faces.items) |e| sigma_font_source_to(e.font, raised.data.ptr, raised.index, pos);
     }
 
     /// Família já carregada (não carrega nada: seguro no meio do quadro).

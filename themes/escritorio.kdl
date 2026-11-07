@@ -2,7 +2,7 @@
 // servidores em lista e a conversa no branco. Exclusivo: barra superior com
 // voltar/avançar entre abas, busca no servidor e ajuda. Berinjela em degradê,
 // fios finos e a caixa de texto flutuando.
-theme "escritorio" description="Ferramenta de trabalho: barra superior com busca, servidores em lista." description-en="Work tool: top bar with search, servers in a list." author="larperCord" preview=office
+theme "escritorio" description="Ferramenta de trabalho: barra superior com busca, servidores em lista." description-en="Work tool: top bar with search, servers in a list." author="SigmaCord" preview=office
 
 options {
     option "topo" label="Barra superior" description="Voltar/avançar entre abas, busca no servidor e ajuda." label-en="Top bar" description-en="Back/forward between tabs, server search and help." default=#true

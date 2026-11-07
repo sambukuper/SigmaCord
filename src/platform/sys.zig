@@ -120,7 +120,7 @@ pub fn wakeSignal(write_end: Socket) void {
     if (windows) _ = c.send(write_end, "x", 1, 0) else _ = c.write(write_end, "x", 1);
 }
 
-// --- TCP local (um larperCord fala com o outro) -----------------------------------
+// --- TCP local (um SigmaCord fala com o outro) -----------------------------------
 
 /// Escuta em 127.0.0.1, numa porta livre. No Windows, sem isso o socket é
 /// herdado por quem o app abrir (e a porta fica presa depois de sair).
@@ -312,9 +312,9 @@ pub fn toast(hwnd: ?*anyopaque, now_ms: i64, title: []const u8, body: []const u8
     nid.uID = toast_uid;
     if (toast_hwnd == null) {
         nid.uFlags = c.NIF_ICON | c.NIF_TIP;
-        // O ícone 1 de assets/larpercord.rc.
+        // O ícone 1 de assets/sigmacord.rc.
         nid.hIcon = c.LoadIconA(c.GetModuleHandleA(null), @ptrFromInt(1));
-        wide(&nid.szTip, "larperCord");
+        wide(&nid.szTip, "SigmaCord");
         if (c.Shell_NotifyIconW(c.NIM_ADD, &nid) == 0) return;
         toast_hwnd = h;
     }
@@ -356,7 +356,7 @@ fn env(name: [*:0]const u8) ?[]const u8 {
     return if (s.len > 0) s else null;
 }
 
-/// Onde ficam as configurações (sem o "larpercord"): $XDG_CONFIG_HOME,
+/// Onde ficam as configurações (sem o "sigmacord"): $XDG_CONFIG_HOME,
 /// %APPDATA% ou ~/.config.
 pub fn configHome(buf: []u8) ?[]const u8 {
     if (env("XDG_CONFIG_HOME")) |x| return x;

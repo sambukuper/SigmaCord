@@ -1,7 +1,7 @@
 // terminal — tmux + IRC. Escuro: fósforo âmbar (ou verde). Claro: papel de
 // impressora matricial. Exclusivo: efeito de monitor CRT, logo em ASCII,
 // retícula de osciloscópio e um radar (ou mapa de curvas de nível) opcional.
-theme "terminal" description="tmux + IRC: monoespaçado, canais em árvore, efeito CRT e logo em ASCII." description-en="tmux + IRC: monospace, channel tree, CRT effect and ASCII logo." author="larperCord" preview=terminal
+theme "terminal" description="tmux + IRC: monoespaçado, canais em árvore, efeito CRT e logo em ASCII." description-en="tmux + IRC: monospace, channel tree, CRT effect and ASCII logo." author="SigmaCord" preview=terminal
 
 options {
     option "crt" label="Efeito CRT" description="Linhas de varredura e cantos escuros, como um monitor antigo." label-en="CRT effect" description-en="Scanlines and dark corners, like an old monitor." default=#true

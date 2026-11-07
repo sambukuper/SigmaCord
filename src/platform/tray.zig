@@ -47,7 +47,7 @@ pub fn hostAvailable() bool {
 fn build(open_label: [*:0]const u8, quit_label: [*:0]const u8, on_open: c.SDL_TrayCallback, on_quit: c.SDL_TrayCallback) ?*c.SDL_Tray {
     const icon = platform.decodeIcon(platform.icon_32);
     defer if (icon) |i| c.SDL_DestroySurface(i);
-    const t = c.SDL_CreateTray(icon, "larperCord") orelse {
+    const t = c.SDL_CreateTray(icon, "SigmaCord") orelse {
         std.log.info("bandeja: SDL_CreateTray falhou: {s}", .{c.SDL_GetError()});
         return null;
     };
@@ -92,7 +92,7 @@ pub fn hide() void {
 
 fn startHelper(open_label: [*:0]const u8, quit_label: [*:0]const u8) bool {
     sys.closeOnExec();
-    // Pelo nome de verdade, para aparecer como larpercord na lista de processos.
+    // Pelo nome de verdade, para aparecer como sigmacord na lista de processos.
     // Se o arquivo foi trocado com o app aberto (atualização), o caminho do kernel ainda roda.
     var pb: [1024]u8 = undefined;
     const n = c.readlink("/proc/self/exe", &pb, pb.len - 1);

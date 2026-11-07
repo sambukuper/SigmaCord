@@ -267,14 +267,14 @@ pub fn build(b: *std.Build) void {
         if (portable) mod.linkSystemLibrary("ssl", .{ .preferred_link_mode = .static });
     }
 
-    const exe = b.addExecutable(.{ .name = "larpercord", .root_module = mod });
+    const exe = b.addExecutable(.{ .name = "sigmacord", .root_module = mod });
     // Com uma seção por função, o ligador joga fora o que ninguém chama.
     exe.link_function_sections = release;
     exe.link_data_sections = release;
     exe.link_gc_sections = release;
     if (windows) {
-        exe.win32_manifest = b.path("assets/larpercord.manifest");
-        mod.addWin32ResourceFile(.{ .file = b.path("assets/larpercord.rc") });
+        exe.win32_manifest = b.path("assets/sigmacord.manifest");
+        mod.addWin32ResourceFile(.{ .file = b.path("assets/sigmacord.rc") });
         // Sem janela de console no build final.
         if (release) exe.subsystem = .windows;
     }
@@ -282,7 +282,7 @@ pub fn build(b: *std.Build) void {
 
     const run = b.addRunArtifact(exe);
     run.step.dependOn(b.getInstallStep());
-    b.step("run", "Roda o larperCord").dependOn(&run.step);
+    b.step("run", "Roda o SigmaCord").dependOn(&run.step);
 
     // Testes das partes puras (sem janela nem GPU): rodam em qualquer CI.
     const test_mod = b.createModule(.{

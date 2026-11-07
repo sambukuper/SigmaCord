@@ -17,9 +17,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs"
 SITE = ROOT / "site"
-REPO = "https://github.com/RshaCuDeVidro/larperCord"
+REPO = "https://github.com/sambukuper/SigmaCord"
 VERSION = re.search(r'number = "(.+?)"', (ROOT / "src/core/version.zig").read_text()).group(1)
-BASE_URL = "https://rshacudevidro.github.io/larperCord/"
+BASE_URL = "https://sambukuper.github.io/SigmaCord/"
 THEMES = ["classico", "vidro", "terminal", "subsolo", "orbital", "editorial", "bolhas", "zen", "papel", "escritorio", "cupertino"]
 LANGS = ["en", "pt"]
 
@@ -319,7 +319,7 @@ BRAND = {
 # ------------------------------------------------------------- Realce ----
 HL = {
     "kdl": r'''(?P<c>//[^\n]*)|(?P<s>"(?:\\.|[^"\\])*")|(?P<n>\#true|\#false|\b\d+(?:\.\d+)?\b)|(?P<p>[\w-]+(?==))|(?P<k>^[ \t]*[\w-]+)''',
-    "lua": r'''(?P<c>--[^\n]*)|(?P<s>"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(?P<n>\b\d+\b)|(?P<k>\b(?:local|function|end|if|then|else|elseif|for|in|do|while|return|not|and|or|nil|true|false)\b)|(?P<p>\blarper\.\w+)''',
+    "lua": r'''(?P<c>--[^\n]*)|(?P<s>"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(?P<n>\b\d+\b)|(?P<k>\b(?:local|function|end|if|then|else|elseif|for|in|do|while|return|not|and|or|nil|true|false)\b)|(?P<p>\bsigma\.\w+)''',
     "bash": r'''(?P<c>(?:^|(?<=\s))\#[^\n]*)|(?P<s>"(?:\\.|[^"\\])*"|'[^']*')|(?P<k>^[ \t]*(?:sudo\s+)?[\w./-]+)|(?P<p>(?<=\s)--?[\w-]+)''',
     "zig": r'''(?P<c>//[^\n]*)|(?P<s>"(?:\\.|[^"\\])*")|(?P<n>\b\d+\b)|(?P<k>\b(?:const|var|fn|pub|return|if|else|while|for|try|struct)\b)''',
 }
@@ -719,7 +719,7 @@ def shell(lang, path, alt_path, title, desc, body, kind):
 <body>
 <a class="skip" href="#main">{t(lang, 'Skip to content', 'Pular para o conteúdo')}</a>
 <header class="topnav">
-  <a class="brand" href="{home}" aria-label="larperCord">{mascot("n")}<span data-brand>larperCord</span></a>
+  <a class="brand" href="{home}" aria-label="SigmaCord">{mascot("n")}<span data-brand>SigmaCord</span></a>
   <nav aria-label="{t(lang, 'Main', 'Principal')}">
     <a href="{anchor_home}#themes">{t(lang, 'Themes', 'Temas')}</a>
     <a href="{anchor_home}#playground">Playground</a>
@@ -735,7 +735,7 @@ def shell(lang, path, alt_path, title, desc, body, kind):
   <button type="button" class="buddy" data-next-theme aria-label="{t(lang, 'Next theme', 'Próximo tema')}">{mascot("b")}</button>
   <i class="sb-prog" aria-hidden="true"></i>
   <span class="sb-dot" aria-hidden="true"></span>
-  <button type="button" class="sb-btn" data-next-theme title="F2"><span data-theme-name>larper</span></button>
+  <button type="button" class="sb-btn" data-next-theme title="F2"><span data-theme-name>sigma</span></button>
   <button type="button" class="sb-btn" data-toggle-mode><span data-mode-name>dark</span></button>
   <span class="sb-spacer"></span>
   <button type="button" class="sb-btn sb-keys" data-open-palette><kbd>Ctrl</kbd><kbd>K</kbd> {t(lang, 'palette', 'paleta')}</button>
@@ -867,7 +867,7 @@ def build_guide(lang, themes):
 </div>'''
         plain = re.sub(r"<[^>]+>", " ", content)
         desc = " ".join(plain.split())[:155]
-        full = f"{title} · larperCord"
+        full = f"{title} · SigmaCord"
         write(path, shell(lang, path, alt, full, desc, body, "guide"))
         index.append({"t": title, "s": t(lang, "Guide", "Guia"), "u": path})
         # Cada seção entra na busca com um trecho do que vem depois do título.
@@ -911,18 +911,18 @@ def build_landing(lang, themes):
   <figcaption><span class="tnum">{i + 1:02d}</span><strong>{name}</strong><span class="tdesc">{html.escape(th['descEn'] if lang == 'en' else th['desc'])}</span></figcaption>
 </figure>''')
     src = src.replace("%THEME_CARDS%", "\n".join(cards)).replace("%MASCOT%", mascot("h"))
-    tabs = [f'<button type="button" role="tab" data-apply="larper" class="tab"><i>0</i>larper</button>']
+    tabs = [f'<button type="button" role="tab" data-apply="sigma" class="tab"><i>0</i>sigma</button>']
     tabs += [f'<button type="button" role="tab" data-apply="{n}" class="tab"><i>{i + 1}</i>{n}</button>' for i, n in enumerate(THEMES)]
     src = src.replace("%THEME_TABS%", "".join(tabs))
     presets = "".join(f'<option value="{n}"{" selected" if n == "subsolo" else ""}>{n}.kdl</option>' for n in THEMES)
     src = src.replace("%PRESET_OPTIONS%", presets)
-    title = t(lang, "larperCord: a native Discord client whose whole UI is one file", "larperCord: um cliente nativo de Discord cuja interface inteira é um arquivo")
+    title = t(lang, "SigmaCord: a native Discord client whose whole UI is one file", "SigmaCord: um cliente nativo de Discord cuja interface inteira é um arquivo")
     desc = t(lang, "Unofficial native Discord client in Zig. About 130 MB of RAM with a real account, 0% CPU at idle, and a whole interface described by hot-reloading KDL theme files. Voice calls, Lua plugins, offline search.",
              "Cliente nativo e não oficial de Discord em Zig. Cerca de 130 MB de RAM com uma conta real, 0% de CPU parado e a interface inteira descrita em temas KDL que recarregam ao salvar. Voz, plugins em Lua, busca offline.")
     src = src.replace('loading="lazy"', 'loading="lazy" decoding="async"')
     write(path, shell(lang, path, alt, title, desc, src, "landing"))
     return [
-        {"t": t(lang, "Home", "Início"), "s": "larperCord", "u": page_url(lang) if lang == "pt" else "index.html"},
+        {"t": t(lang, "Home", "Início"), "s": "SigmaCord", "u": page_url(lang) if lang == "pt" else "index.html"},
         *[{"t": label, "s": t(lang, "Home", "Início"), "u": f"{'' if lang == 'en' else 'pt/'}index.html#{a}"} for label, a in [
             (t(lang, "Numbers", "Números"), "numbers"), (t(lang, "Layout playground", "Playground de layout"), "playground"),
             (t(lang, "Themes", "Temas"), "themes"), (t(lang, "Features", "Recursos"), "features"),
@@ -935,7 +935,7 @@ def build_landing(lang, themes):
 def main():
     themes = load_themes()
     data = {"order": THEMES, "themes": {**{k: {x: v[x] for x in v if x not in ("preset", "options", "desc", "descEn", "nodes")} for k, v in themes.items()},
-                                        "larper": {k: BRAND[k] for k in ("radius", "display", "fx", "dark", "light")}}}
+                                        "sigma": {k: BRAND[k] for k in ("radius", "display", "fx", "dark", "light")}}}
     write("assets/site/data.js", "window.LC_DATA=" + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n")
     write("assets/site/layouts.js", "window.LC_LAYOUTS=" + json.dumps({k: {"nodes": v["nodes"], "en": v["descEn"], "pt": v["desc"]} for k, v in themes.items()}, ensure_ascii=False, separators=(",", ":")) + ";\n")
     write("assets/site/presets.js", "window.LC_PRESETS=" + json.dumps({k: v["preset"] for k, v in themes.items()}, ensure_ascii=False) + ";\n")
@@ -950,12 +950,12 @@ def main():
     write(".nojekyll", "")
     write("assets/icon-live.svg", live_icon())
     # O 404 é servido em qualquer profundidade: os caminhos são absolutos a partir do projeto.
-    body = (f'<main id="main" class="lost"><img src="/larperCord/assets/logo.svg" alt="" width="320">'
+    body = (f'<main id="main" class="lost"><img src="/SigmaCord/assets/logo.svg" alt="" width="320">'
             f'<h1>404</h1><p class="aside">nothing here. <span lang="pt-BR">nada aqui.</span></p>'
-            f'<p><a class="btn primary" href="/larperCord/">Home</a> <a class="btn" href="/larperCord/pt/">Início</a></p></main>')
-    page = shell("en", "index.html", "pt/index.html", "404 · larperCord", "Page not found.", body, "lost")
-    page = page.replace('data-root=""', 'data-root="/larperCord/"')
-    page = re.sub(r'(href|src)="(?!https?:|/|#)(?:\./)?([^"]*)"', r'\1="/larperCord/\2"', page)
+            f'<p><a class="btn primary" href="/SigmaCord/">Home</a> <a class="btn" href="/SigmaCord/pt/">Início</a></p></main>')
+    page = shell("en", "index.html", "pt/index.html", "404 · SigmaCord", "Page not found.", body, "lost")
+    page = page.replace('data-root=""', 'data-root="/SigmaCord/"')
+    page = re.sub(r'(href|src)="(?!https?:|/|#)(?:\./)?([^"]*)"', r'\1="/SigmaCord/\2"', page)
     write("404.html", page)
     print(f"site gerado em {OUT} ({len(urls)} páginas no sitemap)")
 

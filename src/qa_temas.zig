@@ -52,7 +52,7 @@ fn themeMarks(app: *App) bool {
             qa.find("shape:arc") != null and qa.find("rule:dashed") != null and fx.live_entries > 0;
     }
     if (themeIs(app, "editorial")) {
-        return qa.find("display:larperCord") != null and qa.find("rule:oxford") != null and
+        return qa.find("display:SigmaCord") != null and qa.find("rule:oxford") != null and
             qa.find("rule:double") != null and fx.live_entries > 0;
     }
     if (themeIs(app, "cupertino")) {

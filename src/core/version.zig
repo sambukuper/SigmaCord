@@ -2,7 +2,7 @@
 //! comparar versões, ler o SHA256SUMS e conferir a assinatura dele.
 const std = @import("std");
 
-pub const number = "0.6.1";
+pub const number = "0.7.0";
 
 /// Chave pública das versões publicadas. A privada não está no repositório:
 /// uma atualização que não foi assinada com ela não é instalada.
@@ -71,8 +71,8 @@ test "comparar versões" {
 
 test "SHA256SUMS" {
     const t = std.testing;
-    const sums = "abababababababababababababababababababababababababababababababab  larpercord-linux-x86_64\r\n" ++ "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd *SDL3.dll\n";
-    try t.expectEqual(@as(u8, 0xab), sumFor(sums, "larpercord-linux-x86_64").?[0]);
+    const sums = "abababababababababababababababababababababababababababababababab  sigmacord-linux-x86_64\r\n" ++ "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd *SDL3.dll\n";
+    try t.expectEqual(@as(u8, 0xab), sumFor(sums, "sigmacord-linux-x86_64").?[0]);
     try t.expectEqual(@as(u8, 0xcd), sumFor(sums, "SDL3.dll").?[31]);
     try t.expect(sumFor(sums, "outro") == null);
     try t.expect(sumFor("curto  a\n", "a") == null);
@@ -82,14 +82,14 @@ test "assinatura: só a chave certa e o texto certo" {
     const t = std.testing;
     const Ed = std.crypto.sign.Ed25519;
     const kp = try Ed.KeyPair.generateDeterministic(@splat(7));
-    const msg = "abc  larpercord\n";
+    const msg = "abc  sigmacord\n";
     const sig = try kp.sign(msg, null);
     var sb: [128]u8 = undefined;
     var kb: [64]u8 = undefined;
     const sig_hex = std.fmt.bufPrint(&sb, "{x}", .{&sig.toBytes()}) catch unreachable;
     const key_hex = std.fmt.bufPrint(&kb, "{x}", .{&kp.public_key.toBytes()}) catch unreachable;
     try t.expect(signatureOk(msg, sig_hex, key_hex));
-    try t.expect(!signatureOk("abd  larpercord\n", sig_hex, key_hex));
+    try t.expect(!signatureOk("abd  sigmacord\n", sig_hex, key_hex));
     const other = try Ed.KeyPair.generateDeterministic(@splat(9));
     var ob: [64]u8 = undefined;
     const other_hex = std.fmt.bufPrint(&ob, "{x}", .{&other.public_key.toBytes()}) catch unreachable;

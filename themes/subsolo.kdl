@@ -2,7 +2,7 @@
 // ultravioleta, scanlines e servidores como racks. Exclusivo: rack horizontal,
 // logo em ASCII, efeito CRT, opção ultravioleta, mapa de túneis ao fundo, fita de
 // perigo e letreiro com aberração cromática.
-theme "subsolo" description="Terminal de subsolo: preto fóssil, fósforo ácido, ultravioleta e scanlines." description-en="Underground terminal: fossil black, acid phosphor, ultraviolet and scanlines." author="larperCord" preview=terminal
+theme "subsolo" description="Terminal de subsolo: preto fóssil, fósforo ácido, ultravioleta e scanlines." description-en="Underground terminal: fossil black, acid phosphor, ultraviolet and scanlines." author="SigmaCord" preview=terminal
 
 options {
     option "tuneis" label="Mapa dos túneis" description="Curvas de nível em fósforo atrás dos painéis, paradas." label-en="Tunnel map" description-en="Still phosphor contour lines behind the panels." default=#true

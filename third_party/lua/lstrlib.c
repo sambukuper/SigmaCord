@@ -152,7 +152,7 @@ static int str_rep (lua_State *L) {
   const char *s = luaL_checklstring(L, 1, &l);
   lua_Integer n = luaL_checkinteger(L, 2);
   const char *sep = luaL_optlstring(L, 3, "", &lsep);
-  /* larperCord: string vazia não gira n vezes num laço sem gancho. */
+  /* SigmaCord: string vazia não gira n vezes num laço sem gancho. */
   if (n <= 0 || l + lsep == 0)
     lua_pushliteral(L, "");
   else if (l_unlikely(l + lsep < l || l + lsep > MAXSIZE / n))
@@ -362,7 +362,7 @@ typedef struct MatchState {
   const char *p_end;  /* end ('\0') of pattern */
   lua_State *L;
   int matchdepth;  /* control for recursive depth (to avoid C stack overflow) */
-  unsigned long steps;  /* larperCord: limite de trabalho (o gancho não roda aqui) */
+  unsigned long steps;  /* SigmaCord: limite de trabalho (o gancho não roda aqui) */
   unsigned char level;  /* total number of captures (finished or unfinished) */
   struct {
     const char *init;

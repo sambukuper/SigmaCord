@@ -1,7 +1,7 @@
 // cupertino — uma mesa de trabalho de Mac: papel de parede de colinas, barra de
 // menus translúcida, janela flutuante com semáforo que funciona, barra lateral
 // que deixa o fundo passar e o Dock com lupa. Mensagens em balões.
-theme "cupertino" description="Mesa de trabalho estilo Mac: papel de parede, janela flutuante com semáforo, barra lateral translúcida e Dock com lupa." description-en="Mac-style desktop: wallpaper, floating window with traffic lights, translucent sidebar and a magnifying Dock." author="larperCord" preview=desktop
+theme "cupertino" description="Mesa de trabalho estilo Mac: papel de parede, janela flutuante com semáforo, barra lateral translúcida e Dock com lupa." description-en="Mac-style desktop: wallpaper, floating window with traffic lights, translucent sidebar and a magnifying Dock." author="SigmaCord" preview=desktop
 
 options {
     option "baloes" label="Balões" description="A conversa em balões, como no app de mensagens." label-en="Bubbles" description-en="The conversation in bubbles, like a messaging app." default=#true
@@ -93,7 +93,7 @@ layout {
         dunes seed=11 color="alpha(wal:3, 0.85)" color2="wal:4" color3="wal:5" motion="$movimento" unless=transparente
         column {
             row height=28 style=menus padding-x=14 gap=10 {
-                label width=112 text="larperCord" size=13 weight=bold color=text font="Inter Display"
+                label width=112 text="SigmaCord" size=13 weight=bold color=text font="Inter Display"
                 status-bar flex=1 variant=plain items="conn ping ram spacer clock"
             }
             row flex=1 padding-x=26 padding-y=14 {

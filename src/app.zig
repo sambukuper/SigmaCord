@@ -19,7 +19,7 @@ const themes = @import("theme/manager.zig");
 const layout = @import("theme/layout.zig");
 const fonts_mod = @import("ui/fonts.zig");
 /// Pontos da interface para coordenadas da janela, para a janela do IME (imgui_impl_sdl3.cpp).
-pub extern var larper_ime_scale: f32;
+pub extern var sigma_ime_scale: f32;
 const State = @import("ui/state.zig").State;
 const d = @import("ui/draw.zig");
 const anim = @import("ui/anim.zig");
@@ -89,7 +89,7 @@ fn setupLsp(qa_mode: bool) void {
     else blk: {
         var hb: [400]u8 = undefined;
         const base = sys.cacheHome(&hb) orelse break :blk "";
-        break :blk std.fmt.bufPrint(&buf, "{s}/larpercord/lsp-scratch", .{base}) catch "";
+        break :blk std.fmt.bufPrint(&buf, "{s}/sigmacord/lsp-scratch", .{base}) catch "";
     };
     lsp_net.setup(&lspWake, dir);
 }
@@ -154,7 +154,7 @@ pub const App = struct {
     /// Último aviso da rede (vira a mensagem de erro do login).
     last_notice: [200]u8 = undefined,
     last_notice_len: usize = 0,
-    /// Plugins em Lua (~/.config/larpercord/plugins).
+    /// Plugins em Lua (~/.config/sigmacord/plugins).
     plugins: plugin_host.Engine = undefined,
     /// Última gravação do cache de mensagens (no máximo uma por minuto pelo relógio).
     cache_flush_ms: i64 = 0,
@@ -170,7 +170,7 @@ pub const App = struct {
         const app = try gpa.create(App);
         errdefer gpa.destroy(app);
 
-        app.win = try platform.Window.init("larperCord", 1280, 800);
+        app.win = try platform.Window.init("SigmaCord", 1280, 800);
         wake_type_global = app.win.wake_type;
         timeline.mark(.janela);
 
@@ -244,8 +244,8 @@ pub const App = struct {
         const qa_login = opts.qa and if (c.SDL_getenv("QA_SUITE")) |q| std.mem.eql(u8, std.mem.span(q), "login") else false;
         if (opts.login or qa_login) {
             app.login.begin(.form);
-        } else if (opts.demo or opts.qa or (opts.shot != null and c.SDL_getenv("LARPER_SHOT_REAL") == null)) {
-            // (LARPER_SHOT_REAL=1: print com a conta de verdade, para depurar.)
+        } else if (opts.demo or opts.qa or (opts.shot != null and c.SDL_getenv("SIGMACORD_SHOT_REAL") == null)) {
+            // (SIGMACORD_SHOT_REAL=1: print com a conta de verdade, para depurar.)
             try app.startDemo();
         } else if (app_accounts.envStartupToken()) |t| {
             try app.startReal(t);
@@ -278,7 +278,7 @@ pub const App = struct {
         if (app.opts.shot != null or app.restart_wanted) return false;
         const logged_in = app.store.ready and !app.login.visible();
         if (!janela.wantsTray(app.st.settings.close_to_tray, logged_in)) return false;
-        if (!tray.show(app.win.wake_type, i18n.trZ("Abrir o larperCord", "Open larperCord").ptr, i18n.trZ("Sair", "Quit").ptr)) return false;
+        if (!tray.show(app.win.wake_type, i18n.trZ("Abrir o SigmaCord", "Open SigmaCord").ptr, i18n.trZ("Sair", "Quit").ptr)) return false;
         _ = c.SDL_HideWindow(app.win.window);
         // Sem quadros daqui em diante: o que depende do quadro fica certo agora.
         // Ninguém está olhando: confirmar leitura e o medidor do microfone param,
@@ -492,7 +492,7 @@ pub const App = struct {
         var pbuf: [512]u8 = undefined;
         app.paste_n += 1;
         // O nome do arquivo aparece na bandeja e vai junto para o Discord.
-        const path = i18n.fmtZ(&pbuf, "{s}/larpercord-colado-{d}-{d}.{s}", "{s}/larpercord-pasted-{d}-{d}.{s}", .{ dir, c.getpid(), app.paste_n, kind.ext });
+        const path = i18n.fmtZ(&pbuf, "{s}/sigmacord-colado-{d}-{d}.{s}", "{s}/sigmacord-pasted-{d}-{d}.{s}", .{ dir, c.getpid(), app.paste_n, kind.ext });
         if (path.len == 0) return;
         const saved = if (kind.bitmap) blk: {
             const surface = c.SDL_LoadBMP_IO(c.SDL_IOFromConstMem(data, size), true) orelse {
@@ -701,7 +701,7 @@ pub const App = struct {
         return fsutil.configPath(buf, "settings.kdl");
     }
 
-    /// Lê ~/.config/larpercord/settings.kdl. Retorna o tema salvo, se houver.
+    /// Lê ~/.config/sigmacord/settings.kdl. Retorna o tema salvo, se houver.
     /// Modo de cor pedido nas configurações (resolvendo "seguir o sistema").
     fn wantedMode(app: *const App) @import("theme/theme.zig").Mode {
         if (app.opts.mode) |m| return m;
@@ -1910,7 +1910,7 @@ pub const App = struct {
     pub fn desktopNotify(app: *App, title: [:0]const u8, body: [:0]const u8) void {
         if (app.notifiers.items.len >= 8) return;
         if (sys.windows) return sys.toast(c.SDL_GetPointerProperty(c.SDL_GetWindowProperties(app.win.window), c.SDL_PROP_WINDOW_WIN32_HWND_POINTER, null), now(), title, body);
-        var args = [_:null]?[*:0]const u8{ "notify-send", "--app-name=larperCord", "--", title.ptr, body.ptr };
+        var args = [_:null]?[*:0]const u8{ "notify-send", "--app-name=SigmaCord", "--", title.ptr, body.ptr };
         const proc = c.SDL_CreateProcess(@ptrCast(&args), false) orelse return;
         app.notifiers.append(app.gpa, proc) catch c.SDL_DestroyProcess(proc);
     }
@@ -2029,10 +2029,10 @@ pub const App = struct {
         _ = call;
     }
 
-    /// Monta uma cena para prints de documentação (LARPER_SCENE=…): abre
+    /// Monta uma cena para prints de documentação (SIGMACORD_SCENE=…): abre
     /// popups e posiciona o mouse, já que o print não tem ninguém clicando.
     fn scene(app: *App, settled: bool) void {
-        const which = std.mem.span(c.SDL_getenv("LARPER_SCENE") orelse return);
+        const which = std.mem.span(c.SDL_getenv("SIGMACORD_SCENE") orelse return);
         // "firstdm": abre a primeira DM (mede a área de mensagens diretas).
         if (std.mem.eql(u8, which, "firstdm")) {
             const F = struct {
@@ -2157,8 +2157,8 @@ pub const App = struct {
         };
         var runner: Runner = .{};
         @import("ui/root.zig").profile = app.opts.stats;
-        widgets.no_pics = c.SDL_getenv("LARPER_NO_PICS") != null;
-        widgets.square_pics = c.SDL_getenv("LARPER_SQUARE") != null;
+        widgets.no_pics = c.SDL_getenv("SIGMACORD_NO_PICS") != null;
+        widgets.square_pics = c.SDL_getenv("SIGMACORD_SQUARE") != null;
         if (app.opts.qa) {
             qa_mod.enable();
             _ = c.SDL_CreateDirectory("qa-out");
@@ -2171,9 +2171,9 @@ pub const App = struct {
         var first_frame_logged = false;
         var login_result: ?login_mod.Result = null;
         var lang_setting: i16 = -1;
-        // LARPER_BENCH=1: redesenha sem parar (medir o custo de um quadro parado).
-        const bench = c.SDL_getenv("LARPER_BENCH") != null;
-        store_mod.read_debug = c.SDL_getenv("LARPER_READ_DEBUG") != null;
+        // SIGMACORD_BENCH=1: redesenha sem parar (medir o custo de um quadro parado).
+        const bench = c.SDL_getenv("SIGMACORD_BENCH") != null;
+        store_mod.read_debug = c.SDL_getenv("SIGMACORD_READ_DEBUG") != null;
         // O que chega da rede (presença, digitando, lista de membros) redesenha
         // no máximo a cada `bg_frame_ms`; o mouse só andando, a cada
         // `MousePace.interval_ms`; clique, roda e teclado redesenham na hora.
@@ -2185,9 +2185,9 @@ pub const App = struct {
         var last_frame_ms: i64 = 0;
         var typing_check_ms: i64 = 0;
         var was_active = false;
-        // LARPER_RECORD=pasta: salva cada quadro da tela de login (a 30 qps fixos)
+        // SIGMACORD_RECORD=pasta: salva cada quadro da tela de login (a 30 qps fixos)
         // para montar o vídeo/GIF da documentação.
-        const record_dir: ?[*:0]const u8 = c.SDL_getenv("LARPER_RECORD");
+        const record_dir: ?[*:0]const u8 = c.SDL_getenv("SIGMACORD_RECORD");
         var record_n: u32 = 0;
 
         while (running) {
@@ -2410,7 +2410,7 @@ pub const App = struct {
             // De 5 em 5%: 99,8% aparece como 100%, mas deixa o texto inteiro fora da grade de pixels.
             if (!app.io.*.MouseDown[0]) app.ui_size = @round(std.math.clamp(app.st.settings.ui_scale, 0.75, 2) * 20) / 20;
             const ui_scale = app.uiScale();
-            larper_ime_scale = ui_scale;
+            sigma_ime_scale = ui_scale;
             app.io.*.DisplaySize.x /= ui_scale;
             app.io.*.DisplaySize.y /= ui_scale;
             app.io.*.DisplayFramebufferScale.x *= ui_scale;
@@ -2435,8 +2435,8 @@ pub const App = struct {
             app.store.message_budget = @intFromFloat(std.math.clamp(set.message_budget, 500, 5000));
             if (debug_log.ui_on != debug_log.isOn()) {
                 debug_log.set(debug_log.ui_on);
-                store_mod.read_debug = debug_log.isOn() or c.SDL_getenv("LARPER_READ_DEBUG") != null;
-                if (debug_log.isOn()) std.log.info("registro ligado: larperCord {s}, {s} {s}, vídeo {s}, renderizador {s}", .{ @import("core/version.zig").number, @tagName(@import("builtin").os.tag), @tagName(@import("builtin").cpu.arch), if (c.SDL_GetCurrentVideoDriver()) |v| std.mem.span(v) else "?", if (c.SDL_GetRendererName(app.win.renderer)) |v| std.mem.span(v) else "?" });
+                store_mod.read_debug = debug_log.isOn() or c.SDL_getenv("SIGMACORD_READ_DEBUG") != null;
+                if (debug_log.isOn()) std.log.info("registro ligado: SigmaCord {s}, {s} {s}, vídeo {s}, renderizador {s}", .{ @import("core/version.zig").number, @tagName(@import("builtin").os.tag), @tagName(@import("builtin").cpu.arch), if (c.SDL_GetCurrentVideoDriver()) |v| std.mem.span(v) else "?", if (c.SDL_GetRendererName(app.win.renderer)) |v| std.mem.span(v) else "?" });
             }
             // Idioma: o QA roda em português (as marcações usam os rótulos), salvo com --lang.
             if (set.language != lang_setting) {
@@ -2638,10 +2638,10 @@ pub const App = struct {
                 const p = std.fmt.bufPrintSentinel(&pbuf, "{s}/{d:0>4}.png", .{ std.mem.span(dir), record_n }, 0) catch unreachable;
                 _ = app.win.screenshot(p.ptr);
                 record_n += 1;
-                const max: u32 = if (c.SDL_getenv("LARPER_RECORD_FRAMES")) |n| std.fmt.parseInt(u32, std.mem.span(n), 10) catch 150 else 150;
+                const max: u32 = if (c.SDL_getenv("SIGMACORD_RECORD_FRAMES")) |n| std.fmt.parseInt(u32, std.mem.span(n), 10) catch 150 else 150;
                 if (record_n >= max) running = false;
             };
-            if (app.opts.shot) |path| if (app.login.visible() and !app.store.ready and c.SDL_getenv("LARPER_SHOT_REAL") == null) {
+            if (app.opts.shot) |path| if (app.login.visible() and !app.store.ready and c.SDL_getenv("SIGMACORD_SHOT_REAL") == null) {
                 // Print da tela de login: espera a animação de entrada.
                 if (app.login.t > 2.6) {
                     if (!app.win.screenshot(path)) std.log.err("não consegui salvar {s}", .{path});

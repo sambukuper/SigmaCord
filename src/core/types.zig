@@ -503,7 +503,7 @@ pub const Reaction = struct {
 /// Imagem colada: um arquivo temporário nosso, apagado depois de enviado.
 pub fn isPastedFile(path: []const u8) bool {
     const name = path[(if (std.mem.lastIndexOfScalar(u8, path, '/')) |i| i + 1 else 0)..];
-    return std.mem.startsWith(u8, name, "larpercord-colado-") or std.mem.startsWith(u8, name, "larpercord-pasted-");
+    return std.mem.startsWith(u8, name, "sigmacord-colado-") or std.mem.startsWith(u8, name, "sigmacord-pasted-");
 }
 
 /// Timestamp embutido num snowflake do Discord (ms desde 2015-01-01).

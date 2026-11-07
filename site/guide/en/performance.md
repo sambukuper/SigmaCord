@@ -6,7 +6,7 @@
 |---|---|---|---|
 | Vesktop (Electron) | 1,279 MB | 12–47% ¹ | 287 MB |
 | Discord Phoenix (Rust) ² | ~290 MB | 0.1% | not released |
-| **larperCord**, real account ³ | **~130 MB** | **0–0.4%** ⁴ | **~15 MB** |
+| **SigmaCord**, real account ³ | **~130 MB** | **0–0.4%** ⁴ | **~15 MB** |
 
 ¹ Average since launch, measured with `ps`. Arch Linux, Hyprland, GTX 1050 Ti, a 1280×800 window, `ReleaseFast` build.
 

@@ -6,7 +6,7 @@
 -- @capabilities messages, decorate, http, storage, timers
 -- @hosts api.github.com
 
-local tr = larper.tr
+local tr = sigma.tr
 local HOST = "api.github.com"
 local MAX_CACHE = 300
 local MAX_QUEUE = 32
@@ -22,7 +22,7 @@ local BLOCKED = 15 * 60
 local TTL = { repo = 6 * HOUR, issue = HOUR, pr = HOUR, none = 24 * HOUR }
 
 -- Só dados públicos do GitHub: nada do que foi escrito na mensagem.
-local cache = larper.storage.get("cache") or {}
+local cache = sigma.storage.get("cache") or {}
 local queue = {}
 local queued = {}
 local flying = 0
@@ -102,9 +102,9 @@ end
 
 local function save_soon()
   if save_timer then return end
-  save_timer = larper.after(3, function()
+  save_timer = sigma.after(3, function()
     save_timer = nil
-    larper.storage.set("cache", cache)
+    sigma.storage.set("cache", cache)
   end)
 end
 
@@ -121,7 +121,7 @@ local function remember(key, entry)
 end
 
 local function read_answer(body, ref)
-  local ok, d = pcall(larper.json.decode, body)
+  local ok, d = pcall(sigma.json.decode, body)
   if not ok or type(d) ~= "table" then return nil end
   if ref.num then
     if type(d.title) ~= "string" then return nil end
@@ -185,7 +185,7 @@ local function paint(msg_id)
   local note = table.concat(notes, "  |  ")
   if tracked.note == note then return end
   tracked.note = note
-  larper.decorate(msg_id, { note = note })
+  sigma.decorate(msg_id, { note = note })
 end
 
 local function settle(key)
@@ -202,7 +202,7 @@ local pump
 local function pause_for(seconds)
   if paused then return end
   paused = true
-  larper.after(seconds, function()
+  sigma.after(seconds, function()
     paused = false
     pump()
   end)
@@ -226,12 +226,12 @@ local function answer(ref, res, moved)
     pause_for(BLOCKED)
   elseif (res.status == 301 or res.status == 302 or res.status == 307) and not moved then
     -- Repositório que mudou de nome: o endereço novo vem na resposta, e é uma vez só.
-    local ok, d = pcall(larper.json.decode, res.body)
+    local ok, d = pcall(sigma.json.decode, res.body)
     local to = ok and type(d) == "table" and d.url
     if type(to) == "string" and to:sub(1, #HOST + 9) == "https://" .. HOST .. "/" then
       flying = flying + 1
       spent = spent + 1
-      larper.http.get(to, OPTS, function(again) answer(ref, again, true) end)
+      sigma.http.get(to, OPTS, function(again) answer(ref, again, true) end)
       return
     end
     remember(ref.key, { k = "none" })
@@ -252,7 +252,7 @@ end
 
 pump = function()
   while not paused and flying < IN_FLIGHT and #queue > 0 do
-    if not larper.http.allowed(HOST) then return end
+    if not sigma.http.allowed(HOST) then return end
     local now = os.time()
     if now - spent_from >= HOUR then
       spent_from = now
@@ -265,7 +265,7 @@ pump = function()
     spent = spent + 1
     flying = flying + 1
     local ref = table.remove(queue, 1)
-    larper.http.get(url_of(ref), OPTS, function(res) answer(ref, res, false) end)
+    sigma.http.get(url_of(ref), OPTS, function(res) answer(ref, res, false) end)
   end
 end
 
@@ -286,7 +286,7 @@ local function examine(m)
   if #refs == 0 then
     if old then
       on_message[m.id] = nil
-      larper.undecorate(m)
+      sigma.undecorate(m)
     end
     return
   end
@@ -306,40 +306,40 @@ end
 -- As últimas do canal aberto: sem gastar o limite do GitHub com o histórico inteiro.
 local again = false
 local function scan()
-  local asked = larper.messages({ limit = 50, contains = { "github.com/", "#" } }, function(list)
+  local asked = sigma.messages({ limit = 50, contains = { "github.com/", "#" } }, function(list)
     for _, m in ipairs(list) do examine(m) end
   end)
   if not asked and not again then
     again = true
-    larper.after(0.6, function()
+    sigma.after(0.6, function()
       again = false
       scan()
     end)
   end
 end
 
-larper.on("message", examine, { contains = { "github.com/", "#" } })
-larper.on("edit", examine)
-larper.on("channel", function()
+sigma.on("message", examine, { contains = { "github.com/", "#" } })
+sigma.on("edit", examine)
+sigma.on("channel", function()
   scan()
-  larper.after(1.5, scan)
+  sigma.after(1.5, scan)
 end)
-larper.on("hosts", function()
+sigma.on("hosts", function()
   pump()
   scan()
 end)
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   on_message[d.id] = nil
   dismissed[d.id] = nil
 end)
-larper.on("dismiss", function(d)
+sigma.on("dismiss", function(d)
   dismissed[d.id] = true
 end)
-larper.on("lang", function()
+sigma.on("lang", function()
   for msg_id, tracked in pairs(on_message) do
     tracked.note = nil
     paint(msg_id)
   end
 end)
 
-larper.after(1, scan)
+sigma.after(1, scan)

@@ -5,13 +5,13 @@
 -- @version 1.0.0
 -- @capabilities menu, panel, storage, decorate, messages, notify
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX = 500
-local items = larper.storage.get("items") or {}
+local items = sigma.storage.get("items") or {}
 local query = ""
 
 local function save()
-  larper.storage.set("items", items)
+  sigma.storage.set("items", items)
 end
 
 local function find(id)
@@ -32,7 +32,7 @@ local function preview(text)
 end
 
 local function date(t)
-  return os.date(larper.lang() == "pt" and "%d/%m/%Y %H:%M" or "%b %d, %Y %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m/%Y %H:%M" or "%b %d, %Y %H:%M", t)
 end
 
 local render
@@ -41,7 +41,7 @@ local function remove(id)
   local i = find(id)
   if not i then return end
   table.remove(items, i)
-  larper.undecorate(id)
+  sigma.undecorate(id)
   save()
   render()
 end
@@ -61,14 +61,14 @@ render = function()
         subtitle = it.gone and tr("(mensagem apagada)", "(message deleted)") or (it.text ~= "" and it.text or tr("(sem texto)", "(no text)")),
         meta = date(it.time),
         key = it.id,
-        on_click = function() larper.jump(it.channel, it.id) end,
+        on_click = function() sigma.jump(it.channel, it.id) end,
         actions = {
           { label = tr("Remover", "Remove"), style = "danger", key = "rm" .. it.id, on_click = function() remove(it.id) end },
         },
       }
     end
   end
-  larper.panel.set({
+  sigma.panel.set({
     title = tr("Favoritos", "Bookmarks"),
     { type = "input", key = "search", placeholder = tr("Buscar nos favoritos…", "Search bookmarks…"), value = query,
       on_change = function(v) query = v; render() end },
@@ -78,32 +78,32 @@ render = function()
   })
 end
 
-larper.menu("message", { pt = "Salvar nos favoritos", en = "Bookmark" }, function(m)
+sigma.menu("message", { pt = "Salvar nos favoritos", en = "Bookmark" }, function(m)
   if find(m.id) then
     remove(m.id)
-    larper.notify(tr("Tirado dos favoritos", "Removed from bookmarks"))
+    sigma.notify(tr("Tirado dos favoritos", "Removed from bookmarks"))
     return
   end
   if #items >= MAX then
-    larper.notify(tr("Favoritos cheios: até 500", "Bookmarks are full: up to 500"))
+    sigma.notify(tr("Favoritos cheios: até 500", "Bookmarks are full: up to 500"))
     return
   end
   local where = "#" .. m.channel.name
   if m.guild then where = where .. "  ·  " .. m.guild.name end
   table.insert(items, 1, { id = m.id, channel = m.channel.id, author = m.author.name, where = where, text = preview(m.content), time = m.time })
   save()
-  larper.decorate(m, { badge = "🔖" })
+  sigma.decorate(m, { badge = "🔖" })
   render()
-  larper.notify(tr("Salvo nos favoritos", "Bookmarked"))
+  sigma.notify(tr("Salvo nos favoritos", "Bookmarked"))
 end)
 
-larper.command("/bookmarks", function()
+sigma.command("/bookmarks", function()
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
 -- Quem apagou a mensagem levou o texto junto: aqui fica só o lugar.
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   local i = find(d.id)
   if not i then return end
   items[i].text = ""
@@ -112,7 +112,7 @@ larper.on("delete", function(d)
   render()
 end)
 
-larper.on("lang", render)
+sigma.on("lang", render)
 
-for _, it in ipairs(items) do larper.decorate(it.id, { badge = "🔖" }) end
+for _, it in ipairs(items) do sigma.decorate(it.id, { badge = "🔖" }) end
 render()

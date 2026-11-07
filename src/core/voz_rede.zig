@@ -1,8 +1,8 @@
 //! Simula a rede ruim para a recepção de voz: `zig build voz-rede` (sempre em
 //! ReleaseFast). Opus de verdade, 60 s de fala por cenário, um dispositivo que
 //! puxa áudio em ritmo fixo. Compara o jeito antigo de tocar com `voz.Jitter` e
-//! conta buracos e estalos. `LARPER_VOZ_FALA=arquivo.wav` (48 kHz, 16 bits, mono)
-//! usa a fala dele, e `LARPER_VOZ_WAV=pasta` grava o que saiu para ouvir.
+//! conta buracos e estalos. `SIGMACORD_VOZ_FALA=arquivo.wav` (48 kHz, 16 bits, mono)
+//! usa a fala dele, e `SIGMACORD_VOZ_WAV=pasta` grava o que saiu para ouvir.
 //! Só para quem desenvolve; não entra no app.
 const std = @import("std");
 const voz = @import("voz.zig");
@@ -378,11 +378,11 @@ pub fn main() !void {
     const voice_mono = try gpa.alloc(i16, (seconds + 1) * voz.rate);
     defer gpa.free(voice_mono);
     var source: [*:0]const u8 = "fala sintetica";
-    if (getenv("LARPER_VOZ_FALA")) |path| {
+    if (getenv("SIGMACORD_VOZ_FALA")) |path| {
         if (!loadWav(path, voice_mono)) return error.WavInvalido;
         source = path;
     } else synth(voice_mono);
-    const wav = getenv("LARPER_VOZ_WAV");
+    const wav = getenv("SIGMACORD_VOZ_WAV");
 
     // Codifica uma vez, como o cliente do Discord (64 kbit/s, com FEC).
     var err: c_int = 0;

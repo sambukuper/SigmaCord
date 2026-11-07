@@ -38,7 +38,7 @@ enum ImGuiFreeTypeLoaderFlags_
     ImGuiFreeTypeLoaderFlags_Monochrome    = 1 << 7,   // Disable anti-aliasing. Combine this with MonoHinting for best results!
     ImGuiFreeTypeLoaderFlags_LoadColor     = 1 << 8,   // Enable FreeType color-layered glyphs
     ImGuiFreeTypeLoaderFlags_Bitmap        = 1 << 9,   // Enable FreeType bitmap glyphs
-    ImGuiFreeTypeLoaderFlags_LarperMatchEm = 1 << 10,  // [larperCord] Merged font: same em size as the font it merges into
+    ImGuiFreeTypeLoaderFlags_SigmaMatchEm = 1 << 10,  // [SigmaCord] Merged font: same em size as the font it merges into
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     ImGuiFreeTypeBuilderFlags_NoHinting     = ImGuiFreeTypeLoaderFlags_NoHinting,

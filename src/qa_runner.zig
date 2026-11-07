@@ -1,4 +1,4 @@
-//! Robô de QA (`larpercord --qa`): roda fora da tela, com os dados de
+//! Robô de QA (`sigmacord --qa`): roda fora da tela, com os dados de
 //! demonstração, e usa o app como uma pessoa usaria, com eventos reais de
 //! mouse e teclado no ImGui, clicando nos elementos marcados pelos
 //! componentes (ui/qa.zig). Depois de cada ação confere o estado, salva
@@ -830,7 +830,7 @@ fn editDialogOpen(app: *App) bool {
 }
 fn guildRenamed(app: *App) bool {
     const g = app.store.guild(500_000) orelse return false;
-    return app.st.popup == .none and std.mem.eql(u8, g.name, "larperCord QA");
+    return app.st.popup == .none and std.mem.eql(u8, g.name, "SigmaCord QA");
 }
 fn guildIconChanged(app: *App) bool {
     const g = app.store.guild(500_000) orelse return false;
@@ -838,7 +838,7 @@ fn guildIconChanged(app: *App) bool {
 }
 fn guildRestored(app: *App) bool {
     const g = app.store.guild(500_000) orelse return false;
-    return app.st.popup == .none and g.icon == null and !std.mem.eql(u8, g.name, "larperCord QA");
+    return app.st.popup == .none and g.icon == null and !std.mem.eql(u8, g.name, "SigmaCord QA");
 }
 fn groupRenamed(app: *App) bool {
     const cs = app.store.channel(900_006) orelse return false;
@@ -1124,14 +1124,14 @@ const qa_plugins = [_]struct { name: []const u8, src: []const u8 }{
     .{ .name = "calc.lua", .src = @embedFile("plugins/testdata/calc.lua") },
     .{ .name = "zoeira.lua", .src = @embedFile("plugins/testdata/zoeira.lua") },
     .{ .name = "qa.lua", .src =
-    \\larper.on("message", function(msg)
-    \\  if msg.content == "ping-plugin" then larper.notify("pong-plugin de " .. msg.author.name) end
-    \\  if msg.content == "spam-plugin" then larper.send(msg.channel, "spam!") end
+    \\sigma.on("message", function(msg)
+    \\  if msg.content == "ping-plugin" then sigma.notify("pong-plugin de " .. msg.author.name) end
+    \\  if msg.content == "spam-plugin" then sigma.send(msg.channel, "spam!") end
     \\end)
-    \\larper.keybind("ctrl+shift+y", function() larper.send(nil, "atalho do plugin") end)
+    \\sigma.keybind("ctrl+shift+y", function() sigma.send(nil, "atalho do plugin") end)
     },
-    .{ .name = "trava.lua", .src = "larper.command('/trava', function() while true do end end)" },
-    .{ .name = "quebrado.lua", .src = "larper.on('message', function( end" },
+    .{ .name = "trava.lua", .src = "sigma.command('/trava', function() while true do end end)" },
+    .{ .name = "quebrado.lua", .src = "sigma.on('message', function( end" },
 };
 
 fn writePlugins(app: *App) void {
@@ -1205,7 +1205,7 @@ fn alertToast(app: *App) bool {
 }
 fn spamBlocked(app: *App) bool {
     const p = plugin(app, "qa.lua") orelse return false;
-    return p.status() == .running and pluginErr(app, "qa.lua", "larper.send") and !lastIs(app, "spam!");
+    return p.status() == .running and pluginErr(app, "qa.lua", "sigma.send") and !lastIs(app, "spam!");
 }
 fn shrugOff(app: *App) bool {
     const p = plugin(app, "shrug.lua") orelse return false;
@@ -1416,6 +1416,16 @@ fn halfPageDown(app: *App) bool {
 fn halfPageUp(app: *App) bool {
     return app.st.scrollOf(app.st.activeChannel() orelse return false).target < saved_target - 100;
 }
+// Os atalhos de mic e surdez (ui/bindings.zig), teclado de verdade.
+fn micFree(app: *App) bool {
+    return !app.st.muted and !app.st.deafened;
+}
+fn micMuted(app: *App) bool {
+    return app.st.muted and !app.st.deafened;
+}
+fn deafenedAll(app: *App) bool {
+    return app.st.deafened and app.st.muted;
+}
 fn scrolledDown(app: *App) bool {
     return app.st.scrollOf(app.st.activeChannel() orelse return false).target > saved_target + 30;
 }
@@ -1544,6 +1554,19 @@ const ops_editor = [_]Op{
     .{ .run = rememberTarget },
     ctrl(c.ImGuiKey_D),
     expect("Ctrl+d desce meia página", halfPageDown),
+    // Atalhos configuráveis (ui/bindings.zig): mic e surdez têm teclas de fábrica.
+    expect("microfone livre", micFree),
+    ctrlShift(c.ImGuiKey_M),
+    expect("Ctrl+Shift+M muta o microfone", micMuted),
+    ctrlShift(c.ImGuiKey_M),
+    expect("Ctrl+Shift+M volta a ouvir o microfone", micFree),
+    ctrlShift(c.ImGuiKey_D),
+    expect("Ctrl+Shift+D ensurdece (e muta junto)", deafenedAll),
+    ctrlShift(c.ImGuiKey_D),
+    // Sair da surdez não desmuta sozinho: desmuta pela tecla.
+    expect("Ctrl+Shift+D volta a ouvir os outros (o mic continua mudo)", micMuted),
+    ctrlShift(c.ImGuiKey_M),
+    expect("e o microfone volta", micFree),
     key(c.ImGuiKey_G),
     key(c.ImGuiKey_G),
     expect("gg vai para o topo", atTop),
@@ -1638,14 +1661,14 @@ fn cacheLeftSaved(app: *App) bool {
 /// arquivo 600, pasta nossa 700, troca sem sobrar .tmp, e regravar por cima.
 fn privateWrite(_: *App) bool {
     const fsutil = @import("platform/fsutil.zig");
-    const p = "qa-out/privado/larpercord/sub/x.kdl";
+    const p = "qa-out/privado/sigmacord/sub/x.kdl";
     if (!fsutil.writePrivate(p, "um") or !fsutil.writePrivate(p, "dois")) return false;
     // No Windows quem protege é a pasta do perfil: não há modo de arquivo.
     if (@import("builtin").os.tag == .windows) return @import("platform/sys.zig").fileSize(p) == 4 and !@import("platform/sys.zig").exists(p ++ ".tmp");
     var st: c.struct_stat = undefined;
     if (c.stat(p, &st) != 0 or st.st_mode & 0o777 != 0o600 or st.st_size != 4) return false;
-    if (c.stat("qa-out/privado/larpercord/sub", &st) != 0 or st.st_mode & 0o777 != 0o700) return false;
-    if (c.stat("qa-out/privado/larpercord", &st) != 0 or st.st_mode & 0o777 != 0o700) return false;
+    if (c.stat("qa-out/privado/sigmacord/sub", &st) != 0 or st.st_mode & 0o777 != 0o700) return false;
+    if (c.stat("qa-out/privado/sigmacord", &st) != 0 or st.st_mode & 0o777 != 0o700) return false;
     return c.stat(p ++ ".tmp", &st) != 0;
 }
 var disk_reads_before: u32 = 0;
@@ -1966,14 +1989,14 @@ const ops_plugin_section = [_]Op{
     click("composer"),
     .{ .text = "ping-plugin" },
     key(c.ImGuiKey_Enter),
-    .{ .expect = .{ .name = "evento message chega ao plugin e larper.notify avisa", .check = pongToast, .timeout_ms = 3000 } },
+    .{ .expect = .{ .name = "evento message chega ao plugin e sigma.notify avisa", .check = pongToast, .timeout_ms = 3000 } },
     .{ .run = clearToast },
     .{ .run = fakeUrgent },
     expect("alerta.lua (docs/plugins) avisa a palavra de outra pessoa", alertToast),
     click("composer"),
     .{ .text = "spam-plugin" },
     key(c.ImGuiKey_Enter),
-    .{ .expect = .{ .name = "larper.send em resposta a mensagem é bloqueado", .check = spamBlocked, .timeout_ms = 3000 } },
+    .{ .expect = .{ .name = "sigma.send em resposta a mensagem é bloqueado", .check = spamBlocked, .timeout_ms = 3000 } },
     ctrl(c.ImGuiKey_Comma),
     click("settings:Plugins"),
     click("toggle:shrug.lua"),
@@ -2136,7 +2159,7 @@ const ops = [_]Op{
     .{ .shot = "06c-atualizacao" },
     click("button:Baixar e instalar"),
     expect("instalar pede para reiniciar", updateShownReady),
-    click("button:Reiniciar o larperCord"),
+    click("button:Reiniciar o SigmaCord"),
     expect("reiniciar (no QA só avisa)", toastRestart),
     click("settings:Novidades"),
     expect("a página de novidades mostra o changelog", changelogShown),
@@ -2154,7 +2177,7 @@ const ops = [_]Op{
     .{ .shot = "06a-editar-servidor" },
     click("edit-name"),
     ctrl(c.ImGuiKey_A),
-    .{ .text = "larperCord QA" },
+    .{ .text = "SigmaCord QA" },
     .{ .wait = 100 },
     click("edit-save"),
     .{ .expect = .{ .name = "salvar troca o nome do servidor", .check = guildRenamed, .timeout_ms = 3000 } },
@@ -2170,7 +2193,7 @@ const ops = [_]Op{
     click("edit-remove:icon"),
     click("edit-name"),
     ctrl(c.ImGuiKey_A),
-    .{ .text = "larperCord dev" },
+    .{ .text = "SigmaCord dev" },
     .{ .wait = 100 },
     click("edit-save"),
     .{ .expect = .{ .name = "remover o ícone e voltar o nome", .check = guildRestored, .timeout_ms = 3000 } },
@@ -3648,7 +3671,7 @@ pub const Runner = struct {
         if (r.started_ms == 0) {
             r.started_ms = now();
             r.step_ms = now();
-            std.debug.print("\nlarperCord — QA automático\n", .{});
+            std.debug.print("\nSigmaCord — QA automático\n", .{});
         }
         const list = script();
         if (r.index >= list.len) return r.finish();

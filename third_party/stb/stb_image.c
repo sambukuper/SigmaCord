@@ -12,14 +12,14 @@
 #define STBI_MAX_DIMENSIONS 8192
 #include "stb_image.h"
 
-// --- larperCord: GIF quadro a quadro -------------------------------------
+// --- SigmaCord: GIF quadro a quadro -------------------------------------
 // O stbi_load_gif_from_memory guarda todos os quadros em tamanho cheio (um
 // GIF de 300 quadros passa fácil de 200 MB). Aqui cada quadro vai para o
 // callback assim que sai, e só os dois últimos ficam guardados (o descarte
 // "restaurar ao anterior" precisa do quadro de dois atrás).
-typedef int (*larper_gif_cb)(void *ud, const unsigned char *rgba, int w, int h, int delay_ms);
+typedef int (*sigma_gif_cb)(void *ud, const unsigned char *rgba, int w, int h, int delay_ms);
 
-int larper_gif_frames(const unsigned char *data, int len, larper_gif_cb cb, void *ud)
+int sigma_gif_frames(const unsigned char *data, int len, sigma_gif_cb cb, void *ud)
 {
    stbi__context s;
    stbi__gif g;

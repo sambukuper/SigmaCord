@@ -42,6 +42,7 @@ test {
     _ = @import("theme/custom.zig");
     _ = @import("theme/layout.zig");
     _ = @import("ui/anim.zig");
+    _ = @import("ui/bind_keys.zig");
     _ = @import("ui/fuzzy.zig");
     _ = @import("ui/i18n.zig");
     _ = @import("ui/syntax.zig");

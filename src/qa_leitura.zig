@@ -399,9 +399,9 @@ fn ptbInApp(app: *App) bool {
     return app.st.activeChannel() == memes and @import("ui/attachments.zig").last_opened_len == 0;
 }
 fn invitesShown(app: *App) bool {
-    const a = app.store.invites.get("larper") orelse return false;
+    const a = app.store.invites.get("sigma") orelse return false;
     const b = app.store.invites.get("zigbr") orelse return false;
-    return a.state == .ok and b.state == .ok and qa.find("invite:larper") != null and qa.find("invite:zigbr") != null and qa.find("invite-go:larper") != null and qa.find("invite-go:zigbr") == null;
+    return a.state == .ok and b.state == .ok and qa.find("invite:sigma") != null and qa.find("invite:zigbr") != null and qa.find("invite-go:sigma") != null and qa.find("invite-go:zigbr") == null;
 }
 // Outras seções também mostram convites: o que vale é um pedido por código conhecido.
 fn oneFetchEach(app: *App) bool {

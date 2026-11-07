@@ -5,8 +5,8 @@
 -- @version 1.0.0
 -- @capabilities composer, settings, storage, notify
 
-local tr = larper.tr
-local style = larper.storage.get("style") or "f"
+local tr = sigma.tr
+local style = sigma.storage.get("style") or "f"
 
 local DAY = 86400
 local units = { s = 1, seg = 1, sec = 1, m = 60, min = 60, h = 3600, d = DAY, dia = DAY, dias = DAY, day = DAY, days = DAY }
@@ -60,7 +60,7 @@ local function parse_date(word)
   if not a then return nil end
   a, b = tonumber(a), tonumber(b)
   local day, month = a, b
-  if larper.lang() == "en" then day, month = b, a end
+  if sigma.lang() == "en" then day, month = b, a end
   if month < 1 or month > 12 or day < 1 or day > 31 then return nil end
   return day, month, y ~= "" and tonumber(y) or nil
 end
@@ -123,18 +123,18 @@ local function parse(args)
   return t
 end
 
-larper.command("/ts", function(args)
+sigma.command("/ts", function(args)
   local t = parse(args)
   if not t then
-    larper.notify(tr("Use assim: /ts amanhã 15h, /ts sexta 20h, /ts 25/12 20h ou /ts em 2h", "Use it like this: /ts tomorrow 3pm, /ts friday 20:00, /ts 12/25 8pm or /ts in 2h"))
+    sigma.notify(tr("Use assim: /ts amanhã 15h, /ts sexta 20h, /ts 25/12 20h ou /ts em 2h", "Use it like this: /ts tomorrow 3pm, /ts friday 20:00, /ts 12/25 8pm or /ts in 2h"))
     return
   end
-  larper.insert("<t:" .. t .. ":" .. style .. ">")
-  larper.notify(os.date(larper.lang() == "pt" and "%d/%m/%Y %H:%M" or "%b %d %Y %H:%M", t))
+  sigma.insert("<t:" .. t .. ":" .. style .. ">")
+  sigma.notify(os.date(sigma.lang() == "pt" and "%d/%m/%Y %H:%M" or "%b %d %Y %H:%M", t))
 end)
 
 local function options()
-  larper.settings.set({
+  sigma.settings.set({
     { type = "select", key = "style", label = tr("Formato", "Format"), value = style,
       options = {
         { value = "f", label = tr("Data e hora", "Date and time") },
@@ -146,10 +146,10 @@ local function options()
       },
       on_change = function(v)
         style = v
-        larper.storage.set("style", v)
+        sigma.storage.set("style", v)
       end },
   })
 end
 
-larper.on("lang", options)
+sigma.on("lang", options)
 options()

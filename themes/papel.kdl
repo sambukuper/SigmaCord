@@ -1,7 +1,7 @@
 // papel — um caderno: títulos em serifa, o índice na margem direita.
 // Exclusivo: folha pautada com a margem vermelha, que rola junto com a conversa.
 // Papel com grão, furos de fichário, a dobra da folha e o índice em página pontilhada.
-theme "papel" description="Caderno: folha pautada com margem vermelha, títulos em serifa e índice." description-en="Notebook: ruled paper with a red margin, serif headings and an index." author="larperCord" preview=mirror
+theme "papel" description="Caderno: folha pautada com margem vermelha, títulos em serifa e índice." description-en="Notebook: ruled paper with a red margin, serif headings and an index." author="SigmaCord" preview=mirror
 
 options {
     option "furos" label="Furos de fichário" description="Os três furos na beirada da folha." label-en="Binder holes" description-en="The three holes at the edge of the page." default=#true

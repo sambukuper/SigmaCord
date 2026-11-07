@@ -6,7 +6,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 zig build -Doptimize=debug -p .zig-cache/qa || exit 1
 mkdir -p qa-out
-bin=./.zig-cache/qa/bin/larpercord
+bin=./.zig-cache/qa/bin/sigmacord
 fail=0
 out=$(QA_SUITE=lsp "$bin" --qa 2>&1 | grep -v '^info:')
 echo "$out" | grep 'passaram'

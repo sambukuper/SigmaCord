@@ -1,4 +1,4 @@
-//! O mascote do larperCord desenhado com o ImDrawList, com as mesmas medidas
+//! O mascote do SigmaCord desenhado com o ImDrawList, com as mesmas medidas
 //! de assets/logo-mark.svg (viewBox 100 110 1200 900), para poder animar cada
 //! parte: o corpo surgindo, a estrelinha girando, as pálpebras piscando e o
 //! rosto virando para onde o mouse está.

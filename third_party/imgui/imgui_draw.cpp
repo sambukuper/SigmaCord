@@ -5199,16 +5199,16 @@ void ImFontAtlasFontRebuildOutput(ImFontAtlas* atlas, ImFont* font)
     ImFontAtlasFontInitOutput(atlas, font);
 }
 
-// [larperCord] A barra de rolagem vertical da janela atual está sendo arrastada?
-extern "C" bool larper_scrollbar_held(void)
+// [SigmaCord] A barra de rolagem vertical da janela atual está sendo arrastada?
+extern "C" bool sigma_scrollbar_held(void)
 {
     ImGuiContext& g = *GImGui;
     return g.ActiveId != 0 && g.ActiveId == ImGui::GetWindowScrollbarID(g.CurrentWindow, ImGuiAxis_Y);
 }
 
-// [larperCord] Peso e encaixe do texto, ao vivo (Configurações → Avançado). O emoji colorido fica
+// [SigmaCord] Peso e encaixe do texto, ao vivo (Configurações → Avançado). O emoji colorido fica
 // de fora. As letras voltam a ser geradas conforme aparecem na tela.
-extern "C" void larper_font_style(ImFont* font, float multiply, unsigned int hint_flags)
+extern "C" void sigma_font_style(ImFont* font, float multiply, unsigned int hint_flags)
 {
     const unsigned int hint_mask = 31u; // NoHinting, NoAutoHint, ForceAutoHint, LightHinting, MonoHinting
     const unsigned int color = 1u << 8; // LoadColor
@@ -6049,7 +6049,7 @@ static bool ImFontAtlasBuildAcceptCodepointForSource(ImFontConfig* src, ImWchar 
     return true;
 }
 
-// larperCord: as tabelas por caractere de cada fonte+tamanho são indexadas direto pelo
+// SigmaCord: as tabelas por caractere de cada fonte+tamanho são indexadas direto pelo
 // código, então um único emoji (U+1F600) custava 128 mil entradas (1,2 MB, com a folga do
 // ImVector) para cada fonte+tamanho. Os emoji ficam logo depois do começo do BMP; o resto
 // só anda para abrir espaço. Vale para IndexLookup e IndexAdvanceX.
@@ -6113,10 +6113,10 @@ static void ImFontAtlas_FontHookRemapCodepoint(ImFontAtlas* atlas, ImFont* font,
     *out_codepoint = (ImWchar)data;
 }
 
-// [larperCord] Told when no source has a codepoint: fonts.zig loads the fallback scripts on first need.
-extern "C" { void (*larper_glyph_missing)(unsigned int) = nullptr; }
-// [larperCord] A letra comum por trás de uma estilizada (𝐫𝐞𝐠𝐫𝐚𝐬), ou 0.
-extern "C" { unsigned int (*larper_glyph_plain)(unsigned int) = nullptr; }
+// [SigmaCord] Told when no source has a codepoint: fonts.zig loads the fallback scripts on first need.
+extern "C" { void (*sigma_glyph_missing)(unsigned int) = nullptr; }
+// [SigmaCord] A letra comum por trás de uma estilizada (𝐫𝐞𝐠𝐫𝐚𝐬), ou 0.
+extern "C" { unsigned int (*sigma_glyph_plain)(unsigned int) = nullptr; }
 
 static ImFontGlyph* ImFontBaked_BuildLoadGlyph(ImFontBaked* baked, ImWchar codepoint, float* only_load_advance_x)
 {
@@ -6145,7 +6145,7 @@ static ImFontGlyph* ImFontBaked_BuildLoadGlyph(ImFontBaked* baked, ImWchar codep
             return glyph;
 
     // Call backend
-larper_try_plain:
+sigma_try_plain:
     char* loader_user_data_p = (char*)baked->FontLoaderDatas;
     char* loader_user_data_p_next = NULL;
     for (int src_n = 0; src_n < font->Sources.Size; src_n++, loader_user_data_p = loader_user_data_p_next)
@@ -6190,16 +6190,16 @@ larper_try_plain:
         }
     }
 
-    // [larperCord] Nenhuma fonte tem esta letra estilizada: desenha a comum no lugar do "?".
-    if (larper_glyph_plain != nullptr && src_codepoint == codepoint)
-        if (unsigned int plain = larper_glyph_plain((unsigned int)codepoint))
+    // [SigmaCord] Nenhuma fonte tem esta letra estilizada: desenha a comum no lugar do "?".
+    if (sigma_glyph_plain != nullptr && src_codepoint == codepoint)
+        if (unsigned int plain = sigma_glyph_plain((unsigned int)codepoint))
         {
             src_codepoint = (ImWchar)plain;
-            goto larper_try_plain;
+            goto sigma_try_plain;
         }
 
-    if (larper_glyph_missing != nullptr)
-        larper_glyph_missing((unsigned int)codepoint);
+    if (sigma_glyph_missing != nullptr)
+        sigma_glyph_missing((unsigned int)codepoint);
 
     // Lazily load fallback glyph
     if (baked->LoadNoFallback)
@@ -6863,7 +6863,7 @@ ImFontGlyph* ImFontAtlasBakedAddFontGlyph(ImFontAtlas* atlas, ImFontBaked* baked
 
         // Snap to pixel
         if (src->PixelSnapH)
-            advance_x = IM_ROUND(advance_x * baked->RasterizerDensity) / baked->RasterizerDensity; // [larperCord] Pixels, not points: see ImFontSnapQuad
+            advance_x = IM_ROUND(advance_x * baked->RasterizerDensity) / baked->RasterizerDensity; // [SigmaCord] Pixels, not points: see ImFontSnapQuad
 
         // Bake spacing
         glyph->AdvanceX = advance_x + src->GlyphExtraAdvanceX;
@@ -6895,7 +6895,7 @@ void ImFontAtlasBakedAddFontGlyphAdvancedX(ImFontAtlas* atlas, ImFontBaked* bake
 
         // Snap to pixel
         if (src->PixelSnapH)
-            advance_x = IM_ROUND(advance_x * baked->RasterizerDensity) / baked->RasterizerDensity; // [larperCord] Pixels, not points: see ImFontSnapQuad
+            advance_x = IM_ROUND(advance_x * baked->RasterizerDensity) / baked->RasterizerDensity; // [SigmaCord] Pixels, not points: see ImFontSnapQuad
 
         // Bake spacing
         advance_x += src->GlyphExtraAdvanceX;
@@ -7352,7 +7352,7 @@ ImVec2 ImFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
 }
 
 // Note: as with every ImDrawList drawing function, this expects that the font atlas texture is bound.
-// [larperCord] Text is snapped to whole points, which at a fractional scale (125%, 150%) fall between
+// [SigmaCord] Text is snapped to whole points, which at a fractional scale (125%, 150%) fall between
 // pixels: the atlas is sampled linearly and the glyph blurs. Each quad lands on the pixel grid instead.
 static inline void ImFontSnapQuad(float density, float& x1, float& x2, float& y1, float& y2)
 {
@@ -7379,7 +7379,7 @@ void ImFont::RenderChar(ImDrawList* draw_list, float size, const ImVec2& pos, Im
     float y = pos.y;
     if ((draw_list->Flags & ImDrawFlags_TextNoPixelSnap) == 0)
     {
-        // [larperCord] Encaixa em pixels da tela, não em pontos: em 125%, um ponto inteiro cai
+        // [SigmaCord] Encaixa em pixels da tela, não em pontos: em 125%, um ponto inteiro cai
         // no meio de um pixel e o texto inteiro sai borrado.
         const float snap = CurrentRasterizerDensity > 0.0f ? CurrentRasterizerDensity : 1.0f;
         x = IM_TRUNC(x * snap) / snap;

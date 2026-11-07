@@ -124,7 +124,7 @@ pub fn get() ?*const Api {
 pub fn localDir(buf: []u8) ?[]const u8 {
     var hb: [400]u8 = undefined;
     const base = @import("sys.zig").cacheHome(&hb) orelse return null;
-    return std.fmt.bufPrint(buf, "{s}/larpercord/ffmpeg", .{base}) catch null;
+    return std.fmt.bufPrint(buf, "{s}/sigmacord/ffmpeg", .{base}) catch null;
 }
 
 /// O Windows também procura as bibliotecas (e as que elas pedem) nesta pasta.
@@ -157,14 +157,14 @@ pub fn known() ?bool {
 }
 
 fn loadAll() bool {
-    // LARPER_NO_FFMPEG=1 finge que não tem (para testar o caminho do navegador).
-    if (c.SDL_getenv("LARPER_NO_FFMPEG") != null) return false;
+    // SIGMACORD_NO_FFMPEG=1 finge que não tem (para testar o caminho do navegador).
+    if (c.SDL_getenv("SIGMACORD_NO_FFMPEG") != null) return false;
     useLocalDir();
     for (sets) |s| if (loadSet(s)) {
         loaded = s;
         rgba_fmt = api.av_get_pix_fmt("rgba");
         if (rgba_fmt < 0) return false;
-        if (c.SDL_getenv("LARPER_DEBUG_MEDIA") == null and !@import("debug_log.zig").isOn()) {
+        if (c.SDL_getenv("SIGMACORD_DEBUG_MEDIA") == null and !@import("debug_log.zig").isOn()) {
             api.av_log_set_level(log_quiet);
         } else std.log.info("ffmpeg: libavformat {d}", .{s.lavf});
         return true;

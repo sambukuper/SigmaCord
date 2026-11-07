@@ -62,8 +62,8 @@ pub fn draw(p: anytype) void {
     p.toggle(i18n.tr("Verificar ao abrir", "Check when opening"), i18n.tr("Pergunta ao GitHub qual é a última versão ao abrir o app. Nenhum dado da conta vai junto.", "Asks GitHub for the latest version when the app opens. No account data is sent."), &ctx.st.settings.check_updates);
     p.y += 10;
     p.heading(i18n.tr("Reiniciar", "Restart"));
-    p.note(i18n.tr("Fecha e abre o larperCord de novo. Se estiver em uma call, ela cai.", "Closes and reopens larperCord. If you're in a call, you'll leave it."));
-    if (p.buttonSoft(i18n.tr("Reiniciar o larperCord", "Restart larperCord"))) ctx.act(.restart);
+    p.note(i18n.tr("Fecha e abre o SigmaCord de novo. Se estiver em uma call, ela cai.", "Closes and reopens SigmaCord. If you're in a call, you'll leave it."));
+    if (p.buttonSoft(i18n.tr("Reiniciar o SigmaCord", "Restart SigmaCord"))) ctx.act(.restart);
     p.divider();
     p.note(i18n.tr("Toda atualização é assinada; uma versão sem a assinatura certa não é instalada.", "Every update is signed; a version without the right signature isn't installed."));
     if (p.buttonSoft(i18n.tr("Ver as versões no GitHub", "See releases on GitHub"))) att.openUrl(updater.releases_page);

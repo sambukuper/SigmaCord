@@ -5,7 +5,7 @@
 -- @version 1.0.0
 -- @capabilities messages, panel, timers
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX_LIST = 20
 local MAX_PEOPLE = 8
 -- Alguém escreveu até tanto tempo depois: a pergunta provavelmente foi respondida.
@@ -19,7 +19,7 @@ local waiting = false
 
 local function when(t)
   if os.date("%Y%m%d", t) == os.date("%Y%m%d") then return os.date("%H:%M", t) end
-  return os.date(larper.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
 end
 
 local function short(text, max)
@@ -147,7 +147,7 @@ local function msg_item(m, key)
     subtitle = short(m.content, 160),
     meta = when(m.time),
     key = key,
-    on_click = function() larper.jump(m.channel.id, m.id) end,
+    on_click = function() sigma.jump(m.channel.id, m.id) end,
   }
 end
 
@@ -155,14 +155,14 @@ local render
 
 local function scan()
   if not open then return end
-  local asked = larper.messages({ limit = 500, files = true }, function(list)
+  local asked = sigma.messages({ limit = 500, files = true }, function(list)
     if not open then return end
     report = summarize(list, list.last_read)
     render()
   end)
   if not asked and not waiting then
     waiting = true
-    larper.after(0.6, function()
+    sigma.after(0.6, function()
       waiting = false
       scan()
     end)
@@ -196,7 +196,7 @@ render = function()
   local r = report
   if not r then
     tree[#tree + 1] = { type = "text", style = "muted", text = tr("Abra este painel num canal, ou use /perdi.", "Open this panel in a channel, or use /missed.") }
-    larper.panel.set(tree)
+    sigma.panel.set(tree)
     return
   end
   if mode == "unread" and not r.from_unread then
@@ -229,14 +229,14 @@ render = function()
       subtitle = l.sub or l.by,
       meta = when(m.time),
       key = "link" .. i,
-      on_click = function() larper.jump(m.channel.id, m.id) end,
+      on_click = function() sigma.jump(m.channel.id, m.id) end,
     }
   end
   section(tr("Links e arquivos", "Links and files"), "links", links, tr("Nenhum.", "None."))
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
-larper.on("panel", function(state)
+sigma.on("panel", function(state)
   open = state
   if open then
     scan()
@@ -246,21 +246,21 @@ larper.on("panel", function(state)
   end
 end)
 
-larper.on("channel", scan)
+sigma.on("channel", scan)
 
 -- Apagaram ou editaram: nada de mostrar o texto de antes.
 local function refresh_if_open()
   if open then scan() end
 end
-larper.on("delete", refresh_if_open)
-larper.on("edit", refresh_if_open)
+sigma.on("delete", refresh_if_open)
+sigma.on("edit", refresh_if_open)
 
 local function show()
-  larper.panel.open()
+  sigma.panel.open()
   scan()
 end
-larper.command("/perdi", show)
-larper.command("/missed", show)
+sigma.command("/perdi", show)
+sigma.command("/missed", show)
 
-larper.on("lang", function() render() end)
+sigma.on("lang", function() render() end)
 render()

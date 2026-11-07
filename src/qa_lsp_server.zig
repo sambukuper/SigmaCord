@@ -1,4 +1,4 @@
-//! Servidor de linguagem de mentira, só para o QA: `larpercord --qa-lsp-server
+//! Servidor de linguagem de mentira, só para o QA: `sigmacord --qa-lsp-server
 //! MODO` (só no build de debug). Fala o protocolo de verdade por stdin/stdout e se comporta mal de
 //! propósito, para testar o cliente (net/lsp.zig) sem rodar programa de terceiros.
 //! Sem janela e sem SDL: sai antes de o app começar.

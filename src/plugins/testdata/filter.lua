@@ -5,15 +5,15 @@
 -- @version 1.0.0
 -- @capabilities menu, panel, storage, decorate, notify
 
-local tr = larper.tr
-local words = larper.storage.get("words") or {}
-local users = larper.storage.get("users") or {}
-local paused = larper.storage.get("paused") or false
+local tr = sigma.tr
+local words = sigma.storage.get("words") or {}
+local users = sigma.storage.get("users") or {}
+local paused = sigma.storage.get("paused") or false
 
 local function save()
-  larper.storage.set("words", words)
-  larper.storage.set("users", users)
-  larper.storage.set("paused", paused)
+  sigma.storage.set("words", words)
+  sigma.storage.set("users", users)
+  sigma.storage.set("paused", paused)
 end
 
 -- As regras ficam com o app: o plugin não é chamado a cada mensagem.
@@ -24,7 +24,7 @@ local function apply()
     for _, w in ipairs(words) do rules[#rules + 1] = { word = w, collapse = true, label = label } end
     for _, u in ipairs(users) do rules[#rules + 1] = { user = u.id, collapse = true, label = label } end
   end
-  larper.rules(rules)
+  sigma.rules(rules)
 end
 
 local render
@@ -41,7 +41,7 @@ local function add_user(id, name)
   end
   users[#users + 1] = { id = id, name = name }
   changed()
-  larper.notify(tr("Recolhendo as mensagens de ", "Collapsing messages from ") .. name)
+  sigma.notify(tr("Recolhendo as mensagens de ", "Collapsing messages from ") .. name)
 end
 
 render = function()
@@ -61,7 +61,7 @@ render = function()
         changed()
       end } } }
   end
-  larper.panel.set({
+  sigma.panel.set({
     title = tr("Filtro local", "Local filter"),
     { type = "input", key = "new", placeholder = tr("Palavra ou expressão (Enter)", "Word or phrase (Enter)"), clear = true,
       on_submit = function(v)
@@ -71,7 +71,7 @@ render = function()
           if w:lower() == v:lower() then return end
         end
         if #words + #users >= 250 then
-          larper.notify(tr("Filtro cheio: até 250", "Filter is full: up to 250"))
+          sigma.notify(tr("Filtro cheio: até 250", "Filter is full: up to 250"))
           return
         end
         words[#words + 1] = v
@@ -90,17 +90,17 @@ render = function()
   })
 end
 
-larper.menu("user", { pt = "Recolher mensagens", en = "Collapse messages" }, function(u) add_user(u.id, u.name) end)
-larper.menu("message", { pt = "Recolher desta pessoa", en = "Collapse this person" }, function(m)
+sigma.menu("user", { pt = "Recolher mensagens", en = "Collapse messages" }, function(u) add_user(u.id, u.name) end)
+sigma.menu("message", { pt = "Recolher desta pessoa", en = "Collapse this person" }, function(m)
   if not m.mine then add_user(m.author.id, m.author.name) end
 end)
 
-larper.command("/filter", function()
+sigma.command("/filter", function()
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
-larper.on("lang", function()
+sigma.on("lang", function()
   apply()
   render()
 end)

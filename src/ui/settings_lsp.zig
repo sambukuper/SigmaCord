@@ -23,7 +23,7 @@ pub fn draw(p: anytype) void {
     const s = &p.ctx.st.settings;
     p.title(i18n.tr("Erros no código", "Code diagnostics"));
     p.note(i18n.tr("Mostra erros enquanto você digita um bloco ```zig na caixa de texto, usando um servidor LSP.", "Shows errors while you type a ```zig block in the message box, using an LSP server."));
-    p.note(i18n.tr("O larperCord não traz nem baixa servidor: é um programa seu, que só roda se você ligar aqui.", "larperCord doesn't ship or download servers: it's your own program, and it only runs if you turn it on here."));
+    p.note(i18n.tr("O SigmaCord não traz nem baixa servidor: é um programa seu, que só roda se você ligar aqui.", "SigmaCord doesn't ship or download servers: it's your own program, and it only runs if you turn it on here."));
     p.note(i18n.tr("Vai para ele só o bloco que você está digitando, nunca as mensagens dos outros.", "Only the block you're typing goes to it, never other people's messages."));
     // A primeira visita procura no PATH (só olha se o arquivo existe, não executa).
     if (!scanned) {
@@ -128,7 +128,7 @@ fn plugins(p: anytype, s: *S.Settings) void {
         if (pl.isRunning() and pl.lsp.items.len > 0) any = true;
     }
     if (!any) {
-        p.note(i18n.tr("Plugins também podem propor um servidor, com larper.lsp. Guia: docs/lsp.md", "Plugins can also propose a server, with larper.lsp. Guide: docs/lsp.md"));
+        p.note(i18n.tr("Plugins também podem propor um servidor, com sigma.lsp. Guia: docs/lsp.md", "Plugins can also propose a server, with sigma.lsp. Guide: docs/lsp.md"));
         return;
     }
     p.divider();

@@ -41,5 +41,5 @@
 #define STBI_NO_STDIO
 #include "stb_image.h"
 /* GIF quadro a quadro (third_party/stb/stb_image.c). */
-typedef int (*larper_gif_cb)(void *ud, const unsigned char *rgba, int w, int h, int delay_ms);
-int larper_gif_frames(const unsigned char *data, int len, larper_gif_cb cb, void *ud);
+typedef int (*sigma_gif_cb)(void *ud, const unsigned char *rgba, int w, int h, int delay_ms);
+int sigma_gif_frames(const unsigned char *data, int len, sigma_gif_cb cb, void *ud);

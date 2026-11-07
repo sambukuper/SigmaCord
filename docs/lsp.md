@@ -1,6 +1,6 @@
 # Code diagnostics (LSP)
 
-While you type a fenced code block in the message box, larperCord can show the errors a
+While you type a fenced code block in the message box, SigmaCord can show the errors a
 [language server](https://microsoft.github.io/language-server-protocol/) finds in it. Nothing
 is built into the app and nothing is downloaded: the server is a program of yours, and it only
 runs for a language you turned on. With everything off (the default) there is no thread, no
@@ -60,12 +60,12 @@ The app holds your Discord token, so a server runs with as little as possible:
 - **Text:** only what you are typing in your own message box, only the block under the cursor.
   Never other people's messages, and never anything else from the app.
 - **Environment:** only `PATH` and `HOME` (on Windows also `SystemRoot`, `SystemDrive`,
-  `USERPROFILE`, `APPDATA`, `LOCALAPPDATA`, `TEMP`, `TMP`, `PATHEXT`). `LARPER_TOKEN` and the
+  `USERPROFILE`, `APPDATA`, `LOCALAPPDATA`, `TEMP`, `TMP`, `PATHEXT`). `SIGMACORD_TOKEN` and the
   rest of your environment do not reach it.
-- **Folder:** it runs in a scratch folder (`~/.cache/larpercord/lsp-scratch`). Whatever a server
+- **Folder:** it runs in a scratch folder (`~/.cache/sigmacord/lsp-scratch`). Whatever a server
   left there is removed before the next start, except subfolders that aren't empty: the app does
   not walk into them, so a link left there can't make it delete anything else. `rootUri` and `workspaceFolders` are `null`, and the document is a virtual
-  `file://<that scratch folder>/larpercord-composer.<ext>` that never exists on disk (servers such as clangd only accept `file:`). Nothing you type is written to disk, and your projects
+  `file://<that scratch folder>/sigmacord-composer.<ext>` that never exists on disk (servers such as clangd only accept `file:`). Nothing you type is written to disk, and your projects
   are not involved. This also means a server that wants a project (imports, a build file) only
   sees one isolated file, so its errors are about that snippet alone.
 - **Open files:** on Linux the app's sockets and files are closed in the child.
@@ -80,12 +80,12 @@ your files, including where the app stores its token. Only turn on servers you t
 A Lua plugin can propose a server, for example for a language the app doesn't list:
 
 ```lua
-larper.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
+sigma.lsp("haskell", {"haskell-language-server-wrapper", "--lsp"})
 ```
 
 The proposal shows up on the same Settings page with its full command, off. It only runs after
 you turn it on, and that decision is tied to that plugin, language and exact command: if the
-plugin changes the command, it goes back to off. See [plugins.md](plugins.md#larperlsplang-argv).
+plugin changes the command, it goes back to off. See [plugins.md](plugins.md#sigmalsplang-argv).
 
 If a language has both, your own command wins.
 

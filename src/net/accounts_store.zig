@@ -1,15 +1,15 @@
 //! Onde ficam as contas guardadas: a lista (core/accounts.zig) em
-//! ~/.config/larpercord/accounts e o token de cada uma no chaveiro do
+//! ~/.config/sigmacord/accounts e o token de cada uma no chaveiro do
 //! sistema, uma entrada por conta:
 //!
-//!   secret-tool store --label='larperCord (conta ID)' service larpercord-account account ID
+//!   secret-tool store --label='SigmaCord (conta ID)' service sigmacord-account account ID
 //!
-//! Sem chaveiro, em ~/.config/larpercord/tokens/ID (pasta 700, arquivo 600),
-//! como o token único de antes. A entrada antiga (`service larpercord`,
+//! Sem chaveiro, em ~/.config/sigmacord/tokens/ID (pasta 700, arquivo 600),
+//! como o token único de antes. A entrada antiga (`service sigmacord`,
 //! discord.zig) continua valendo para a conta que já estava nela.
 //!
 //! O serviço tem outro nome de propósito: `secret-tool clear service
-//! larpercord` (o "Sair" de antes) casa com qualquer entrada que tenha esse
+//! sigmacord` (o "Sair" de antes) casa com qualquer entrada que tenha esse
 //! atributo, e apagaria todas as contas de uma vez.
 //!
 //! O token nunca vai para a linha de comando (vai pela entrada padrão do
@@ -76,7 +76,7 @@ pub fn tokenFor(acc: *const accounts.Account) ?[:0]u8 {
         defer std.crypto.secureZero(u8, &buf);
         if (sys.credRead(target.ptr, &buf)) |s| if (trimmed(s)) |t| return t;
     } else {
-        const cmd = std.fmt.bufPrintSentinel(&cbuf, "secret-tool lookup service larpercord-account account {d} 2>/dev/null", .{acc.id}, 0) catch return null;
+        const cmd = std.fmt.bufPrintSentinel(&cbuf, "secret-tool lookup service sigmacord-account account {d} 2>/dev/null", .{acc.id}, 0) catch return null;
         if (c.popen(cmd.ptr, "r")) |f| {
             var buf: [256]u8 = undefined;
             const n = c.fread(&buf, 1, buf.len, f);
@@ -101,7 +101,7 @@ pub const Saved = enum { keyring, file, failed };
 
 /// Nome da entrada no Gerenciador de Credenciais do Windows.
 fn credTarget(buf: []u8, id: Id) ?[:0]const u8 {
-    return std.fmt.bufPrintSentinel(buf, "larperCord/account/{d}", .{id}, 0) catch null;
+    return std.fmt.bufPrintSentinel(buf, "SigmaCord/account/{d}", .{id}, 0) catch null;
 }
 
 /// Guarda o token de uma conta (no chaveiro; sem ele, num arquivo 600).
@@ -112,12 +112,12 @@ pub fn storeToken(id: Id, token: []const u8) Saved {
     const path = tokenPath(&pbuf, id);
     if (sys.windows) {
         const target = credTarget(&cbuf, id) orelse return .failed;
-        if (sys.credWrite(target.ptr, "larperCord", token)) {
+        if (sys.credWrite(target.ptr, "SigmaCord", token)) {
             if (path) |p| _ = c.unlink(p.ptr);
             return .keyring;
         }
     } else {
-        const cmd = std.fmt.bufPrintSentinel(&cbuf, "secret-tool store --label='larperCord (conta {d})' service larpercord-account account {d} 2>/dev/null", .{ id, id }, 0) catch return .failed;
+        const cmd = std.fmt.bufPrintSentinel(&cbuf, "secret-tool store --label='SigmaCord (conta {d})' service sigmacord-account account {d} 2>/dev/null", .{ id, id }, 0) catch return .failed;
         if (c.popen(cmd.ptr, "w")) |f| {
             const wrote = c.fwrite(token.ptr, 1, token.len, f);
             if (c.pclose(f) == 0 and wrote == token.len) {
@@ -138,7 +138,7 @@ pub fn forgetToken(acc: *const accounts.Account) void {
     var cbuf: [160]u8 = undefined;
     if (sys.windows) {
         if (credTarget(&cbuf, acc.id)) |target| sys.credDelete(target.ptr);
-    } else if (std.fmt.bufPrintSentinel(&cbuf, "secret-tool clear service larpercord-account account {d} 2>/dev/null", .{acc.id}, 0)) |cmd| {
+    } else if (std.fmt.bufPrintSentinel(&cbuf, "secret-tool clear service sigmacord-account account {d} 2>/dev/null", .{acc.id}, 0)) |cmd| {
         if (c.popen(cmd.ptr, "r")) |f| _ = c.pclose(f);
     } else |_| {}
     var pbuf: [512]u8 = undefined;

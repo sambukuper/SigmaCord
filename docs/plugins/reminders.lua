@@ -5,18 +5,18 @@
 -- @version 1.1.0
 -- @capabilities menu, panel, storage, timers, notify, messages
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX = 200
 local DAY = 86400
-local list = larper.storage.get("list") or {}
+local list = sigma.storage.get("list") or {}
 local recent = {}
-local next_id = larper.storage.get("next") or 1
+local next_id = sigma.storage.get("next") or 1
 local pending = nil -- a mensagem do "Lembrar", esperando o tempo
 local timer = nil
 
 local function save()
-  larper.storage.set("list", list)
-  larper.storage.set("next", next_id)
+  sigma.storage.set("list", list)
+  sigma.storage.set("next", next_id)
 end
 
 -- "10m", "1h30m", "2d", "45s", "90 min".
@@ -121,7 +121,7 @@ end
 
 local function when(t)
   if os.date("%Y%m%d", t) == os.date("%Y%m%d") then return os.date("%H:%M", t) end
-  return os.date(larper.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
 end
 
 local render
@@ -131,7 +131,7 @@ local function fire(r, late)
   local text = r.text ~= "" and r.text or tr("Lembrete", "Reminder")
   if late then text = text .. tr(" (atrasado)", " (late)") end
   -- Foi a própria pessoa que pediu: aparece mesmo com a janela em foco.
-  larper.notify("⏰ " .. text, { desktop = true })
+  sigma.notify("⏰ " .. text, { desktop = true })
   table.insert(recent, 1, r)
   recent[11] = nil
 end
@@ -166,20 +166,20 @@ end
 
 -- Um temporizador só, para o próximo que vence.
 arm = function()
-  if timer then larper.cancel(timer) end
+  if timer then sigma.cancel(timer) end
   timer = nil
   local nearest
   for _, r in ipairs(list) do
     if not nearest or r.due < nearest then nearest = r.due end
   end
   if nearest then
-    timer = larper.after(math.max(nearest - os.time(), 0), function() check(false) end)
+    timer = sigma.after(math.max(nearest - os.time(), 0), function() check(false) end)
   end
 end
 
 local function add_at(due, text, channel, message, daily)
   if #list >= MAX then
-    larper.notify(tr("Lembretes demais: até 200", "Too many reminders: up to 200"))
+    sigma.notify(tr("Lembretes demais: até 200", "Too many reminders: up to 200"))
     return false
   end
   local r = { id = next_id, due = due, text = text, channel = channel, message = message, daily = daily or nil }
@@ -189,7 +189,7 @@ local function add_at(due, text, channel, message, daily)
   save()
   arm()
   render()
-  larper.notify(tr("Vou lembrar às ", "I'll remind you at ") .. when(r.due))
+  sigma.notify(tr("Vou lembrar às ", "I'll remind you at ") .. when(r.due))
   return true
 end
 
@@ -225,7 +225,7 @@ local function row(r, past)
     subtitle = r.message and tr("Clique para ir até a mensagem", "Click to go to the message") or "",
     meta = when(r.due),
     key = (past and "old" or "r") .. r.id,
-    on_click = r.message and function() larper.jump(r.channel, r.message) end or nil,
+    on_click = r.message and function() sigma.jump(r.channel, r.message) end or nil,
     actions = actions,
   }
 end
@@ -258,7 +258,7 @@ render = function()
           pending = nil
           add_at(due, m and m.text or "", m and m.msg.channel.id, m and m.msg.id)
         else
-          larper.notify(tr("Não entendi esse tempo", "I didn't get that time"))
+          sigma.notify(tr("Não entendi esse tempo", "I didn't get that time"))
         end
       end }
     tree[#tree + 1] = { type = "row",
@@ -276,21 +276,21 @@ render = function()
     for _, r in ipairs(recent) do old[#old + 1] = row(r, true) end
     tree[#tree + 1] = { type = "list", key = "recent", items = old }
   end
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
-larper.command("/remind", function(args)
+sigma.command("/remind", function(args)
   local due, text, daily = parse_when(args)
   if not due then
-    larper.notify(tr("Use assim: /remind 10m ligar de volta", "Use it like this: /remind 10m call back"))
+    sigma.notify(tr("Use assim: /remind 10m ligar de volta", "Use it like this: /remind 10m call back"))
     return
   end
   add_at(due, text or "", nil, nil, daily)
 end)
 
-larper.command("/reminders", function()
+sigma.command("/reminders", function()
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
 local function summary(m)
@@ -303,14 +303,14 @@ local function summary(m)
   return m.author.name .. ": " .. text
 end
 
-larper.menu("message", { pt = "Lembrar desta mensagem", en = "Remind me" }, function(m, choice)
+sigma.menu("message", { pt = "Lembrar desta mensagem", en = "Remind me" }, function(m, choice)
   local seconds = tonumber(choice)
   if seconds then
     add(seconds, summary(m), m)
   else
     pending = { text = summary(m), msg = m }
     render()
-    larper.panel.open()
+    sigma.panel.open()
   end
 end, { choices = {
   { value = "600", pt = "Em 10 minutos", en = "In 10 minutes" },
@@ -321,7 +321,7 @@ end, { choices = {
 } })
 
 -- Se a mensagem foi apagada, o lembrete fica, sem o texto dela.
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   local changed = false
   for _, r in ipairs(list) do
     if r.message == d.id then
@@ -336,7 +336,7 @@ larper.on("delete", function(d)
   end
 end)
 
-larper.on("lang", function() render() end)
+sigma.on("lang", function() render() end)
 
 -- O que venceu com o app fechado avisa agora.
 check(true)

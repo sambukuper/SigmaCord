@@ -1,5 +1,19 @@
 # O que mudou em cada versão
 
+## 0.7.0
+
+**SigmaCord**
+- Esta é a primeira versão com o nome SigmaCord. Tudo foi renomeado: a janela, a bandeja, o instalador, o binário (`sigmacord`), a pasta de configurações (`~/.config/sigmacord`, antes `~/.config/larpercord`), as variáveis de ambiente (`SIGMACORD_TOKEN`, antes `LARPER_TOKEN`) e a API dos plugins (`sigma.notify`, `sigma.send` e companhia, antes `larper.*`). Mova a pasta antiga `~/.config/larpercord` para `~/.config/sigmacord` para manter suas configurações, temas e plugins.
+
+**Atalhos**
+- Atalhos configuráveis: Configurações → Atalhos de teclado lista cada ação com a tecla dela; clicar e apertar outra combinação troca, e o × ao lado volta ao padrão. Se a tecla já era de outra ação, ela sai de lá.
+- O mudo do microfone e o ensurdecer finalmente têm teclas, `Ctrl+Shift+M` e `Ctrl+Shift+D`, e os dois trocam como todo o resto.
+- A paleta de comandos, a busca, as configurações, a tela cheia, o próximo tema, a caixa de entrada, as mensagens salvas e as ações de aba estão na mesma lista. Os fixos (Ctrl+Shift+P, zoom da interface, Alt+1…9, Alt+Enter) continuam como eram.
+- A regra é a mesma que os plugins já tinham: letras e números pedem Ctrl, Alt ou Super, F1–F24 podem ir sozinhas, e enquanto você digita numa caixa de texto só atalhos com modificador disparam.
+
+**Builds**
+- Os dois binários das releases agora saem do GitHub Actions: o Linux portável e o Windows cruzado, cada um com atestado de build. Nada mais é compilado daqui; o script da release só baixa, confere e assina.
+
 ## 0.6.1
 
 **Mais idiomas e telas**
@@ -44,7 +58,7 @@
 - Instalado por um gerenciador de pacotes, o app avisa para atualizar por ele.
 
 **Projeto**
-- O larperCord agora usa a licença GPL-3.0.
+- O SigmaCord agora usa a licença GPL-3.0.
 
 ## 0.6.0
 
@@ -59,7 +73,7 @@
 - Destaques mostra quantos você não viu, silencia um canal, acompanha edições e pode usar as notificações do sistema.
 - Favoritos, o filtro de palavras, trechos, horários, estatísticas e os plugins de demonstração não vêm mais com o app: os dois primeiros viraram funções do próprio app. Quem tem continua usando, e um botão arquiva em `plugins/antigos/`. Nada é apagado.
 - Um plugin incluído com versão nova mostra um botão de atualizar no cartão, e guarda o seu arquivo como `.bak`.
-- Novo para quem faz plugins: opções no cartão (`larper.settings`, `select`, `toggle`), segunda lista e botão na barra nos menus, sugestões na caixa de mensagem (`larper.completions`), regras para o que você envia (`larper.rewrite`), `larper.copy`, `larper.open`, um número na etiqueta do painel, notas em vermelho, os eventos `edit`, `dismiss` e `hosts`, um filtro `contains` que mantém as mensagens longe do Lua, e anexos, respostas, menções e a posição de leitura em `larper.messages`.
+- Novo para quem faz plugins: opções no cartão (`sigma.settings`, `select`, `toggle`), segunda lista e botão na barra nos menus, sugestões na caixa de mensagem (`sigma.completions`), regras para o que você envia (`sigma.rewrite`), `sigma.copy`, `sigma.open`, um número na etiqueta do painel, notas em vermelho, os eventos `edit`, `dismiss` e `hosts`, um filtro `contains` que mantém as mensagens longe do Lua, e anexos, respostas, menções e a posição de leitura em `sigma.messages`.
 - Um plugin atrasado perde mensagens em vez de segurar os outros, e o cartão dele diz isso. Cada plugin tem o próprio limite de notificações do sistema: um barulhento não come o aviso de um lembrete.
 - O cartão avisa quando um plugin lê mensagens e também consegue mandar algo para fora.
 - Fechar uma tradução com o × não faz mais o próximo "Traduzir" não fazer nada.
@@ -88,7 +102,7 @@
 ## 0.5.0
 
 **Windows**
-- O larperCord agora roda no Windows 10 e 11, a partir do mesmo código.
+- O SigmaCord agora roda no Windows 10 e 11, a partir do mesmo código.
 - Os tokens ficam no Gerenciador de Credenciais do Windows.
 
 **Atualizações**

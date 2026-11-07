@@ -4,6 +4,8 @@
 
 | Ação | Teclas |
 |---|---|
+| Mutar / desmutar o microfone | `Ctrl+Shift+M` |
+| Ensurdecer / voltar a ouvir | `Ctrl+Shift+D` |
 | Paleta de comandos | `Ctrl+K` |
 | Paleta, ações primeiro | `Ctrl+Shift+P` |
 | Buscar mensagens | `Ctrl+F` |
@@ -25,6 +27,8 @@
 | Autocompletar na caixa de texto | `@`, `#`, `:ab` ou `/`, depois as setas e `Tab` ou `Enter` |
 | Aperte para falar | A tecla ou o botão do mouse que você escolher em Configurações → Voz |
 
+Tudo de "Mutar / desmutar o microfone" até "Fechar aba" é um atalho configurável: troque em Configurações → Atalhos de teclado (clique na tecla, aperte outra combinação; o × ao lado volta ao padrão, e letras e números pedem Ctrl, Alt ou Super). O resto da tabela é fixo.
+
 O botão direito funciona em mensagens, usuários, canais e servidores.
 
 ## Navegação estilo vim
@@ -44,7 +48,7 @@ Vem desligada. Ligue em Configurações → Atalhos de teclado. As teclas funcio
 ## Linha de comando
 
 ```bash
-larpercord [options]
+sigmacord [options]
 ```
 
 | Opção | O que faz |
@@ -60,23 +64,23 @@ larpercord [options]
 | `--shot FILE.png` | salva uma captura de tela quando a tela se acalma e sai |
 | `--stats` | mostra o tempo até o primeiro quadro |
 | `--qa` | roda o teste automático da interface, com capturas de tela em `qa-out/` |
-| `--voice-test GUILD CHANNEL` | entra num canal de voz por 25 s, sempre mudo (precisa de `LARPER_TOKEN`) |
+| `--voice-test GUILD CHANNEL` | entra num canal de voz por 25 s, sempre mudo (precisa de `SIGMACORD_TOKEN`) |
 | `--help` | mostra o texto de uso |
 
 ## Variáveis de ambiente
 
 | Variável | O que faz |
 |---|---|
-| `LARPER_TOKEN` | o token da conta (veja [Conectar a sua conta](page:account)) |
-| `LARPER_RENDERER` | escolhe o backend de renderização do SDL: `opengl`, `vulkan`, `gpu` ou `software` |
-| `LARPER_HIDDEN` | abre com a janela oculta. O app não desenha nada enquanto ela está oculta, então a memória mede bem menos do que com uma janela de verdade |
-| `LARPER_BENCH` | redesenha sem parar, para medir o custo de um quadro |
-| `LARPER_VOICE_DEBUG` | imprime o que acontece numa call (opcodes, códigos de fechamento, DAVE). Nunca imprime tokens nem chaves |
-| `LARPER_DEBUG_MEDIA` | registra por que uma imagem não carregou |
-| `LARPER_NO_FFMPEG` | finge que o FFmpeg não está instalado |
-| `LARPER_EGL_ALL` | desliga o truque que pula drivers EGL desnecessários |
-| `LARPER_SCENE` | monta uma cena para as capturas de tela da documentação |
-| `LARPER_RECORD`, `LARPER_RECORD_FRAMES` | grava a tela de login como quadros numa pasta |
-| `LARPER_FLOOD` | manda N mudanças de presença por segundo no modo demonstração (teste de carga) |
+| `SIGMACORD_TOKEN` | o token da conta (veja [Conectar a sua conta](page:account)) |
+| `SIGMACORD_RENDERER` | escolhe o backend de renderização do SDL: `opengl`, `vulkan`, `gpu` ou `software` |
+| `SIGMACORD_HIDDEN` | abre com a janela oculta. O app não desenha nada enquanto ela está oculta, então a memória mede bem menos do que com uma janela de verdade |
+| `SIGMACORD_BENCH` | redesenha sem parar, para medir o custo de um quadro |
+| `SIGMACORD_VOICE_DEBUG` | imprime o que acontece numa call (opcodes, códigos de fechamento, DAVE). Nunca imprime tokens nem chaves |
+| `SIGMACORD_DEBUG_MEDIA` | registra por que uma imagem não carregou |
+| `SIGMACORD_NO_FFMPEG` | finge que o FFmpeg não está instalado |
+| `SIGMACORD_EGL_ALL` | desliga o truque que pula drivers EGL desnecessários |
+| `SIGMACORD_SCENE` | monta uma cena para as capturas de tela da documentação |
+| `SIGMACORD_RECORD`, `SIGMACORD_RECORD_FRAMES` | grava a tela de login como quadros numa pasta |
+| `SIGMACORD_FLOOD` | manda N mudanças de presença por segundo no modo demonstração (teste de carga) |
 
 `XDG_CONFIG_HOME` e `XDG_CACHE_HOME` são respeitadas, e ajudam a rodar com uma configuração limpa.

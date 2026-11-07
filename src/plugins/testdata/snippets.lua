@@ -5,12 +5,12 @@
 -- @version 1.1.0
 -- @capabilities panel, storage, composer, menu, notify, completions
 
-local tr = larper.tr
-local items = larper.storage.get("items") or {}
+local tr = sigma.tr
+local items = sigma.storage.get("items") or {}
 local draft_name, draft_text = "", ""
 
 local function save()
-  larper.storage.set("items", items)
+  sigma.storage.set("items", items)
 end
 
 local function find(name)
@@ -27,7 +27,7 @@ local function publish()
     if #list == 256 then break end
     list[#list + 1] = { name = it.name, text = it.text }
   end
-  larper.completions(";", list)
+  sigma.completions(";", list)
 end
 
 local render
@@ -35,7 +35,7 @@ local render
 local function add(name, text)
   name = name:gsub("^%s+", ""):gsub("%s+$", "")
   if name == "" or text == "" then
-    larper.notify(tr("O trecho precisa de nome e texto", "A snippet needs a name and text"))
+    sigma.notify(tr("O trecho precisa de nome e texto", "A snippet needs a name and text"))
     return false
   end
   local i = find(name)
@@ -43,7 +43,7 @@ local function add(name, text)
     items[i].text = text
   else
     if #items >= 200 then
-      larper.notify(tr("Trechos demais: até 200", "Too many snippets: up to 200"))
+      sigma.notify(tr("Trechos demais: até 200", "Too many snippets: up to 200"))
       return false
     end
     items[#items + 1] = { name = name, text = text }
@@ -68,7 +68,7 @@ render = function()
       title = it.name,
       subtitle = it.text,
       key = it.name,
-      on_click = function() larper.insert(it.text) end,
+      on_click = function() sigma.insert(it.text) end,
       actions = { { label = tr("Tirar", "Remove"), style = "danger", key = "rm" .. it.name, on_click = function()
         local i = find(it.name)
         if i then table.remove(items, i) end
@@ -78,7 +78,7 @@ render = function()
       end } },
     }
   end
-  larper.panel.set({
+  sigma.panel.set({
     title = tr("Trechos", "Snippets"),
     { type = "text", text = tr("Clique para pôr na caixa de mensagem, ou digite ;nome nela.", "Click to put it in the message box, or type ;name there."), style = "muted" },
     { type = "list", key = "items", items = list, empty = tr("Nenhum trecho ainda.", "No snippets yet.") },
@@ -96,27 +96,27 @@ render = function()
   })
 end
 
-larper.command("/snip", function(args)
+sigma.command("/snip", function(args)
   if args == "" then
     render()
-    larper.panel.open()
+    sigma.panel.open()
     return
   end
   local i = find(args)
   if i then
-    larper.insert(items[i].text)
+    sigma.insert(items[i].text)
   else
-    larper.notify(tr("Não há trecho com esse nome: ", "No snippet with that name: ") .. args)
+    sigma.notify(tr("Não há trecho com esse nome: ", "No snippet with that name: ") .. args)
   end
 end)
 
-larper.menu("message", { pt = "Guardar como trecho", en = "Save as snippet" }, function(m)
+sigma.menu("message", { pt = "Guardar como trecho", en = "Save as snippet" }, function(m)
   draft_text = m.content
   draft_name = ""
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
-larper.on("lang", render)
+sigma.on("lang", render)
 publish()
 render()

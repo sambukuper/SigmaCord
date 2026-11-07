@@ -14,7 +14,7 @@ const L = @import("../core/lsp.zig");
 const net = @import("../net/lsp.zig");
 const engine = @import("../plugins/engine.zig");
 
-extern fn larper_input_wrap(font: *c.ImFont, size: f32, s: [*]const u8, end: [*]const u8, w: f32) [*]const u8;
+extern fn sigma_input_wrap(font: *c.ImFont, size: f32, s: [*]const u8, end: [*]const u8, w: f32) [*]const u8;
 
 /// Há um bloco de uma linguagem ligada sob o cursor.
 pub var have_doc = false;
@@ -334,7 +334,7 @@ fn squiggles(ctx: *d.Ctx, dl: *c.ImDrawList, font: *c.ImFont, frame: d.Rect, fon
         var row: f32 = 0;
         var at: usize = 0;
         while (at < text.len) : (row += 1) {
-            const stop_ptr = larper_input_wrap(font, font_px, start + at, end, wrap_w);
+            const stop_ptr = sigma_input_wrap(font, font_px, start + at, end, wrap_w);
             var stop = @intFromPtr(stop_ptr) - @intFromPtr(start);
             if (stop <= at and text[at] != '\n') stop = at + 1;
             if (pass == 1) {

@@ -1,9 +1,9 @@
 //! O lado do app dos plugins (ver engine.zig): lê a pasta, guarda quem está
 //! desligado e os hosts aprovados, traduz teclas e entrega eventos, avisos e
-//! mensagens. A pasta é ~/.config/larpercord/plugins (ou
-//! $XDG_CONFIG_HOME/larpercord/plugins); as escolhas ficam em
-//! ~/.config/larpercord/plugins.kdl e os dados de cada plugin, por conta, em
-//! ~/.config/larpercord/plugin-data. No QA é tudo em qa-out e nada de escolha é salvo.
+//! mensagens. A pasta é ~/.config/sigmacord/plugins (ou
+//! $XDG_CONFIG_HOME/sigmacord/plugins); as escolhas ficam em
+//! ~/.config/sigmacord/plugins.kdl e os dados de cada plugin, por conta, em
+//! ~/.config/sigmacord/plugin-data. No QA é tudo em qa-out e nada de escolha é salvo.
 const std = @import("std");
 const c = @import("c");
 const App = @import("../app.zig").App;
@@ -205,7 +205,7 @@ fn notify(ctx: *anyopaque, plugin: []const u8, text: []const u8, desktop: bool) 
     if (!quotaTake(quotaFor(plugin, now), desktop_per_minute, now)) return;
     if (!quotaTake(&desktop_quota[0], desktop_all_per_minute, now)) return;
     var tb: [160]u8 = undefined;
-    const title = std.fmt.bufPrintSentinel(&tb, "larperCord · {s}", .{plugin}, 0) catch return;
+    const title = std.fmt.bufPrintSentinel(&tb, "SigmaCord · {s}", .{plugin}, 0) catch return;
     var cut = @min(text.len, 200);
     while (cut > 0 and cut < text.len and (text[cut] & 0xC0) == 0x80) cut -= 1;
     var bb: [208]u8 = undefined;

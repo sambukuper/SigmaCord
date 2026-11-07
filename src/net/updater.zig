@@ -13,20 +13,20 @@ const proxy = @import("proxy.zig");
 const alloc = std.heap.c_allocator;
 
 pub const current: []const u8 = build_options.version;
-const latest_url = "https://api.github.com/repos/RshaCuDeVidro/larperCord/releases/latest";
-pub const releases_page = "https://github.com/RshaCuDeVidro/larperCord/releases";
+const latest_url = "https://api.github.com/repos/sambukuper/SigmaCord/releases/latest";
+pub const releases_page = "https://github.com/sambukuper/SigmaCord/releases";
 
 /// Arquivo publicado -> nome ao lado do executável.
 const File = struct { asset: []const u8, target: []const u8 };
 const files: []const File = if (builtin.os.tag == .windows) &.{
-    .{ .asset = "larpercord-windows-x86_64.exe", .target = "larpercord.exe" },
+    .{ .asset = "sigmacord-windows-x86_64.exe", .target = "sigmacord.exe" },
     .{ .asset = "SDL3.dll", .target = "SDL3.dll" },
     .{ .asset = "libcurl-x64.dll", .target = "libcurl-x64.dll" },
     .{ .asset = "libcrypto-3-x64.dll", .target = "libcrypto-3-x64.dll" },
 } else &.{
-    .{ .asset = "larpercord-linux-x86_64", .target = "larpercord" },
+    .{ .asset = "sigmacord-linux-x86_64", .target = "sigmacord" },
 };
-pub const exe_name: [:0]const u8 = if (builtin.os.tag == .windows) "larpercord.exe" else "larpercord";
+pub const exe_name: [:0]const u8 = if (builtin.os.tag == .windows) "sigmacord.exe" else "sigmacord";
 
 pub const Phase = enum { idle, checking, up_to_date, available, downloading, ready, failed };
 pub const Error = enum { none, network, no_release, bad_signature, bad_hash, read_only, disk };
@@ -166,7 +166,7 @@ pub fn fetch(url: [:0]const u8, out: *std.ArrayList(u8), max: usize, progress: ?
     defer c.curl_easy_cleanup(h);
     var sink: Sink = .{ .out = out, .max = max, .progress = progress };
     var ua_buf: [48]u8 = undefined;
-    const ua = std.fmt.bufPrintSentinel(&ua_buf, "larperCord/{s}", .{current}, 0) catch "larperCord";
+    const ua = std.fmt.bufPrintSentinel(&ua_buf, "SigmaCord/{s}", .{current}, 0) catch "SigmaCord";
     _ = c.curl_easy_setopt(h, c.CURLOPT_URL, url.ptr);
     _ = c.curl_easy_setopt(h, c.CURLOPT_USERAGENT, ua.ptr);
     _ = c.curl_easy_setopt(h, c.CURLOPT_FOLLOWLOCATION, @as(c_long, 1));

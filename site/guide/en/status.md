@@ -1,6 +1,6 @@
 # Status and roadmap
 
-larperCord is a young project: version 0.6.0, with its first commit on November 2, 2026. It's usable, but it isn't complete.
+SigmaCord is a young project: version 0.6.0, with its first commit on November 2, 2026. It's usable, but it isn't complete.
 
 ## What works today
 

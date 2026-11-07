@@ -56,4 +56,4 @@ Feito com Zig, SDL3, [Dear ImGui](https://github.com/ocornut/imgui), dear_bindin
 
 ## Licença
 
-O larperCord usa a licença GPL-3.0. O código de terceiros em `third_party/` mantém a própria licença, no arquivo de licença de cada pasta.
+O SigmaCord usa a licença GPL-3.0. O código de terceiros em `third_party/` mantém a própria licença, no arquivo de licença de cada pasta.

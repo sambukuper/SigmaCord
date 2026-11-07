@@ -5,14 +5,14 @@
 -- @version 1.1.0
 -- @capabilities messages, panel, storage, notify, decorate, settings
 
-local tr = larper.tr
+local tr = sigma.tr
 local MAX_HITS = 200
-local words = larper.storage.get("words") or {}
+local words = sigma.storage.get("words") or {}
 -- Guardado no disco: onde e quem, nunca o texto de ninguém.
-local hits = larper.storage.get("hits") or {}
+local hits = sigma.storage.get("hits") or {}
 -- Canais silenciados: id -> nome.
-local muted = larper.storage.get("muted") or {}
-local desktop = larper.storage.get("desktop") or false
+local muted = sigma.storage.get("muted") or {}
+local desktop = sigma.storage.get("desktop") or false
 -- O trecho da mensagem fica só na memória, e sai se ela for apagada.
 local snippets = {}
 -- Quantas chegaram desde a última vez que o painel abriu.
@@ -46,14 +46,14 @@ local function trim(s)
 end
 
 local function save()
-  larper.storage.set("words", words)
-  larper.storage.set("hits", hits)
-  larper.storage.set("muted", muted)
+  sigma.storage.set("words", words)
+  sigma.storage.set("hits", hits)
+  sigma.storage.set("muted", muted)
 end
 
 local function when(t)
   if os.date("%Y%m%d", t) == os.date("%Y%m%d") then return os.date("%H:%M", t) end
-  return os.date(larper.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
+  return os.date(sigma.lang() == "pt" and "%d/%m %H:%M" or "%b %d %H:%M", t)
 end
 
 local function short(content)
@@ -74,7 +74,7 @@ local function add_word(w)
     if x == w then return end
   end
   if #words >= 64 then
-    larper.notify(tr("Palavras demais: até 64", "Too many words: up to 64"))
+    sigma.notify(tr("Palavras demais: até 64", "Too many words: up to 64"))
     return
   end
   words[#words + 1] = w
@@ -102,7 +102,7 @@ render = function()
       subtitle = snippets[h.id] or ("“" .. h.word .. "”"),
       meta = when(h.time),
       key = h.id,
-      on_click = function() larper.jump(h.channel, h.id) end,
+      on_click = function() sigma.jump(h.channel, h.id) end,
     }
   end
   local tree = {
@@ -114,7 +114,7 @@ render = function()
       empty = tr("Nenhuma palavra ainda. Escreva uma acima.", "No words yet. Type one above.") },
     { type = "row",
       { type = "button", label = tr("Silenciar este canal", "Mute this channel"), key = "mute", on_click = function()
-        local ch = larper.channel()
+        local ch = sigma.channel()
         if not ch then return end
         muted[ch.id] = ch.name
         save()
@@ -151,7 +151,7 @@ render = function()
       end },
     }
   end
-  larper.panel.set(tree)
+  sigma.panel.set(tree)
 end
 
 local function word_in(content)
@@ -174,8 +174,8 @@ local function take(m)
   if not panel_open then unread = unread + 1 end
   save()
   render()
-  larper.decorate(m, { badge = "★ " .. w })
-  larper.notify("★ " .. w .. ": " .. m.author.name .. " #" .. m.channel.name, { desktop = desktop })
+  sigma.decorate(m, { badge = "★ " .. w })
+  sigma.notify("★ " .. w .. ": " .. m.author.name .. " #" .. m.channel.name, { desktop = desktop })
 end
 
 -- Editaram: o trecho acompanha o texto novo, e sem a palavra sai da lista. Uma edição
@@ -188,7 +188,7 @@ local function edited(m)
       else
         table.remove(hits, i)
         snippets[m.id] = nil
-        larper.undecorate(m)
+        sigma.undecorate(m)
         save()
       end
       render()
@@ -204,18 +204,18 @@ local listening = false
 listen = function()
   if listening or #words == 0 then return end
   listening = true
-  larper.on("message", take)
-  larper.on("edit", edited)
+  sigma.on("message", take)
+  sigma.on("edit", edited)
 end
 
-larper.command("/highlights", function(args)
+sigma.command("/highlights", function(args)
   if args ~= "" then add_word(args) end
   render()
-  larper.panel.open()
+  sigma.panel.open()
 end)
 
 -- Apagaram: sai da lista, com o texto.
-larper.on("delete", function(d)
+sigma.on("delete", function(d)
   snippets[d.id] = nil
   for i, h in ipairs(hits) do
     if h.id == d.id then
@@ -227,7 +227,7 @@ larper.on("delete", function(d)
   end
 end)
 
-larper.on("panel", function(open)
+sigma.on("panel", function(open)
   panel_open = open
   if open and unread > 0 then
     unread = 0
@@ -236,18 +236,18 @@ larper.on("panel", function(open)
 end)
 
 local function options()
-  larper.settings.set({
+  sigma.settings.set({
     { type = "toggle", key = "desktop", label = tr("Notificação do sistema", "Desktop notification"),
       hint = tr("Também com a janela em foco. Sem isto, só um aviso no app, e a notificação quando você está longe.", "Even with the window focused. Without this, just a notice in the app, and the notification when you're away."),
       value = desktop,
       on_change = function(on)
         desktop = on
-        larper.storage.set("desktop", on)
+        sigma.storage.set("desktop", on)
       end },
   })
 end
 
-larper.on("lang", function()
+sigma.on("lang", function()
   options()
   render()
 end)

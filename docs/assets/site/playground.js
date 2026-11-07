@@ -146,7 +146,7 @@
     },
     "channel-list": function (p) {
       var tree = p.variant === "tree" ? "├ " : "# ";
-      return el("m-list", (p.header === false ? "" : "<b>larperCord dev</b>") + "<small>general</small><span>" + tree + "rules</span><span class='on'>" + tree + S.general + "</span><span>" + tree + S.memes + "</span><span>" + tree + S.setups + "</span><small>voice</small><span>" + tree + "late-night call</span>");
+      return el("m-list", (p.header === false ? "" : "<b>SigmaCord dev</b>") + "<small>general</small><span>" + tree + "rules</span><span class='on'>" + tree + S.general + "</span><span>" + tree + S.memes + "</span><span>" + tree + S.setups + "</span><small>voice</small><span>" + tree + "late-night call</span>");
     },
     "user-panel": function () { return el("m-user", "<u></u><span>rsha</span>"); },
     header: function (p) { return el("m-header", "# " + S.general + (p.variant === "minimal" ? "" : "<small>no spam</small>")); },
@@ -182,7 +182,7 @@
       else if (p.font && p.font !== "ui") d.style.fontFamily = "Fraunces,serif";
       return d;
     },
-    logo: function (p) { return el("m-logo", "larperCord"); },
+    logo: function (p) { return el("m-logo", "SigmaCord"); },
     crt: function () { return el("m-crt"); },
     spacer: function () { return el("m-spacer"); },
   };

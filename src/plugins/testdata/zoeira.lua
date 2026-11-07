@@ -5,12 +5,12 @@
 --   /contrario abc       cba (entende acentos e emoji)
 --   /spoiler o fim       ||o fim||
 local function comando(nome, exemplo, transforma)
-  larper.command(nome, function(args)
+  sigma.command(nome, function(args)
     if args == "" then
-      larper.notify("Use assim: " .. nome .. " " .. exemplo)
+      sigma.notify("Use assim: " .. nome .. " " .. exemplo)
       return
     end
-    larper.send(nil, transforma(args))
+    sigma.send(nil, transforma(args))
   end)
 end
 

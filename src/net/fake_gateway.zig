@@ -82,7 +82,7 @@ pub const Gateway = struct {
     history_replies: std.ArrayList(struct { at_ms: i64, channel: Id }) = .empty,
     /// Servidores cujos cargos já foram mandados.
     roles_sent: u64 = 0,
-    /// LARPER_FLOOD=N: N trocas de presença por segundo (teste de carga,
+    /// SIGMACORD_FLOOD=N: N trocas de presença por segundo (teste de carga,
     /// como um servidor grande).
     flood_per_s: u32 = 0,
     next_flood_ms: i64 = std.math.maxInt(i64),
@@ -217,7 +217,7 @@ pub const Gateway = struct {
         try g.demoEmojis();
         g.emit(.{ .status = .ready });
         g.next_live_ms = nowMs() + 6000;
-        if (c.SDL_getenv("LARPER_FLOOD")) |f| {
+        if (c.SDL_getenv("SIGMACORD_FLOOD")) |f| {
             g.flood_per_s = std.fmt.parseInt(u32, std.mem.span(f), 10) catch 0;
             if (g.flood_per_s > 0) g.next_flood_ms = nowMs() + 500;
         }
@@ -850,7 +850,7 @@ pub const Gateway = struct {
                 // Reações personalizadas (uma animada) na mensagem com emoji.
                 if (r.channel == emoji_channel) {
                     const target = msgs[msgs.len - 2].id;
-                    for (0..3) |u| g.emit(.{ .reaction = .{ .channel = r.channel, .id = target, .emoji = types.Reaction.initCustom("larper", demo_emojis[0].id, false), .user = users[1 + u].id, .add = true } });
+                    for (0..3) |u| g.emit(.{ .reaction = .{ .channel = r.channel, .id = target, .emoji = types.Reaction.initCustom("sigma", demo_emojis[0].id, false), .user = users[1 + u].id, .add = true } });
                     g.emit(.{ .reaction = .{ .channel = r.channel, .id = target, .emoji = types.Reaction.initCustom("festa", demo_emojis[3].id, true), .user = users[4].id, .add = true } });
                 }
                 _ = g.history_replies.orderedRemove(i);
@@ -929,7 +929,7 @@ const me_id: Id = 1000;
 /// "demo:emoji:<id>:<animado>"). `guild`: índice do servidor. Sem Nitro na conta
 /// da demonstração: os do segundo servidor e os animados ficam travados.
 pub const demo_emojis = [_]struct { id: Id, guild: usize, name: []const u8, animated: bool = false, available: bool = true }{
-    .{ .id = 900_101, .guild = 0, .name = "larper" },
+    .{ .id = 900_101, .guild = 0, .name = "sigma" },
     .{ .id = 900_102, .guild = 0, .name = "pepe_ok" },
     .{ .id = 900_103, .guild = 0, .name = "ziguana" },
     .{ .id = 900_104, .guild = 0, .name = "festa", .animated = true },
@@ -1001,10 +1001,10 @@ const group_members = [_]Id{ 1001, 1003, 1005 };
 const group_id: Id = 900_006;
 
 const guilds = [_]GuildSeed{
-    .{ .name = "larperCord dev", .acronym = "LC", .color = 0 },
+    .{ .name = "SigmaCord dev", .acronym = "LC", .color = 0 },
     .{ .name = "Rice do Hyprland", .acronym = "RH", .color = 4, .name_en = "Hyprland Rice", .acronym_en = "HR", .icon = true },
     .{ .name = "Zig Brasil", .acronym = "Z", .color = 1, .name_en = "Zig Brazil", .icon = true },
-    .{ .name = "os larpers", .acronym = "ol", .color = 3, .name_en = "the larpers", .acronym_en = "tl" },
+    .{ .name = "os sigmas", .acronym = "ol", .color = 3, .name_en = "the sigmas", .acronym_en = "tl" },
     .{ .name = "CTF da madrugada", .acronym = "CTF", .color = 6, .name_en = "Late-night CTF", .icon = true },
     .{ .name = "Faculdade 2026", .acronym = "F26", .color = 2, .name_en = "College 2026", .acronym_en = "C26" },
     .{ .name = "Minecraft SMP", .acronym = "MC", .color = 7, .icon = true },
@@ -1089,7 +1089,7 @@ const channel_tree = [_]ChannelSeed{
     .{ .name = "música", .topic = "o que vocês estão ouvindo?", .name_en = "music", .topic_en = "what are you all listening to?" },
     .{ .name = "projetos", .kind = .category, .name_en = "projects" },
     .{ .name = "zig", .topic = "allocators, comptime e sofrimento", .topic_en = "allocators, comptime and suffering" },
-    .{ .name = "interface", .topic = "design do larperCord", .topic_en = "larperCord's design" },
+    .{ .name = "interface", .topic = "design do SigmaCord", .topic_en = "SigmaCord's design" },
     .{ .name = "bugs", .topic = "reporte com print", .topic_en = "report with a screenshot" },
     .{ .name = "voz", .kind = .category, .name_en = "voice" },
     .{ .name = "Call da madrugada", .kind = .voice, .name_en = "Late-night call" },
@@ -1334,7 +1334,7 @@ fn demoReadStates(epoch_ms: i64) ![]types.ReadEntry {
 /// Cartão de convite da demonstração (sem conta, sem entrar em nada).
 fn demoInvite(code: []const u8) !types.Invite {
     if (std.mem.startsWith(u8, code, "qa")) return .{ .state = .ok, .guild = 777_100, .name = try alloc.dupe(u8, "Servidor de teste"), .members = 321, .online = 45 };
-    if (std.mem.eql(u8, code, "larper")) return .{ .state = .ok, .guild = guildId(0), .name = try alloc.dupe(u8, pick(guilds[0].name, guilds[0].name_en)), .members = 12, .online = 7 };
+    if (std.mem.eql(u8, code, "sigma")) return .{ .state = .ok, .guild = guildId(0), .name = try alloc.dupe(u8, pick(guilds[0].name, guilds[0].name_en)), .members = 12, .online = 7 };
     if (std.mem.eql(u8, code, "zigbr")) return .{ .state = .ok, .guild = 777_000, .name = try alloc.dupe(u8, "Zig Brasil (oficial)"), .icon = try alloc.dupe(u8, "demo:icon:2"), .banner = try alloc.dupe(u8, "demo:2"), .members = 4312, .online = 389 };
     return .{ .state = .invalid };
 }
@@ -1573,7 +1573,7 @@ fn buildHistory(channel: Id, now_ms: i64) ![]types.Message {
         .{ .back = 23, .text = "", .url = "demo:3", .name = "aurora.png", .w = 960, .h = 540 },
         .{ .back = 31, .text = "o relatório que eu falei", .url = "demo:file", .name = "relatorio-de-ram.pdf", .w = 0, .h = 0, .text_en = "the report i mentioned", .name_en = "ram-report.pdf" },
         // Um GIF de link (como os do Tenor): animado e marcado como embed.
-        .{ .back = 9, .text = "https://tenor.com/view/larper-loading", .url = "demo:gif", .name = "loading.gif", .w = 480, .h = 270 },
+        .{ .back = 9, .text = "https://tenor.com/view/sigma-loading", .url = "demo:gif", .name = "loading.gif", .w = 480, .h = 270 },
     };
     for (pics) |p| {
         const m = &msgs[n - p.back];
@@ -1600,7 +1600,7 @@ fn buildHistory(channel: Id, now_ms: i64) ![]types.Message {
     {
         const m = &msgs[n - 20];
         alloc.free(m.content);
-        m.content = try alloc.dupe(u8, "https://tenor.com/view/larper-antigo");
+        m.content = try alloc.dupe(u8, "https://tenor.com/view/sigma-antigo");
         m.reply_to = 0;
         const list = try alloc.alloc(types.Attachment, 1);
         list[0] = .{ .url = try alloc.dupe(u8, "demo:mp4"), .filename = try alloc.dupe(u8, "antigo.gif"), .width = 426, .height = 240, .animated = true, .still = try alloc.dupe(u8, "demo:2"), .embed = true };
@@ -1634,7 +1634,7 @@ fn buildHistory(channel: Id, now_ms: i64) ![]types.Message {
         fields[1] = .{ .name = try alloc.dupe(u8, pick("Ping", "Ping")), .value = try alloc.dupe(u8, "`42 ms`") };
         const e = try alloc.alloc(types.Embed, 1);
         e[0] = .{
-            .author = try alloc.dupe(u8, "larperBot"),
+            .author = try alloc.dupe(u8, "sigmaBot"),
             .title = try alloc.dupe(u8, pick("Status do servidor", "Server status")),
             .description = try alloc.dupe(u8, pick("Tudo funcionando. Use `/ajuda` para ver os comandos.", "All systems go. Use `/help` to see the commands.")),
             .fields = fields,
@@ -1710,7 +1710,7 @@ fn buildHistory(channel: Id, now_ms: i64) ![]types.Message {
                 m.reply_to = 0;
             }
         }.f;
-        try set(&msgs[n - 1], try i18n.allocPrint(alloc, "entra lá: https://discord.gg/larper", "join us: https://discord.gg/larper", .{}));
+        try set(&msgs[n - 1], try i18n.allocPrint(alloc, "entra lá: https://discord.gg/sigma", "join us: https://discord.gg/sigma", .{}));
         try set(&msgs[n - 2], try i18n.allocPrint(alloc, "o pessoal do zig também: https://discord.gg/zigbr", "the zig folks too: https://discord.gg/zigbr", .{}));
         try set(&msgs[n - 4], try i18n.allocPrint(alloc, "a regra fixada é esta: https://discord.com/channels/{d}/{d}/{d}", "the pinned rule is this one: https://discord.com/channels/{d}/{d}/{d}", .{ guildId(0), channel, oldPinId(channel, now_ms) }));
         try set(&msgs[n - 6], try i18n.allocPrint(alloc, "vejam <#{d}> e falem com <@1001>; o outro canal: https://ptb.discord.com/channels/{d}/{d}", "check <#{d}> and talk to <@1001>; the other channel: https://ptb.discord.com/channels/{d}/{d}", .{ channelId(0, 4), guildId(0), channelId(0, 5) }));
@@ -1723,7 +1723,7 @@ fn buildHistory(channel: Id, now_ms: i64) ![]types.Message {
 fn demoEmojiMessages(msgs: []types.Message) !void {
     const n = msgs.len;
     const texts = [_]struct { back: usize, raw: []const u8, raw_en: []const u8 }{
-        .{ .back = 2, .raw = "ficou muito bom <:larper:900101> o tema novo <:pepe_ok:900102>", .raw_en = "the new theme looks so good <:larper:900101> <:pepe_ok:900102>" },
+        .{ .back = 2, .raw = "ficou muito bom <:sigma:900101> o tema novo <:pepe_ok:900102>", .raw_en = "the new theme looks so good <:sigma:900101> <:pepe_ok:900102>" },
         .{ .back = 4, .raw = "<:ziguana:900103> <a:festa:900104>", .raw_en = "<:ziguana:900103> <a:festa:900104>" },
         .{ .back = 6, .raw = "🔥🔥😂", .raw_en = "🔥🔥😂" },
     };
@@ -1763,7 +1763,7 @@ const phrases = [_][]const u8{
     "mano o hyprland novo tá *muito* liso",
     "**finalmente** consegui compilar",
     "alguém tem um wallpaper bom aí? to cansado do meu",
-    "isso é muito larper kkkk",
+    "isso é muito sigma kkkk",
     "vou dormir, amanhã cedo tenho prova 😴",
     "tá, mas e o allocator? quem dá `free` nisso?",
     "manda o print",
@@ -1805,7 +1805,7 @@ const phrases_en = [_][]const u8{
     "dude the new hyprland is *so* smooth",
     "**finally** got it to compile",
     "anyone got a good wallpaper? i'm sick of mine",
-    "this is so larper lmao",
+    "this is so sigma lmao",
     "going to bed, got an exam early tomorrow 😴",
     "ok, but what about the allocator? who calls `free` on this?",
     "send a screenshot",

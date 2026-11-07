@@ -16,7 +16,7 @@ const c = @import("c");
 const platform = @import("platform/window.zig");
 
 /// De onde veio o token da conexão atual (decide o que guardar no READY).
-/// `env`: LARPER_TOKEN, nunca guardado. `legacy`: a entrada única de antes
+/// `env`: SIGMACORD_TOKEN, nunca guardado. `legacy`: a entrada única de antes
 /// das várias contas. `saved`: o de uma conta da lista. `typed`: o do login.
 pub const TokenSource = union(enum) { none, env, legacy, saved: types.Id, typed };
 
@@ -24,7 +24,7 @@ pub var token_source: TokenSource = .none;
 /// Conta do "Voltar" da tela de login.
 pub var prev_account: types.Id = 0;
 
-/// LARPER_TOKEN: não precisa perguntar a ninguém.
+/// SIGMACORD_TOKEN: não precisa perguntar a ninguém.
 pub fn envStartupToken() ?[:0]u8 {
     const t = discord.envToken() orelse return null;
     token_source = .env;
@@ -242,7 +242,7 @@ pub fn ready(app: *App) void {
     const name = if (u) |x| x.name else app.store.me_username orelse "?";
     const avatar = if (u) |x| x.avatar orelse "" else "";
     switch (token_source) {
-        // LARPER_TOKEN nunca é guardado; só atualiza quem já estava na lista.
+        // SIGMACORD_TOKEN nunca é guardado; só atualiza quem já estava na lista.
         .none, .env => if (list.find(me)) |a| {
             a.setName(name);
             a.setAvatar(avatar);
@@ -268,7 +268,7 @@ pub fn ready(app: *App) void {
             const was_legacy = if (list.find(me)) |a| a.legacy else false;
             switch (accounts_store.storeToken(me, app.net.real.token)) {
                 .keyring => app.st.showToast(nowMs(), false, "token guardado no chaveiro do sistema", "token saved to the system keyring", .{}),
-                .file => app.st.showToast(nowMs(), false, "token guardado em ~/.config/larpercord/tokens", "token saved to ~/.config/larpercord/tokens", .{}),
+                .file => app.st.showToast(nowMs(), false, "token guardado em ~/.config/sigmacord/tokens", "token saved to ~/.config/sigmacord/tokens", .{}),
                 .failed => return app.st.showToast(nowMs(), true, "não consegui guardar o token", "couldn't save the token", .{}),
             }
             // A entrada antiga era desta conta: a nova substitui.

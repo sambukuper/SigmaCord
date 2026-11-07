@@ -1,6 +1,6 @@
 //! Valores das configurações. Todas têm efeito de verdade (o que ainda não
 //! existe não aparece aqui até existir).
-//! São salvos em ~/.config/larpercord/settings.kdl.
+//! São salvos em ~/.config/sigmacord/settings.kdl.
 const std = @import("std");
 const L = @import("../core/lsp.zig");
 
@@ -171,6 +171,19 @@ pub const Settings = struct {
     // Atalhos
     /// Navegação estilo vim com a caixa de texto sem foco (ui/vim.zig).
     vim_keys: bool = false,
+    /// Teclas das ações do app (ui/bindings.zig), no texto "ctrl+shift+m".
+    /// Vazio = o padrão de sempre; "none" = nenhuma.
+    bind_mute: Text = .{},
+    bind_deafen: Text = .{},
+    bind_palette: Text = .{},
+    bind_search: Text = .{},
+    bind_settings: Text = .{},
+    bind_fullscreen: Text = .{},
+    bind_theme: Text = .{},
+    bind_inbox: Text = .{},
+    bind_saved: Text = .{},
+    bind_next_tab: Text = .{},
+    bind_close_tab: Text = .{},
 
     // Avançado
     developer_mode: bool = false,
@@ -308,7 +321,7 @@ pub fn fieldIndex(comptime name: []const u8) usize {
 
 /// Serializa em KDL: `settings theme="vidro" compact=#true font_scale=1.1 …`
 pub fn write(s: *const Settings, theme_name: []const u8, out: *std.ArrayList(u8), gpa: std.mem.Allocator) !void {
-    try out.print(gpa, "// gerado pelo larperCord\nsettings theme=\"{s}\"", .{theme_name});
+    try out.print(gpa, "// gerado pelo SigmaCord\nsettings theme=\"{s}\"", .{theme_name});
     const base: [*]const u8 = @ptrCast(s);
     for (fields()) |f| {
         switch (f.kind) {
@@ -525,4 +538,27 @@ test "campos pelo índice (paleta de comandos)" {
     try std.testing.expectEqual(@as(u8, 2), s.color_mode);
     try std.testing.expect(!setByte(&s, fieldIndex("font_scale"), 1));
     try std.testing.expect(!s.vim_keys and s.md_preview);
+}
+
+test "atalhos configuráveis vão e voltam, e um arquivo antigo fica nos padrões" {
+    const kdl = @import("../theme/kdl.zig");
+    var s: Settings = .{};
+    s.bind_mute.set("ctrl+shift+m");
+    s.bind_deafen.set("none");
+    var out: std.ArrayList(u8) = .empty;
+    defer out.deinit(std.testing.allocator);
+    try write(&s, "vidro", &out, std.testing.allocator);
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    defer arena.deinit();
+    const nodes = try kdl.parse(arena.allocator(), out.items, null);
+    var back: Settings = .{};
+    apply(&back, &nodes[0]);
+    try std.testing.expectEqualStrings("ctrl+shift+m", back.bind_mute.slice());
+    try std.testing.expectEqualStrings("none", back.bind_deafen.slice());
+    // Arquivo antigo, sem os campos: vazio, que é o padrão de sempre.
+    const old = try kdl.parse(arena.allocator(), "settings compact=#true\n", null);
+    var fresh: Settings = .{};
+    apply(&fresh, &old[0]);
+    try std.testing.expectEqual(@as(usize, 0), fresh.bind_mute.slice().len);
+    try std.testing.expectEqual(@as(usize, 0), fresh.bind_close_tab.slice().len);
 }

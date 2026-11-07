@@ -1,4 +1,4 @@
-//! Um larperCord por pasta de configurações: um segundo chamado acorda o primeiro
+//! Um SigmaCord por pasta de configurações: um segundo chamado acorda o primeiro
 //! (que pode estar escondido na bandeja) em vez de abrir outra conexão.
 //!
 //! A exclusão é uma trava de arquivo (`instance.lock`, sys.lockFile): atômica, e
@@ -134,7 +134,7 @@ pub fn stopListening() void {
     listener = sys.no_socket;
 }
 
-/// Fim do encerramento: daqui em diante outro larperCord já pode assumir.
+/// Fim do encerramento: daqui em diante outro SigmaCord já pode assumir.
 pub fn release() void {
     stopListening();
     if (lock) |l| sys.unlockFile(l);

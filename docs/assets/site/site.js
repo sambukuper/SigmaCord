@@ -4,16 +4,16 @@
   var root = html.dataset.root || "";
   var lang = html.dataset.lang;
   var data = window.LC_DATA;
-  var names = ["larper"].concat(data.order);
+  var names = ["sigma"].concat(data.order);
   var T = lang === "pt"
-    ? { dark: "escuro", light: "claro", copy: "copiar", copied: "copiado", search: "Vá para uma página, seção ou tema…", none: "Nada encontrado.", theme: "tema", appearance: "aparência", toLight: "Modo claro", toDark: "Modo escuro", next: "Próximo tema", action: "ação", foot: "↑↓ escolher · Enter abrir · Esc fechar", brand: "Prints reais, passando pelos 11 temas. Escolha um lá em cima e a página inteira veste ele.", typed: [["ps -o pss larpercord", "cerca de 130 MB"], ["top -p $(pidof larpercord)", "0% de CPU parado"], ["ls themes/*.kdl | wc -l", "11"], ["grep -c electron larpercord", "0"], ["$EDITOR themes/subsolo.kdl", "salvou, a janela mudou"]], appTheme: "Print real do app, tema " , top: "topo", bot: "fim", fxOn: "Efeitos: ligar todos", fxOff: "Efeitos: modo leve", loaded: "carregado", site: "tema do site", quips: ["próximo arquivo.", "mesmo binário.", "e nada de Electron.", "de novo?", "pode continuar, eu espero.", "cada clique é um .kdl."], sep: ".", mode: { dark: "escuro", light: "claro" } }
-    : { dark: "dark", light: "light", copy: "copy", copied: "copied", search: "Jump to a page, section or theme…", none: "Nothing found.", theme: "theme", appearance: "appearance", toLight: "Light mode", toDark: "Dark mode", next: "Next theme", action: "action", foot: "↑↓ select · Enter open · Esc close", brand: "Real screenshots, cycling through all 11 themes. Pick one up top and the whole page wears it.", typed: [["ps -o pss larpercord", "about 130 MB"], ["top -p $(pidof larpercord)", "0% CPU at idle"], ["ls themes/*.kdl | wc -l", "11"], ["grep -c electron larpercord", "0"], ["$EDITOR themes/subsolo.kdl", "saved, the window changed"]], appTheme: "Real app screenshot, theme ", top: "top", bot: "bot", fxOn: "Effects: turn everything on", fxOff: "Effects: lite mode", loaded: "loaded", site: "site theme", quips: ["next file.", "same binary.", "still no Electron.", "again?", "go on, I can wait.", "every click is a .kdl."], sep: ",", mode: { dark: "dark", light: "light" } };
+    ? { dark: "escuro", light: "claro", copy: "copiar", copied: "copiado", search: "Vá para uma página, seção ou tema…", none: "Nada encontrado.", theme: "tema", appearance: "aparência", toLight: "Modo claro", toDark: "Modo escuro", next: "Próximo tema", action: "ação", foot: "↑↓ escolher · Enter abrir · Esc fechar", brand: "Prints reais, passando pelos 11 temas. Escolha um lá em cima e a página inteira veste ele.", typed: [["ps -o pss sigmacord", "cerca de 130 MB"], ["top -p $(pidof sigmacord)", "0% de CPU parado"], ["ls themes/*.kdl | wc -l", "11"], ["grep -c electron sigmacord", "0"], ["$EDITOR themes/subsolo.kdl", "salvou, a janela mudou"]], appTheme: "Print real do app, tema " , top: "topo", bot: "fim", fxOn: "Efeitos: ligar todos", fxOff: "Efeitos: modo leve", loaded: "carregado", site: "tema do site", quips: ["próximo arquivo.", "mesmo binário.", "e nada de Electron.", "de novo?", "pode continuar, eu espero.", "cada clique é um .kdl."], sep: ".", mode: { dark: "escuro", light: "claro" } }
+    : { dark: "dark", light: "light", copy: "copy", copied: "copied", search: "Jump to a page, section or theme…", none: "Nothing found.", theme: "theme", appearance: "appearance", toLight: "Light mode", toDark: "Dark mode", next: "Next theme", action: "action", foot: "↑↓ select · Enter open · Esc close", brand: "Real screenshots, cycling through all 11 themes. Pick one up top and the whole page wears it.", typed: [["ps -o pss sigmacord", "about 130 MB"], ["top -p $(pidof sigmacord)", "0% CPU at idle"], ["ls themes/*.kdl | wc -l", "11"], ["grep -c electron sigmacord", "0"], ["$EDITOR themes/subsolo.kdl", "saved, the window changed"]], appTheme: "Real app screenshot, theme ", top: "top", bot: "bot", fxOn: "Effects: turn everything on", fxOff: "Effects: lite mode", loaded: "loaded", site: "site theme", quips: ["next file.", "same binary.", "still no Electron.", "again?", "go on, I can wait.", "every click is a .kdl."], sep: ",", mode: { dark: "dark", light: "light" } };
 
   function current() { return html.dataset.theme; }
   function mode() { return html.dataset.mode; }
 
   function shotFile(name, m) {
-    if (name === "larper") return m === "light" ? "classico-claro" : "larper";
+    if (name === "sigma") return m === "light" ? "classico-claro" : "sigma";
     return m === "light" ? name + "-claro" : name;
   }
 
@@ -25,9 +25,9 @@
     var hero = document.querySelector("[data-hero-shot]");
     if (hero) hero.src = root + "assets/shots/" + lang + "/" + shotFile(name, m) + ".webp";
     var note = document.querySelector("[data-stage-note]");
-    if (note) note.textContent = name === "larper" ? T.brand : T.appTheme + name + ".";
+    if (note) note.textContent = name === "sigma" ? T.brand : T.appTheme + name + ".";
     var win = document.querySelector("[data-win-title]");
-    if (win) win.textContent = name === "larper" ? "larpercord --demo" : "larpercord --demo --theme " + name;
+    if (win) win.textContent = name === "sigma" ? "sigmacord --demo" : "sigmacord --demo --theme " + name;
     document.dispatchEvent(new CustomEvent("lc-rendered"));
     var mascot = document.querySelector(".mascot");
     if (mascot) {
@@ -56,7 +56,7 @@
       toast.setAttribute("role", "status");
       document.body.appendChild(toast);
     }
-    var file = name === "larper" ? T.site : name + ".kdl";
+    var file = name === "sigma" ? T.site : name + ".kdl";
     toast.innerHTML = "<b>✓</b> " + file + " · " + T[m] + " · " + T.loaded;
     toast.classList.add("on");
     clearTimeout(toastTimer);
@@ -428,7 +428,7 @@
     function swap(name) {
       var src = root + "assets/shots/" + lang + "/" + shotFile(name, mode()) + ".webp", im = new Image();
       im.onload = function () {
-        if (current() !== "larper") return;
+        if (current() !== "sigma") return;
         next.src = src;
         next.classList.remove("in");
         void next.offsetWidth;
@@ -436,9 +436,9 @@
         laser.classList.remove("go");
         void laser.offsetWidth;
         laser.classList.add("go");
-        if (win) win.textContent = "larpercord --demo --theme " + name;
+        if (win) win.textContent = "sigmacord --demo --theme " + name;
         setTimeout(function () {
-          if (current() !== "larper") return;
+          if (current() !== "sigma") return;
           heroShot.src = src;
           next.classList.remove("in");
         }, 430);
@@ -452,10 +452,10 @@
     new IntersectionObserver(function (es) { winSeen = es[0].isIntersecting; }).observe(windowEl);
     new IntersectionObserver(function (es) { morphSeen = es[0].isIntersecting; }).observe(morphEl);
     document.addEventListener("lc-rendered", function () {
-      if (current() !== "larper") { peek(null); next.classList.remove("in"); }
+      if (current() !== "sigma") { peek(null); next.classList.remove("in"); }
     });
     if (!calm) setInterval(function () {
-      if (current() !== "larper" || hover || !(winSeen || morphSeen) || document.hidden) return;
+      if (current() !== "sigma" || hover || !(winSeen || morphSeen) || document.hidden) return;
       n = (n + 1) % data.order.length;
       var name = data.order[n];
       peek(name);

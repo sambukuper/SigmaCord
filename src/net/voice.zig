@@ -21,7 +21,7 @@
 //! `local` (a demonstração): só a metade do áudio, sem rede. O microfone, a
 //! detecção de voz e o aviso de falha valem de verdade; nada sai do computador.
 //!
-//! LARPER_VOICE_DEBUG=1 mostra no terminal o que acontece na call (opcodes,
+//! SIGMACORD_VOICE_DEBUG=1 mostra no terminal o que acontece na call (opcodes,
 //! códigos de fechamento, DAVE). Nunca imprime token nem chaves.
 const std = @import("std");
 const sys = @import("../platform/sys.zig");
@@ -112,7 +112,7 @@ pub const Voice = struct {
     }
 
     pub fn start(v: *Voice) !void {
-        debug_on = c.SDL_getenv("LARPER_VOICE_DEBUG") != null;
+        debug_on = c.SDL_getenv("SIGMACORD_VOICE_DEBUG") != null;
         v.thread = c.SDL_CreateThread(threadMain, "voice", v) orelse return error.SdlThread;
     }
 
@@ -250,7 +250,7 @@ const Worker = struct {
     trailing_silence: u8 = 0,
     /// O próximo pacote é o primeiro de uma fala (bit de marcação do RTP).
     spurt_start: bool = true,
-    // Diagnóstico (LARPER_VOICE_DEBUG).
+    // Diagnóstico (SIGMACORD_VOICE_DEBUG).
     mic_peak_rms: f64 = 0,
     stats: Stats = .{},
     sent_frames: u64 = 0,
@@ -1298,7 +1298,7 @@ fn mixCheck(_: ?*anyopaque, _: [*c]const c.SDL_AudioSpec, buffer: [*c]f32, bufle
     if (over > 0) _ = mix_over.fetchAdd(over, .monotonic);
 }
 
-/// O que aconteceu com o áudio desde o último relatório (LARPER_VOICE_DEBUG=1).
+/// O que aconteceu com o áudio desde o último relatório (SIGMACORD_VOICE_DEBUG=1).
 const Stats = struct {
     packets: u32 = 0,
     late: u32 = 0,

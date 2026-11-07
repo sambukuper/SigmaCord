@@ -2,7 +2,7 @@
 // conversa em balões (os seus à direita). Exclusivo: "Entregue ✓✓" e o balão
 // de "digitando" com os três pontinhos. Os cartões flutuam sobre um fundo
 // pontilhado com uma luz colorida atrás.
-theme "bolhas" description="Mensageiro: balões de conversa, \"Entregue ✓✓\" e balão de digitando." description-en="Messenger: chat bubbles, \"Delivered ✓✓\" and a typing bubble." author="larperCord" preview=bubbles
+theme "bolhas" description="Mensageiro: balões de conversa, \"Entregue ✓✓\" e balão de digitando." description-en="Messenger: chat bubbles, \"Delivered ✓✓\" and a typing bubble." author="SigmaCord" preview=bubbles
 
 options {
     option "fundo" label="Fundo colorido" description="Pontinhos e uma luz suave atrás dos cartões." label-en="Colorful backdrop" description-en="Little dots and a soft glow behind the cards." default=#true

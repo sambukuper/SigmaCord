@@ -14,7 +14,7 @@ const Id = @import("../core/types.zig").Id;
 const row_h: f32 = 34;
 const item_h: f32 = 32;
 
-/// A conta aberta não está na lista (token da variável LARPER_TOKEN, sem
+/// A conta aberta não está na lista (token da variável SIGMACORD_TOKEN, sem
 /// "Lembrar", ou a demonstração): aparece em cima, sem trocar.
 fn sessionUnsaved(ctx: *const d.Ctx) bool {
     return store_acc.list.find(store_acc.session) == null and ctx.store.user(ctx.store.me) != null;

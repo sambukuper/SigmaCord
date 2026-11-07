@@ -6,7 +6,7 @@ local total, minhas = 0, 0
 local pessoas, canais = {}, {}
 local desde = os.time()
 
-larper.on("message", function(msg)
+sigma.on("message", function(msg)
   total = total + 1
   if msg.mine then
     minhas = minhas + 1
@@ -26,7 +26,7 @@ end
 
 local function mostra()
   if total == 0 then
-    larper.notify("Nenhuma mensagem nova desde que o app abriu")
+    sigma.notify("Nenhuma mensagem nova desde que o app abriu")
     return
   end
   local minutos = math.max(1, (os.time() - desde) // 60)
@@ -35,15 +35,15 @@ local function mostra()
   if quem then partes[#partes + 1] = "quem mais falou: " .. quem .. " (" .. n .. ")" end
   local onde, m = maior(canais)
   if onde then partes[#partes + 1] = "#" .. onde .. " (" .. m .. ")" end
-  larper.notify(table.concat(partes, " · "))
+  sigma.notify(table.concat(partes, " · "))
 end
 
-larper.command("/resumo", function(args)
+sigma.command("/resumo", function(args)
   if args == "zerar" then
     total, minhas, pessoas, canais, desde = 0, 0, {}, {}, os.time()
-    larper.notify("Contagem zerada")
+    sigma.notify("Contagem zerada")
     return
   end
   mostra()
 end)
-larper.keybind("ctrl+alt+r", mostra)
+sigma.keybind("ctrl+alt+r", mostra)

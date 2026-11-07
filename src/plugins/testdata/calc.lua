@@ -99,24 +99,24 @@ end
 -- Devolve o resultado em texto, ou nil depois de avisar o que deu errado.
 local function resolve(args)
   if args == "" then
-    larper.notify("Use assim: /calc 2 + 3 * 4")
+    sigma.notify("Use assim: /calc 2 + 3 * 4")
     return nil
   end
   local ok, v = pcall(avaliar, args)
   if not ok then
-    larper.notify("Conta inválida: " .. tostring(v))
+    sigma.notify("Conta inválida: " .. tostring(v))
     return nil
   end
   ans = v
   return bonito(v)
 end
 
-larper.command("/calc", function(args)
+sigma.command("/calc", function(args)
   local r = resolve(args)
-  if r then larper.notify(args .. " = " .. r) end
+  if r then sigma.notify(args .. " = " .. r) end
 end)
 
-larper.command("/conta", function(args)
+sigma.command("/conta", function(args)
   local r = resolve(args)
-  if r then larper.send(nil, "`" .. args .. " = " .. r .. "`") end
+  if r then sigma.send(nil, "`" .. args .. " = " .. r .. "`") end
 end)

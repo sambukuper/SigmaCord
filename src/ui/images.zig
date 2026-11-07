@@ -642,10 +642,10 @@ fn load(curl: *?*c.CURL, jb: Job, stop: *std.atomic.Value(bool)) Pixels {
     return px;
 }
 
-/// Com LARPER_DEBUG_MEDIA, diz no log por que uma imagem falhou. Só host e
+/// Com SIGMACORD_DEBUG_MEDIA, diz no log por que uma imagem falhou. Só host e
 /// caminho: a query das URLs do Discord leva assinaturas.
 fn logFail(url: []const u8, comptime fmt: []const u8, args: anytype) void {
-    if (c.SDL_getenv("LARPER_DEBUG_MEDIA") == null and !@import("../platform/debug_log.zig").isOn()) return;
+    if (c.SDL_getenv("SIGMACORD_DEBUG_MEDIA") == null and !@import("../platform/debug_log.zig").isOn()) return;
     std.log.info("mídia {s}: " ++ fmt, .{media_url.logPart(url)} ++ args);
 }
 
@@ -753,7 +753,7 @@ pub fn fetch(curl: *?*c.CURL, url: [:0]const u8, sink: Sink, stop: *std.atomic.V
         @import("../platform/sys.zig").curlTls(h);
         _ = c.curl_easy_setopt(h, c.CURLOPT_URL, cur_url.ptr);
         _ = c.curl_easy_setopt(h, c.CURLOPT_NOSIGNAL, @as(c_long, 1));
-        _ = c.curl_easy_setopt(h, c.CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) larperCord/0.1");
+        _ = c.curl_easy_setopt(h, c.CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) SigmaCord/0.1");
         _ = c.curl_easy_setopt(h, c.CURLOPT_WRITEFUNCTION, writeCb);
         _ = c.curl_easy_setopt(h, c.CURLOPT_WRITEDATA, &t);
         if (timeout_s > 0) {
@@ -948,7 +948,7 @@ fn newSink(max_w: u16, max_h: u16, stop: *std.atomic.Value(bool)) FrameSink {
 
 fn decodeGif(data: []const u8, max_w: u16, max_h: u16, stop: *std.atomic.Value(bool)) Pixels {
     var sink = newSink(max_w, max_h, stop);
-    _ = c.larper_gif_frames(data.ptr, @intCast(data.len), FrameSink.gifCb, &sink);
+    _ = c.sigma_gif_frames(data.ptr, @intCast(data.len), FrameSink.gifCb, &sink);
     return sink.finish();
 }
 

@@ -9,10 +9,10 @@ The token is never stored in the code, and it never goes into logs or error mess
 
 1. **The system keyring** (recommended):
    ```bash
-   secret-tool store --label='larperCord' service larpercord   # paste the token when asked
+   secret-tool store --label='SigmaCord' service sigmacord   # paste the token when asked
    ```
-2. The `LARPER_TOKEN` environment variable.
-3. The file `~/.config/larpercord/token`, which must have `chmod 600`. If other users can read it, the app warns you.
+2. The `SIGMACORD_TOKEN` environment variable.
+3. The file `~/.config/sigmacord/token`, which must have `chmod 600`. If other users can read it, the app warns you.
 
 ## The sign-in screen
 
@@ -26,14 +26,14 @@ The sign-in screen lists saved accounts too, so you can get into another one if 
 
 | What | Where |
 |---|---|
-| Each remembered token | Its own keyring entry (`service larpercord-account account <ID>`). Without a keyring: `~/.config/larpercord/tokens/<ID>` with `chmod 600` |
-| The list of accounts (ID, name and avatar only) | `~/.config/larpercord/accounts` |
+| Each remembered token | Its own keyring entry (`service sigmacord-account account <ID>`). Without a keyring: `~/.config/sigmacord/tokens/<ID>` with `chmod 600` |
+| The list of accounts (ID, name and avatar only) | `~/.config/sigmacord/accounts` |
 
 The keyring entry from the first section still works for the account that was already in it.
 
 ## Sign out
 
-Settings → **Log Out**. To force demo mode even with a token saved, run `larpercord --demo`.
+Settings → **Log Out**. To force demo mode even with a token saved, run `sigmacord --demo`.
 
 ## What goes over the network
 

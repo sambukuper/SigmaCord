@@ -3559,17 +3559,17 @@ pub const Gateway = struct {
 };
 
 /// Procura o token, nesta ordem:
-///   1. variável LARPER_TOKEN
-///   2. chaveiro do sistema: `secret-tool lookup service larpercord`
-///   3. ~/.config/larpercord/token (precisa ter permissão 600)
+///   1. variável SIGMACORD_TOKEN
+///   2. chaveiro do sistema: `secret-tool lookup service sigmacord`
+///   3. ~/.config/sigmacord/token (precisa ter permissão 600)
 /// Retorna null se não houver (o app usa o modo demonstração).
 pub fn loadToken() ?[:0]u8 {
     return envToken() orelse loadSavedToken();
 }
 
-/// Só a variável LARPER_TOKEN (nunca é guardada em lugar nenhum).
+/// Só a variável SIGMACORD_TOKEN (nunca é guardada em lugar nenhum).
 pub fn envToken() ?[:0]u8 {
-    const t = c.SDL_getenv("LARPER_TOKEN") orelse return null;
+    const t = c.SDL_getenv("SIGMACORD_TOKEN") orelse return null;
     const s = std.mem.trim(u8, std.mem.span(t), " \n\r\t");
     return if (s.len > 20) alloc.dupeSentinel(u8, s, 0) catch null else null;
 }
@@ -3577,7 +3577,7 @@ pub fn envToken() ?[:0]u8 {
 /// Só o token guardado na entrada antiga (chaveiro, depois o arquivo).
 pub fn loadSavedToken() ?[:0]u8 {
     if (sys.windows) return null; // A entrada antiga só existe no Linux.
-    if (c.popen("secret-tool lookup service larpercord 2>/dev/null", "r")) |f| {
+    if (c.popen("secret-tool lookup service sigmacord 2>/dev/null", "r")) |f| {
         var buf: [256]u8 = undefined;
         const n = c.fread(&buf, 1, buf.len, f);
         _ = c.pclose(f);
@@ -3589,7 +3589,7 @@ pub fn loadSavedToken() ?[:0]u8 {
     const path = tokenFilePath(&pbuf) orelse return null;
     if (!sys.exists(path.ptr)) return null;
     if (!sys.ownerOnly(path.ptr)) {
-        std.log.warn("~/.config/larpercord/token está legível por outros usuários; rode: chmod 600 ~/.config/larpercord/token", .{});
+        std.log.warn("~/.config/sigmacord/token está legível por outros usuários; rode: chmod 600 ~/.config/sigmacord/token", .{});
         return null;
     }
     var size: usize = 0;
@@ -3605,13 +3605,13 @@ pub fn loadSavedToken() ?[:0]u8 {
 
 fn tokenFilePath(buf: []u8) ?[:0]const u8 {
     const home = c.SDL_getenv("HOME") orelse return null;
-    return std.fmt.bufPrintSentinel(buf, "{s}/.config/larpercord/token", .{std.mem.span(home)}, 0) catch null;
+    return std.fmt.bufPrintSentinel(buf, "{s}/.config/sigmacord/token", .{std.mem.span(home)}, 0) catch null;
 }
 
 /// "Sair": apaga o token do chaveiro e do arquivo.
 pub fn forgetToken() void {
     if (sys.windows) return;
-    if (c.popen("secret-tool clear service larpercord 2>/dev/null", "r")) |f| _ = c.pclose(f);
+    if (c.popen("secret-tool clear service sigmacord 2>/dev/null", "r")) |f| _ = c.pclose(f);
     var pbuf: [512]u8 = undefined;
     if (tokenFilePath(&pbuf)) |p| _ = c.unlink(p.ptr);
 }

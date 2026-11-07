@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=larperCord
+Name=SigmaCord
 Comment=Native Discord client
-Exec=larpercord
-Icon=larpercord
+Exec=sigmacord
+Icon=sigmacord
 Terminal=false
 Categories=Network;InstantMessaging;
-StartupWMClass=dev.larpercord
+StartupWMClass=dev.sigmacord

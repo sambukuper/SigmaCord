@@ -1,6 +1,6 @@
 //! QA dos erros de código (LSP). O servidor é sempre o de mentira, o próprio
 //! binário com `--qa-lsp-server MODO` (src/qa_lsp_server.zig): nenhum programa de
-//! terceiros roda aqui. O LARPER_TOKEN do teste é um valor falso, só para conferir
+//! terceiros roda aqui. O SIGMACORD_TOKEN do teste é um valor falso, só para conferir
 //! que ele não chega ao filho.
 //! `QA_SUITE=lsp` roda isto; `QA_SUITE=lsp-quit` deixa um servidor de pé (travado,
 //! com QA_LSP_MODE) e sai: quem confere se ele morreu é tools/qa_lsp.sh.
@@ -56,7 +56,7 @@ fn selfPath() []const u8 {
 
 fn prepare(_: *App) void {
     const base = c.SDL_GetBasePath() orelse return;
-    _ = std.fmt.bufPrintSentinel(&self_buf, "{s}larpercord", .{std.mem.span(base)}, 0) catch return;
+    _ = std.fmt.bufPrintSentinel(&self_buf, "{s}sigmacord", .{std.mem.span(base)}, 0) catch return;
     const cwd = c.SDL_GetCurrentDirectory() orelse return;
     defer c.SDL_free(cwd);
     _ = std.fmt.bufPrintSentinel(&cwd_buf, "{s}", .{std.mem.span(cwd)}, 0) catch return;
@@ -83,7 +83,7 @@ fn prepare(_: *App) void {
     var pb: [1000]u8 = undefined;
     const path = std.fmt.bufPrintSentinel(&pb, "qa-out/lsp-rel:{s}/qa-out/lsp-bin", .{dir}, 0) catch return;
     setEnv("PATH", path.ptr);
-    setEnv("LARPER_TOKEN", "qa-valor-falso-nao-e-token");
+    setEnv("SIGMACORD_TOKEN", "qa-valor-falso-nao-e-token");
     // Sobra de uma execução anterior: a pasta tem que chegar vazia ao servidor.
     _ = c.SDL_SaveFile("qa-out/lsp-scratch/sobra.txt", "x", 1);
     net.tuning = .{};
@@ -98,8 +98,8 @@ fn cleanup(app: *App) void {
     set.lsp_plugins_ok = .{};
     net.tuning = .{};
     if (path_had) setEnv("PATH", &path_saved);
-    _ = c.unsetenv("LARPER_TOKEN");
-    _ = c.SDL_UnsetEnvironmentVariable(c.SDL_GetEnvironment(), "LARPER_TOKEN");
+    _ = c.unsetenv("SIGMACORD_TOKEN");
+    _ = c.SDL_UnsetEnvironmentVariable(c.SDL_GetEnvironment(), "SIGMACORD_TOKEN");
     _ = c.SDL_RemovePath("qa-out/plugins/lsp-qa.lua");
     if (engine.current) |e| e.reload();
     @memset(&app.st.input, 0);
@@ -268,7 +268,7 @@ fn textAudit(app: *App) void {
 }
 fn auditEnv(_: *App) bool {
     const env = auditField("env") orelse return false;
-    return std.mem.indexOf(u8, env, "LARPER_TOKEN") == null and (std.mem.eql(u8, env, "PATH,HOME") or std.mem.eql(u8, env, "HOME,PATH"));
+    return std.mem.indexOf(u8, env, "SIGMACORD_TOKEN") == null and (std.mem.eql(u8, env, "PATH,HOME") or std.mem.eql(u8, env, "HOME,PATH"));
 }
 fn auditRoot(_: *App) bool {
     const r = auditField("root_null") orelse return false;
@@ -283,10 +283,10 @@ fn auditFds(_: *App) bool {
 }
 fn auditUri(_: *App) bool {
     const u = auditField("uri") orelse return false;
-    return std.mem.startsWith(u8, u, "file:///") and std.mem.endsWith(u8, u, "/larpercord-composer.zig");
+    return std.mem.startsWith(u8, u, "file:///") and std.mem.endsWith(u8, u, "/sigmacord-composer.zig");
 }
 fn tokenStillHere(_: *App) bool {
-    const t = c.SDL_getenv("LARPER_TOKEN") orelse return false;
+    const t = c.SDL_getenv("SIGMACORD_TOKEN") orelse return false;
     return std.mem.eql(u8, std.mem.span(t), "qa-valor-falso-nao-e-token");
 }
 
@@ -463,7 +463,7 @@ fn writePlugin(comptime lang: []const u8, comptime extra: []const u8) fn (*App) 
         fn f(_: *App) void {
             _ = c.SDL_CreateDirectory("qa-out/plugins");
             var b: [1500]u8 = undefined;
-            const t = std.fmt.bufPrint(&b, "larper.lsp(\"{s}\", {{\"{s}\", \"--qa-lsp-server\", \"normal\"{s}}})\n", .{ lang, selfPath(), extra }) catch return;
+            const t = std.fmt.bufPrint(&b, "sigma.lsp(\"{s}\", {{\"{s}\", \"--qa-lsp-server\", \"normal\"{s}}})\n", .{ lang, selfPath(), extra }) catch return;
             _ = c.SDL_SaveFile("qa-out/plugins/lsp-qa.lua", t.ptr, t.len);
             engine.current.?.reload();
         }
