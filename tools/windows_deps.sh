@@ -10,7 +10,22 @@ mkdir -p "$dl" "$out/include" "$out/lib" "$out/bin" "$out/src"
 msys=https://repo.msys2.org/mingw/ucrt64
 get() { # url sha256
     local f="$dl/$(basename "$1")"
-    [ -f "$f" ] || curl -fsSL --retry 3 -o "$f" "$1"
+    if [ ! -f "$f" ]; then
+        curl -fsSL --retry 3 -o "$f" "$1" || {
+            # A página de download do GitHub pode ficar fora (504): o mesmo
+            # arquivo vai pela API, que serve o conteúdo com outro cabeçalho.
+            case "$1" in
+                https://github.com/*)
+                    local repo tag asset id
+                    repo=$(echo "$1" | cut -d/ -f4-5)
+                    tag=$(echo "$1" | cut -d/ -f7)
+                    asset=$(echo "$1" | cut -d/ -f8-)
+                    id=$(curl -fsSL "https://api.github.com/repos/$repo/releases/tags/$tag"                         | grep -B4 "\"name\": \"$asset\"" | grep -o "\"id\": [0-9]*" | head -1 | tr -dc "0-9")
+                    [ -n "$id" ] && curl -fsSL -H "Accept: application/octet-stream" -o "$f"                         "https://api.github.com/repos/$repo/releases/assets/$id"
+                    ;;
+            esac
+        }
+    fi
     echo "$2  $f" | sha256sum -c --quiet -
     echo "$f"
 }
