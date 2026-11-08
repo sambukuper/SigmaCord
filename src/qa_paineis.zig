@@ -886,8 +886,9 @@ fn newestItem() bool {
     return qa.find(k) != null;
 }
 fn changelogReal(_: *App) bool {
-    // O conteúdo de verdade do CHANGELOG, no idioma da interface, sem o título do arquivo.
-    return qa.find("changelog-section:Chamadas") != null and qa.find("changelog-section:Correções") != null and newestItem();
+    // O conteúdo de verdade do CHANGELOG, no idioma da interface, sem o título
+    // do arquivo: as seções da versão nova (mudam a cada versão, junto daqui).
+    return qa.find("changelog-section:SigmaCord") != null and qa.find("changelog-section:Atalhos") != null and newestItem();
 }
 fn currentMarked(_: *App) bool {
     var b: [64]u8 = undefined;

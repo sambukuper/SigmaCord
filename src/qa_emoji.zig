@@ -541,7 +541,7 @@ pub const ops = [_]Op{
     expect("emoji Unicode entra direto", unicodeInserted),
     .{ .run = clearInput },
     .{ .wait = 60 },
-    .{ .text = ":larp" },
+    .{ .text = ":sig" },
     .{ .expect = .{ .name = "emoji personalizado na lista", .check = listOpen, .timeout_ms = 2000 } },
     key(c.ImGuiKey_Enter),
     expect("personalizado entra como :nome:", customInserted),
