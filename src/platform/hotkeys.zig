@@ -269,7 +269,8 @@ fn x11Real() !void {
     // e os dois lados da declaração têm que ser o MESMO tipo.
     const Display = *anyopaque;
     const Dpy = ?Display;
-    const open: *const fn (?[:0]const u8) callconv(.c) Dpy = lib.lookup(*const fn (?[:0]const u8) callconv(.c) Dpy, "XOpenDisplay") orelse return error.NoX11;
+    // const char* na ABI do C: ponteiro com sentinela, não um slice do Zig.
+    const open: *const fn (?[*:0]const u8) callconv(.c) Dpy = lib.lookup(*const fn (?[*:0]const u8) callconv(.c) Dpy, "XOpenDisplay") orelse return error.NoX11;
     const close: *const fn (Display) callconv(.c) c_int = lib.lookup(*const fn (Display) callconv(.c) c_int, "XCloseDisplay") orelse return error.NoX11;
     const rootOf: *const fn (Display) callconv(.c) u64 = lib.lookup(*const fn (Display) callconv(.c) u64, "XDefaultRootWindow") orelse return error.NoX11;
     const keycodeOf: *const fn (Display, u64) callconv(.c) u8 = lib.lookup(*const fn (Display, u64) callconv(.c) u8, "XKeysymToKeycode") orelse return error.NoX11;
