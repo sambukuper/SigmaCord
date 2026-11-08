@@ -6,6 +6,7 @@ const builtin = @import("builtin");
 const c = @import("c");
 
 pub const windows = builtin.os.tag == .windows;
+pub const macos = builtin.os.tag == .macos;
 
 pub const Socket = c.curl_socket_t;
 pub const no_socket: Socket = if (windows) std.math.maxInt(Socket) else -1;

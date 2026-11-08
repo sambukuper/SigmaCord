@@ -21,6 +21,7 @@ const vim = @import("vim.zig");
 const search = @import("search.zig");
 const bindings = @import("bindings.zig");
 const Preview = @import("../theme/manager.zig").Preview;
+const sys = @import("../platform/sys.zig");
 
 const extra = @import("comp_extra.zig");
 const fx = @import("fx.zig");
@@ -111,6 +112,8 @@ pub fn frame(ctx: *d.Ctx, placed: *std.ArrayList(layout.Placed), previews: []con
     rich.emoji_images = @import("emoji_img.zig").enabled(ctx);
     vim.beforeFrame(ctx.st);
     ctx.win = .{ .x = vp.*.Pos.x, .y = vp.*.Pos.y, .w = vp.*.Size.x, .h = vp.*.Size.y };
+    // As faixas de arrasto (barra de título do tema) são registradas de novo a cada quadro.
+    @import("../platform/window.zig").resetChrome();
 
     d.opt_theme = ctx.th;
     fx.beginFrame();
@@ -133,7 +136,23 @@ pub fn frame(ctx: *d.Ctx, placed: *std.ArrayList(layout.Placed), previews: []con
             n_hides += 1;
         }
         // Painel de plugin aberto: o tema inteiro cabe no que sobra da janela.
-        const bounds = search.reserve(plugin_panel.reserve(ctx.win));
+        var bounds = search.reserve(plugin_panel.reserve(ctx.win));
+        // A faixa de título do tema fica em cima do layout (a barra do sistema saiu).
+        const win_chrome = @import("../platform/window.zig");
+        const bar_h: f32 = if (comptime sys.macos) 0 else ctx.th.titlebar_h;
+        if (bar_h > 0 and bounds.h > bar_h + 120) {
+            bounds.y += bar_h;
+            bounds.h -= bar_h;
+            const bar: d.Rect = .{ .x = ctx.win.x, .y = ctx.win.y, .w = ctx.win.w, .h = bar_h };
+            win_chrome.setCaption(bar.x, bar.y, bar.w, bar.h);
+            d.rect(ctx.dl, bar, ctx.col(ctx.th.titlebar_bg orelse .rail), 0);
+            d.line(ctx.dl, bar.x, bar.bottom() - 0.5, bar.right(), bar.bottom() - 0.5, ctx.col(.border), 1);
+            if (ctx.th.titlebar_text.len > 0) {
+                d.text(ctx.dl, ctx.ui.get(.semibold), 13, bar.x + 14, d.centerY(bar, 13), ctx.col(.text), ctx.th.titlebar_text);
+            }
+            const pad: f32 = 12;
+            extra.controlsDraw(ctx, bar.right() - pad - 24, bar.y + bar.h / 2, 12, 8, .{ ctx.col(.danger), ctx.col(.idle), ctx.col(.online) });
+        }
         // Largura dos painéis: a da pessoa, com a conversa sempre usável.
         var sizes = resize.sizes(&ctx.st.settings);
         layout.solveSized(ctx.st.gpa, root, bounds, bounds.w, .{ .ctx = ctx.th, .get = Look.get, .hides = hides[0..n_hides] }, &sizes, "messages", resize.min_chat, placed) catch {};
@@ -155,6 +174,13 @@ pub fn frame(ctx: *d.Ctx, placed: *std.ArrayList(layout.Placed), previews: []con
             if (ctx.th.style(p.node.str("style"))) |st| d.drawStyle(ctx, ctx.dl, st, p.rect, i);
             // Primitivas novas no próprio nó (gradiente, grão, borda por lado…).
             if (base_theme.nodeFx(p.node)) |x| fx.node(ctx, x, p.node, p.rect, i);
+            // O tema pede caption=#true: o retângulo inteiro (linha, coluna ou
+            // componente) vira barra de título; os botões por cima saem de fora
+            // por conta deles mesmos. Antes do continue: linha também vale.
+            if (d.pflag(p.node, "caption", false)) {
+                const w = @import("../platform/window.zig");
+                w.setCaption(p.rect.x, p.rect.y, p.rect.w, p.rect.h);
+            }
             if (p.kind != .component or hidden(ctx, p.node.name)) continue;
             c.ImGui_PushIDPtr(p.node);
             defer c.ImGui_PopID();

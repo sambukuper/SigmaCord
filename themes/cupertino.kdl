@@ -88,11 +88,13 @@ styles {
     style "menus" gradient="alpha(@bg, 0.42) alpha(@bg, 0.30)" border-bottom="alpha(white, 0.08)"
 }
 
+titlebar height=0
+
 layout {
     stack gradient="wal:0 wal:1 wal:2" gradient-angle=90 {
         dunes seed=11 color="alpha(wal:3, 0.85)" color2="wal:4" color3="wal:5" motion="$movimento" unless=transparente
         column {
-            row height=28 style=menus padding-x=14 gap=10 {
+            row height=28 style=menus padding-x=14 gap=10 caption=#true {
                 label width=112 text="SigmaCord" size=13 weight=bold color=text font="Inter Display"
                 status-bar flex=1 variant=plain items="conn ping ram spacer clock"
             }

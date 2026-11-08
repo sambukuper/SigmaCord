@@ -19,6 +19,88 @@ pub const Wake = enum(i32) {
     plugins = 8,
 };
 
+// --- Barra de título do app --------------------------------------------------
+
+/// A faixa arrastável registrada pelo tema (até 4) e os cantos que têm botão
+/// por cima (os cliques deles valem; o resto da faixa arrasta a janela).
+/// Coordenadas da interface, que são os mesmos pontos do hit-test do SDL.
+var captions: [4][4]f32 = @splat(.{ 0, 0, 0, 0 });
+var captions_n: usize = 0;
+var excludes: [8][4]f32 = @splat(.{ 0, 0, 0, 0 });
+var excludes_n: usize = 0;
+
+/// Zera o que o quadro anterior registrou. O laço chama no começo do quadro.
+pub fn resetChrome() void {
+    captions_n = 0;
+    excludes_n = 0;
+}
+
+/// Um retângulo vira "barra de título": dá para segurar e arrastar a janela.
+pub fn setCaption(x: f32, y: f32, w: f32, h: f32) void {
+    if (captions_n == captions.len) return;
+    captions[captions_n] = .{ x, y, w, h };
+    captions_n += 1;
+}
+
+/// Um botão dentro da barra: o clique dele não pode virar arrasto.
+pub fn excludeHit(x: f32, y: f32, w: f32, h: f32) void {
+    if (excludes_n == excludes.len) return;
+    excludes[excludes_n] = .{ x, y, w, h };
+    excludes_n += 1;
+}
+
+fn chromeHit(x: f32, y: f32) c.SDL_HitTestResult {
+    var in_caption = false;
+    for (captions[0..captions_n]) |r| {
+        if (x >= r[0] and x < r[0] + r[2] and y >= r[1] and y < r[1] + r[3]) {
+            in_caption = true;
+            break;
+        }
+    }
+    if (in_caption) {
+        for (excludes[0..excludes_n]) |r| {
+            if (x >= r[0] and x < r[0] + r[2] and y >= r[1] and y < r[1] + r[3]) {
+                in_caption = false;
+                break;
+            }
+        }
+    }
+    if (!in_caption) return c.SDL_HITTEST_NORMAL;
+    return c.SDL_HITTEST_DRAGGABLE;
+}
+
+fn hitTest(window: ?*c.SDL_Window, area: [*c]const c.SDL_Point, data: ?*anyopaque) callconv(.c) c.SDL_HitTestResult {
+    _ = data;
+    const p = area[0];
+    const x: f32 = @floatFromInt(p.x);
+    const y: f32 = @floatFromInt(p.y);
+    const flags = c.SDL_GetWindowFlags(window);
+    const fixed = flags & (c.SDL_WINDOW_MAXIMIZED | c.SDL_WINDOW_FULLSCREEN) != 0;
+    var w: c_int = 0;
+    var h: c_int = 0;
+    _ = c.SDL_GetWindowSize(window, &w, &h);
+    const wf: f32 = @floatFromInt(w);
+    const hf: f32 = @floatFromInt(h);
+    // Redimensionar pelas bordas (janela normal; maximizada não se redimensiona).
+    if (!fixed) {
+        const tl = x < edge and y < edge;
+        const tr = x >= wf - edge and y < edge;
+        const bl = x < edge and y >= hf - edge;
+        const br = x >= wf - edge and y >= hf - edge;
+        if (tl) return c.SDL_HITTEST_RESIZE_TOPLEFT;
+        if (tr) return c.SDL_HITTEST_RESIZE_TOPRIGHT;
+        if (bl) return c.SDL_HITTEST_RESIZE_BOTTOMLEFT;
+        if (br) return c.SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+        if (y < edge) return c.SDL_HITTEST_RESIZE_TOP;
+        if (y >= hf - edge) return c.SDL_HITTEST_RESIZE_BOTTOM;
+        if (x < edge) return c.SDL_HITTEST_RESIZE_LEFT;
+        if (x >= wf - edge) return c.SDL_HITTEST_RESIZE_RIGHT;
+    }
+    return chromeHit(x, y);
+}
+
+const edge: f32 = 8;
+
 pub const Window = struct {
     window: *c.SDL_Window,
     renderer: *c.SDL_Renderer,
@@ -32,9 +114,16 @@ pub const Window = struct {
         _ = c.SDL_SetAppMetadata("SigmaCord", (@import("build_options").version ++ "\x00").ptr, "dev.sigmacord");
         if (!c.SDL_Init(c.SDL_INIT_VIDEO)) return error.SdlInit;
         var flags = c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIGH_PIXEL_DENSITY | c.SDL_WINDOW_TRANSPARENT;
+        // Barra de título própria, desenhada pelo tema. No macOS o título do
+        // sistema fica: os botões de lá são parte do sistema de janelas dele.
+        if (comptime !sys.macos) flags |= c.SDL_WINDOW_BORDERLESS;
         // SIGMACORD_HIDDEN=1: janela escondida (medir desempenho com a GPU de verdade).
         if (c.SDL_getenv("SIGMACORD_HIDDEN") != null) flags |= c.SDL_WINDOW_HIDDEN;
         const window = c.SDL_CreateWindow(title, w, h, flags) orelse return error.SdlWindow;
+        if (comptime !sys.macos) {
+            // Arrastar pela barra do tema e redimensionar pelas bordas.
+            _ = c.SDL_SetWindowHitTest(window, hitTest, null);
+        }
         // On Windows the requested size is in pixels: at 150% the window would open at 2/3 size.
         const s = contentScale(window);
         if (s != 1) openScaled(window, w, h, s);

@@ -97,6 +97,12 @@ pub const Theme = struct {
     /// Primitivas novas dos nós que usam alguma (`fx.zig`). Vazio na maioria.
     node_fx: std.AutoHashMapUnmanaged(*const kdl.Node, *const fx.NodeFx) = .empty,
     mode: Mode = .dark,
+    /// Faixa de título do app (a barra do sistema saiu): altura 0 = o tema
+    /// não quer faixa e marca o próprio topo com caption=#true no layout.
+    titlebar_h: f32 = 32,
+    titlebar_text: []const u8 = "SigmaCord",
+    /// Cor de fundo da faixa: um token da paleta (o rail de cada tema).
+    titlebar_bg: ?Token = null,
     options: []const Option = &.{},
     option_values: std.StringHashMapUnmanaged(bool) = .empty,
 
@@ -310,6 +316,10 @@ pub fn loadWith(gpa: std.mem.Allocator, src: []const u8, lo: LoadOptions, diag: 
             if (n.num("radius")) |v| t.radius = @floatCast(std.math.clamp(v, 0, 64));
         } else if (std.mem.eql(u8, n.name, "window")) {
             if (n.flag("transparent")) |v| t.transparent = v;
+        } else if (std.mem.eql(u8, n.name, "titlebar")) {
+            if (n.num("height")) |v| t.titlebar_h = @floatCast(std.math.clamp(v, 0, 120));
+            if (n.str("text")) |s2| t.titlebar_text = try a.dupe(u8, s2);
+            if (n.str("bg")) |tok| t.titlebar_bg = tokenFromName(tok);
         } else if (std.mem.eql(u8, n.name, "styles")) {
             for (n.children) |*ch| {
                 const sname = (ch.arg(0) orelse return fail(diag, ch, "estilo sem nome")).asString() orelse return fail(diag, ch, "nome do estilo deve ser string");

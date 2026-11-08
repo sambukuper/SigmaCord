@@ -314,8 +314,15 @@ pub fn windowControls(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
     const cy = r.y + r.h / 2;
     const total = size * 3 + gap * 2;
     const x0 = if (d.is(n, "align", "center", "left")) r.x + (r.w - total) / 2 else if (d.is(n, "align", "right", "left")) r.right() - total else r.x;
-    const group: d.Rect = .{ .x = x0 - 4, .y = cy - size / 2 - 4, .w = total + 8, .h = size + 8 };
-    const hot = ctx.hovering(group);
+    controlsDraw(ctx, x0, cy, size, gap, cols);
+}
+
+/// Os três botões numa posição já resolvida (a faixa de título chama direto).
+pub fn controlsDraw(ctx: *d.Ctx, x0: f32, cy: f32, size: f32, gap: f32, cols: [3]d.Rgba) void {
+    const total = size * 3 + gap * 2;
+    // Os botões ficam de fora do arrasto da barra de título.
+    @import("../platform/window.zig").excludeHit(x0 - 4, cy - size / 2 - 4, total + 8, size + 8);
+    const hot = ctx.hovering(.{ .x = x0 - 4, .y = cy - size / 2 - 4, .w = total + 8, .h = size + 8 });
     for (0..3) |i| {
         const cx = x0 + size / 2 + @as(f32, @floatFromInt(i)) * (size + gap);
         const br: d.Rect = .{ .x = cx - size / 2 - gap / 2, .y = cy - size / 2 - 3, .w = size + gap, .h = size + 6 };
