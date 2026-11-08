@@ -17,7 +17,39 @@ dl=$out/dl
 mkdir -p "$dl"
 get() { # url sha256
     local f="$dl/$(basename "$1")"
-    [ -f "$f" ] || curl -fsSL --retry 3 -o "$f" "$1"
+    if [ ! -f "$f" ]; then
+        if ! curl -fsSL --retry 3 --connect-timeout 20 -o "$f" "$1"; then
+            # O site de origem pode estar fora (504, tempo de conexão): tenta
+            # os caminhos de trás, e o sha256 abaixo garante que é o arquivo.
+            case "$1" in
+                https://github.com/*)
+                    local repo tag asset
+                    # github.com/<dono>/<repo>/releases/download/<tag>/<arquivo>
+                    repo=$(echo "$1" | cut -d/ -f4-5)
+                    tag=$(echo "$1" | cut -d/ -f8)
+                    asset=$(echo "$1" | cut -d/ -f9-)
+                    # Com gh autenticado (no CI tem GH_TOKEN): API sem o limite
+                    # anônimo, que nos corredores compartilhados nem sempre abre.
+                    if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+                        gh release download "$tag" --repo "$repo" --pattern "$asset" --output "$f" --clobber || true
+                    fi
+                    if [ ! -s "$f" ]; then
+                        local id
+                        id=$(curl -fsSL --connect-timeout 20 "https://api.github.com/repos/$repo/releases/tags/$tag"                             | grep -B4 "\"name\": \"$asset\"" | grep -o "\"id\": [0-9]*" | head -1 | tr -dc "0-9" || true)
+                        if [ -n "$id" ]; then
+                            curl -fsSL --connect-timeout 20 -H "Accept: application/octet-stream" -o "$f"                                 "https://api.github.com/repos/$repo/releases/assets/$id" || true
+                        fi
+                    fi
+                    ;;
+                https://repo.msys2.org/*)
+                    curl -fsSL --retry 3 --connect-timeout 20 -o "$f" "https://mirror.msys2.org/mingw/ucrt64/$(basename "$1")" || true
+                    ;;
+                https://download.savannah.gnu.org/*)
+                    curl -fsSL --retry 3 --connect-timeout 20 -o "$f"                         "https://mirror.netcologne.de/savannah/${1#https://download.savannah.gnu.org/releases/}" || true
+                    ;;
+            esac
+        fi
+    fi
     echo "$2  $f" | sha256sum -c --quiet -
     echo "$f"
 }

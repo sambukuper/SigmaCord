@@ -26,6 +26,8 @@ jobs:
         with:
           version: 0.17.0
       - run: tools/windows_deps.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: zig build -Dtarget=x86_64-windows-gnu -Dqa=true
       - uses: actions/upload-artifact@v4
         with:
