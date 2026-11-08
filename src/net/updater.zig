@@ -162,8 +162,48 @@ pub fn wakeUi() void {
 }
 
 pub fn fetch(url: [:0]const u8, out: *std.ArrayList(u8), max: usize, progress: ?*std.atomic.Value(usize)) !void {
+    return fetchHdr(url, null, out, max, progress);
+}
+
+/// Um arquivo de release do GitHub pela API: a página de download às vezes
+/// fica fora (504), e a API serve o mesmo conteúdo com outro cabeçalho.
+/// O chamador confere o hash: os bytes são os mesmos.
+pub fn fetchGithubReleaseFile(repo: []const u8, tag: []const u8, file: []const u8, out: *std.ArrayList(u8), max: usize, progress: ?*std.atomic.Value(usize)) !void {
+    var lb: [512]u8 = undefined;
+    const list_url = std.fmt.bufPrintSentinel(&lb, "https://api.github.com/repos/{s}/releases/tags/{s}", .{ repo, tag }, 0) catch return error.Network;
+    var body: std.ArrayList(u8) = .empty;
+    defer body.deinit(alloc);
+    try fetch(list_url, &body, 4 * 1024 * 1024, null);
+    var arena = std.heap.ArenaAllocator.init(alloc);
+    defer arena.deinit();
+    const v = try std.json.parseFromSliceLeaky(std.json.Value, arena.allocator(), body.items, .{});
+    if (v != .object) return error.NoRelease;
+    const assets = v.object.get("assets") orelse return error.NoRelease;
+    if (assets != .array) return error.NoRelease;
+    var asset_url: ?[]const u8 = null;
+    for (assets.array.items) |a| {
+        if (a != .object) continue;
+        const n = a.object.get("name") orelse continue;
+        if (n != .string or !std.mem.eql(u8, n.string, file)) continue;
+        const u = a.object.get("url") orelse continue;
+        if (u != .string) continue;
+        asset_url = u.string;
+    }
+    const au = asset_url orelse return error.NoRelease;
+    var ab: [512]u8 = undefined;
+    const asset = std.fmt.bufPrintSentinel(&ab, "{s}", .{au}, 0) catch return error.Network;
+    return fetchHdr(asset, "Accept: application/octet-stream", out, max, progress);
+}
+
+fn fetchHdr(url: [:0]const u8, accept: ?[*:0]const u8, out: *std.ArrayList(u8), max: usize, progress: ?*std.atomic.Value(usize)) !void {
     const h = c.curl_easy_init() orelse return error.Network;
     defer c.curl_easy_cleanup(h);
+    var slist: ?*c.curl_slist = null;
+    if (accept) |a| {
+        slist = c.curl_slist_append(slist, a);
+        _ = c.curl_easy_setopt(h, c.CURLOPT_HTTPHEADER, slist);
+    }
+    defer if (slist != null) c.curl_slist_free_all(slist);
     var sink: Sink = .{ .out = out, .max = max, .progress = progress };
     var ua_buf: [48]u8 = undefined;
     const ua = std.fmt.bufPrintSentinel(&ua_buf, "SigmaCord/{s}", .{current}, 0) catch "SigmaCord";

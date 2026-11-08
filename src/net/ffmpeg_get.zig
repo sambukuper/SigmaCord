@@ -9,7 +9,10 @@ const updater = @import("updater.zig");
 const alloc = std.heap.c_allocator;
 
 /// A última build de outubro: o projeto guarda a última de cada mês por dois anos.
-const url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-10-31-12-59/ffmpeg-n8.1.3-27-g8dca1586f4-win64-lgpl-shared-8.1.zip";
+const repo = "BtbN/FFmpeg-Builds";
+const tag = "autobuild-2026-10-31-12-59";
+const file = "ffmpeg-n8.1.3-27-g8dca1586f4-win64-lgpl-shared-8.1.zip";
+const url = "https://github.com/" ++ repo ++ "/releases/download/" ++ tag ++ "/" ++ file;
 const sha256 = "5cef7bc48e513f3cee7c881e8b2999d835541edb1846c3e89443a67f8f8556ab";
 const zip_bytes: usize = 80_356_594;
 pub const source = "github.com/BtbN/FFmpeg-Builds";
@@ -78,7 +81,12 @@ fn install() !void {
     var data: std.ArrayList(u8) = .empty;
     defer data.deinit(alloc);
     try data.ensureTotalCapacity(alloc, zip_bytes);
-    try updater.fetch(url, &data, zip_bytes + 1024, &got_bytes);
+    updater.fetch(url, &data, zip_bytes + 1024, &got_bytes) catch |e| {
+        // A página de download do GitHub às vezes fica fora (504): o mesmo
+        // arquivo vai pela API, e o hash abaixo garante que é o mesmo zip.
+        if (e == error.NoRelease) return e;
+        try updater.fetchGithubReleaseFile(repo, tag, file, &data, zip_bytes + 1024, &got_bytes);
+    };
 
     var want: [32]u8 = undefined;
     _ = std.fmt.hexToBytes(&want, sha256) catch unreachable;
