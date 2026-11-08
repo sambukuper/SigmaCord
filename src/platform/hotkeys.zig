@@ -129,6 +129,7 @@ extern "user32" fn RegisterHotKey(hWnd: ?*opaque {}, id: c_int, fsModifiers: c_u
 extern "user32" fn UnregisterHotKey(hWnd: ?*opaque {}, id: c_int) i32;
 extern "user32" fn GetMessageW(lpMsg: *MSG, hWnd: ?*opaque {}, min: c_uint, max: c_uint) i32;
 extern "user32" fn PostThreadMessageW(idThread: u32, msg: u32, wParam: usize, lParam: isize) i32;
+extern "kernel32" fn GetCurrentThreadId() u32;
 
 var win_tid: u32 = 0;
 
@@ -137,7 +138,7 @@ fn postRegrab() void {
 }
 
 fn winLoop() void {
-    win_tid = std.os.windows.kernel32.GetCurrentThreadId();
+    win_tid = GetCurrentThreadId();
     // A primeira lista pode já estar guardada quando a thread nasce.
     regrabWin();
     var msg: MSG = undefined;
@@ -296,8 +297,8 @@ fn x11Real() !void {
             seen = g;
             // Solta as teclas de antes, registra as de agora.
             for (keys[0..keys_n]) |k| {
-                for ([_]u32{ 0, LockMask, Mod2Mask, LockMask | Mod2Mask }) |lock| {
-                    _ = ungrab(dpy, @intCast(k.keycode), k.mods | lock, root);
+                for ([_]u32{ 0, LockMask, Mod2Mask, LockMask | Mod2Mask }) |lk| {
+                    _ = ungrab(dpy, @intCast(k.keycode), k.mods | lk, root);
                 }
             }
             keys_n = 0;
@@ -314,8 +315,8 @@ fn x11Real() !void {
                 if (s.super) mods |= Mod4Mask;
                 // Presa também com Caps Lock e Num Lock apertados: quatro
                 // combinações por tecla.
-                for ([_]u32{ 0, LockMask, Mod2Mask, LockMask | Mod2Mask }) |lock| {
-                    _ = grab(dpy, @intCast(kc), mods | lock, root, 0, 0, 0);
+                for ([_]u32{ 0, LockMask, Mod2Mask, LockMask | Mod2Mask }) |lk| {
+                    _ = grab(dpy, @intCast(kc), mods | lk, root, 0, 0, 0);
                 }
                 keys[keys_n] = .{ .index = s.index, .keycode = kc, .mods = mods };
                 keys_n += 1;
