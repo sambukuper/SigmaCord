@@ -96,6 +96,11 @@ fn setupLsp(qa_mode: bool) void {
     lsp_net.setup(&lspWake, dir);
 }
 
+/// Uma tecla global apertou fora da janela: acorda o laço para drenar a fila.
+fn wakeHotkeys() void {
+    if (wake_type_global != 0) platform.Window.wake(wake_type_global, .tick);
+}
+
 fn wakeTheme() void {
     platform.Window.wake(wake_type_global, .theme);
 }
@@ -224,6 +229,7 @@ pub const App = struct {
         voz_audio.force_dummy = opts.qa or opts.shot != null;
         if (opts.qa or opts.shot != null) hotkeys.disable();
         // As teclas globais dos atalhos (Configurações → Atalhos de teclado).
+        hotkeys.setWake(wakeHotkeys);
         bindings_mod.syncGlobal(&app.st.settings);
         app.themes.mode = app.wantedMode();
         // Já aqui: os dados da demonstração saem no idioma da interface.
@@ -1471,6 +1477,15 @@ pub const App = struct {
                 st.typing_sent_ms = now_ms;
                 app.cmd(.{ .typing = id });
             },
+            .call_dm => |ch| {
+                if (st.voice == ch) {
+                    app.handle(.{ .toggle_voice = ch });
+                    return;
+                }
+                // Toca o ring no Discord e entra na call do canal.
+                app.cmd(.{ .call_ring = ch });
+                app.handle(.{ .toggle_voice = ch });
+            },
             .toggle_voice => |ch| {
                 if (st.voice != ch) if (app.store.channel(ch)) |cs| if (!app.store.canAccess(&cs.info)) {
                     return st.showToast(now(), true, "você não pode entrar em {s}", "you can't join {s}", .{cs.info.name});
@@ -1484,7 +1499,8 @@ pub const App = struct {
                     app.cmd(.{ .join_voice = .{ .guild = st.voice_guild, .channel = null, .mute = st.muted, .deaf = st.deafened } });
                 } else {
                     const cs = app.store.channel(ch) orelse return;
-                    if (cs.info.kind != .voice) return;
+                    // DM e grupo também têm call: entrar no canal deles.
+                    if (cs.info.kind != .voice and !(cs.info.kind == .text and cs.info.guild == 0)) return;
                     st.voice = ch;
                     st.voice_guild = cs.info.guild;
                     st.voice_status = .connecting;

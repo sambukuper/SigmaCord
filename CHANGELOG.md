@@ -10,7 +10,8 @@
 - The microphone mute and the deafen toggles finally have keys, `Ctrl+Shift+M` and `Ctrl+Shift+D`, and both are rebindable like everything else.
 - Every bind can be turned off by itself (the little square next to the key), and there is one switch to make all of them work outside the window too: on Windows (RegisterHotKey) and on Linux with X11 (XGrabKey) the keys then work in any program; on Wayland they stay window-focused, since the compositor decides about global keys. Off by default: a global key is taken away from every other program.
 - The command palette, search, settings, fullscreen, next theme, inbox, saved messages and the tab actions are all in the same list. The fixed extras (Ctrl+Shift+P, interface zoom, Alt+1…9, Alt+Enter) stay as they were.
-- The rule is the same one plugins already had: letters and digits need Ctrl, Alt or Super, and F1–F24 can go alone.
+- Any key can be a bind, even a bare letter. While you're typing in a text box, binds without Ctrl/Alt/Super don't fire, and bare keys never become global (they would be taken from the whole system).
+- **Calls in direct messages**: a phone button in the DM header rings the other person (the Discord ring) and joins the call, like the official client.
 
 **Builds**
 - Both release binaries now come from GitHub Actions: Linux portable and Windows cross-compiled, each with a build attestation. Nothing is built locally anymore; the release script only downloads, checks and signs.

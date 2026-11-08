@@ -160,6 +160,9 @@ pub fn dispatch(ctx: *d.Ctx) void {
         if (io.*.KeyCtrl != k.ctrl or io.*.KeyAlt != k.alt or io.*.KeySuper != k.super) continue;
         if (!b.variant and io.*.KeyShift != k.shift) continue;
         if (!c.ImGui_IsKeyPressedEx(k.key, false)) continue;
+        // Digitando numa caixa de texto, tecla solta (sem Ctrl/Alt/Super) é
+        // da caixa: só F1–F24 e as que têm modificador passam por cima.
+        if (!k.ctrl and !k.alt and !k.super and !keys.isFkey(k.key) and io.*.WantTextInput) continue;
         b.run(ctx);
     }
 }
@@ -179,6 +182,9 @@ pub fn syncGlobal(s: *const S.Settings) void {
         if (n >= specs.len) break;
         if (!b.on_get(s)) continue;
         const k = resolve(b, s) orelse continue;
+        // Tecla solta não vira global: ela seria tomada de todo o sistema e
+        // ninguém conseguiria mais digitá-la em lugar nenhum.
+        if (!k.ctrl and !k.alt and !k.super and !keys.isFkey(k.key)) continue;
         specs[n] = .{ .index = @intCast(i), .key = k.key, .ctrl = k.ctrl, .shift = k.shift, .alt = k.alt, .super = k.super };
         n += 1;
     }
@@ -331,8 +337,8 @@ pub fn pageRows(p: anytype) void {
     }
     p.y += 4;
     p.note(i18n.tr(
-        "A regra é a dos plugins: letras e números precisam de Ctrl, Alt ou Super; F1–F24 podem ir sozinhas. Com \"fora da janela\" desligado, valem com a janela do SigmaCord em foco.",
-        "Same rule as plugins: letters and digits need Ctrl, Alt or Super; F1–F24 can go alone. With \"outside the window\" off, binds work while the SigmaCord window is focused.",
+        "Qualquer tecla vale, sozinha até. Digitando numa caixa de texto, atalhos sem Ctrl/Alt/Super não disparam. Teclas soltas não valem fora da janela: elas seriam tomadas de todo o sistema.",
+        "Any key works, even alone. While typing in a text box, binds without Ctrl/Alt/Super don't fire. Bare keys don't work outside the window: they would be taken from the whole system.",
     ));
 }
 

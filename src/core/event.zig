@@ -230,6 +230,8 @@ pub const Command = union(enum) {
     typing: Id,
     /// Entrar (channel != null) ou sair da call.
     join_voice: struct { guild: Id, channel: ?Id, mute: bool = false, deaf: bool = false },
+    /// Toca o ring de uma DM (POST /channels/{id}/call/ring).
+    call_ring: Id,
     /// Mudou mudo/ensurdecer com a call já conectada.
     voice_flags: struct { mute: bool, deaf: bool },
     /// Volume individual de quem está falando (0..2).
@@ -298,6 +300,9 @@ pub const Action = union(enum) {
     next_tab: i32,
     send_message: []const u8,
     toggle_voice: Id,
+    /// Telefonar para uma DM (ou desligar, se já está na call dela): toca o
+    /// ring do Discord e entra na call do canal.
+    call_dm: Id,
     leave_voice,
     toggle_mute,
     toggle_deafen,

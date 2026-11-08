@@ -32,6 +32,16 @@ pub fn headset(dl: *c.ImDrawList, cx: f32, cy: f32, col: u32) void {
     c.ImDrawList_AddRectFilledEx(dl, v(cx + 5, cy), v(cx + 9, cy + 8), col, 2, 0);
 }
 
+/// Fone na diagonal (o clássico "telefonar"): o arco e as duas pontas.
+pub fn phone(dl: *c.ImDrawList, cx: f32, cy: f32, col: u32) void {
+    c.ImDrawList_PathClear(dl);
+    c.ImDrawList_PathArcTo(dl, v(cx + 1, cy + 1), 8.5, pi * 0.25, pi * 0.85, 12);
+    c.ImDrawList_PathStroke(dl, col, 0, 2.6);
+    c.ImDrawList_AddCircleFilled(dl, v(cx - 6, cy - 2), 2.6, col);
+    c.ImDrawList_AddCircleFilled(dl, v(cx - 2, cy - 6), 2.6, col);
+    line(dl, cx - 5.5, cy - 3, cx - 2.5, cy - 5.5, col, 3);
+}
+
 pub fn gear(dl: *c.ImDrawList, cx: f32, cy: f32, col: u32) void {
     var i: usize = 0;
     while (i < 8) : (i += 1) {

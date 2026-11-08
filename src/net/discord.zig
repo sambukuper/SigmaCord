@@ -2783,9 +2783,12 @@ pub const Gateway = struct {
     fn sendVoiceState(g: *Gateway, channel: ?Id) void {
         var b: [192]u8 = undefined;
         const ch = if (channel) |cid| std.fmt.bufPrint(&b, "\"{d}\"", .{cid}) catch return else "null";
+        // Call de DM não tem servidor: o guild_id vai null.
+        var gb: [24]u8 = undefined;
+        const gid = if (g.voice_guild == 0) "null" else std.fmt.bufPrint(&gb, "\"{d}\"", .{g.voice_guild}) catch return;
         var out: [256]u8 = undefined;
-        const p = std.fmt.bufPrint(&out, "{{\"op\":4,\"d\":{{\"guild_id\":\"{d}\",\"channel_id\":{s},\"self_mute\":{s},\"self_deaf\":{s}}}}}", .{
-            g.voice_guild,
+        const p = std.fmt.bufPrint(&out, "{{\"op\":4,\"d\":{{\"guild_id\":{s},\"channel_id\":{s},\"self_mute\":{s},\"self_deaf\":{s}}}}}", .{
+            gid,
             ch,
             if (g.voice_mute) "true" else "false",
             if (g.voice_deaf) "true" else "false",
@@ -2875,6 +2878,10 @@ pub const Gateway = struct {
         defer freeCommand(cmd);
         var path_buf: [256]u8 = undefined;
         switch (cmd) {
+            .call_ring => |ch| {
+                const path = std.fmt.bufPrint(&path_buf, "/channels/{d}/call/ring", .{ch}) catch return;
+                _ = g.request("POST", path, null);
+            },
             .fetch_history => |ch| {
                 const path = std.fmt.bufPrint(&path_buf, "/channels/{d}/messages?limit=50", .{ch}) catch return;
                 var resp = g.request("GET", path, null) orelse return g.emit(.{ .history = .{ .channel = ch, .messages = &.{} } });

@@ -84,18 +84,13 @@ pub fn parse(spec: []const u8) ?Combo {
     return k;
 }
 
-/// A combinação serve de atalho? Regra igual à dos plugins (runtime.zig): sem
-/// Ctrl/Alt/Super só F1–F24 (Shift sozinho digita a letra), e Ctrl sozinho não
-/// leva a,c,v,x,y,z (copiar, colar e desfazer acontecem o tempo todo).
+/// A combinação serve de atalho? Qualquer tecla vale — quem captura aceita a
+/// tecla que a pessoa apertou. O cuidado fica por conta de quem usa: digitando
+/// numa caixa de texto, atalhos sem Ctrl/Alt/Super não disparam (dispatch),
+/// e teclas soltas não vão para as teclas globais (syncGlobal), porque elas
+/// seriam tomadas de todo o sistema.
 pub fn valid(k: Combo) bool {
-    if (k.key == 0) return false;
-    if (!k.ctrl and !k.alt and !k.super and !isFkey(k.key)) return false;
-    if (k.ctrl and !k.shift and !k.alt and !k.super) {
-        var b: [4]u8 = undefined;
-        const name = keySpec(k.key, &b);
-        if (name.len == 1 and std.mem.indexOfScalar(u8, "acvxyz", name[0]) != null) return false;
-    }
-    return true;
+    return k.key != 0;
 }
 
 /// O nome da tecla no atalho salvo: "m", "44", "f2", "enter", ",".
@@ -218,24 +213,19 @@ test "rótulo bonito das teclas" {
     try std.testing.expectEqualStrings("Ctrl+,", format(parse("ctrl+,").?, &b3));
 }
 
-test "o que não pode virar atalho" {
-    // Letra sem Ctrl/Alt/Super: digitaria a letra na caixa de texto.
-    try std.testing.expect(!valid(parse("m").?));
-    // Shift sozinho também digita: não conta como modificador.
-    try std.testing.expect(!valid(parse("shift+5").?));
-    try std.testing.expect(!valid(parse("shift+m").?));
-    // Tecla nomeada sem modificador: idem (a regra é a dos plugins).
-    try std.testing.expect(!valid(parse("enter").?));
-    try std.testing.expect(!valid(parse("-").?));
-    // Ctrl sozinho não leva a,c,v,x,y,z: copiar, colar e desfazer.
-    try std.testing.expect(!valid(parse("ctrl+v").?));
+test "o que pode virar atalho" {
+    // Qualquer tecla vale: letra solta, com Shift, nomeada, F…
+    try std.testing.expect(valid(parse("m").?));
+    try std.testing.expect(valid(parse("shift+5").?));
+    try std.testing.expect(valid(parse("enter").?));
+    try std.testing.expect(valid(parse("-").?));
+    try std.testing.expect(valid(parse("ctrl+v").?));
     try std.testing.expect(valid(parse("ctrl+shift+v").?));
-    // Tecla desconhecida e só modificadores.
+    try std.testing.expect(valid(parse("f9").?));
+    // Tecla desconhecida e só modificadores não.
     try std.testing.expect(parse("tecla") == null);
     try std.testing.expect(parse("ctrl+shift") == null);
     try std.testing.expect(parse("") == null);
-    // F1–F24 podem ir sozinhas.
-    try std.testing.expect(valid(parse("f9").?));
     // Maiúsculas e "win" também valem.
     const k = parse("Win+7").?;
     try std.testing.expect(k.super and k.key == c.ImGuiKey_0 + 7);
@@ -256,7 +246,8 @@ test "a lista de captura cobre tudo que o texto entende" {
         const back = parse(spec) orelse return error.TestUnexpectedResult;
         try std.testing.expect(back.key == code);
         k.ctrl = false;
-        // Sem modificador, só o que a regra aceita pode ser capturado.
-        try std.testing.expectEqual(valid(k), valid(parse(serialize(k, &buf)).?));
+        // Sem modificador também é atalho válido hoje; só modificadores
+        // sozinhos é que não (e eles nem estão na lista).
+        try std.testing.expect(valid(parse(serialize(k, &buf)).?));
     }
 }

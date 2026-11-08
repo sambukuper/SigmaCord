@@ -404,6 +404,7 @@ pub const Gateway = struct {
                         .recipient = u,
                     } });
                 },
+                .call_ring => {},
                 .join_voice => |v| {
                     g.emit(.{ .voice_state = .{ .channel = v.channel, .user = me_id, .flags = .{ .self_mute = v.mute, .self_deaf = v.deaf } } });
                     g.emit(.{ .voice_status = .{ .status = if (v.channel != null) .connected else .disconnected, .channel = v.channel orelse 0 } });

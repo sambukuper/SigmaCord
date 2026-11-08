@@ -54,6 +54,13 @@ pub fn disable() void {
     disabled = true;
 }
 
+/// Como acordar o laço da interface (o app registra o dele no começo): sem
+/// isso, a tecla apertada fora da janela ficaria na fila até o próximo quadro.
+var wake_fn: ?*const fn () void = null;
+pub fn setWake(w: *const fn () void) void {
+    wake_fn = w;
+}
+
 /// A lista de atalhos globais mudou: guarda e acorda a thread.
 pub fn update(specs: []const Spec) void {
     if (disabled) return;
@@ -96,6 +103,9 @@ fn fire(index: u8) void {
     if (fired_len == fired_buf.len) return;
     fired_buf[(fired_head + fired_len) % fired_buf.len] = index;
     fired_len += 1;
+    // O laço dorme em SDL_WaitEvent com a janela fora de foco: acorda para
+    // drenar a fila agora, em vez de quando a pessoa voltar para o app.
+    if (wake_fn) |w| w();
 }
 
 fn threadMain(_: ?*anyopaque) callconv(.c) c_int {

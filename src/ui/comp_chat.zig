@@ -72,6 +72,7 @@ pub fn header(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
         const has_panels = plugin_panel.available();
         const needs_gear = !ctx.th.has_user_panel;
         _ = d.textClipped(dl, fam.get(.regular), 13, r.x + 4, r.y + r.h / 2 + 5, ctx.col(.faint), sub, r.w - (if (has_panels) @as(f32, 156) else 120) - (if (needs_gear) @as(f32, 36) else 0));
+        if (ch.guild == 0) callButton(ctx, dl, ch_id, r.right() - (if (has_panels) @as(f32, 248) else 212), r.y + r.h / 2 - 14);
         inboxButtons(ctx, dl, r.right() - 32, r.y + r.h / 2 - 14);
         pinsButton(ctx, dl, ch_id, r.right() - 104, r.y + r.h / 2 - 14);
         if (has_panels) panelsButton(ctx, dl, r.right() - 140, r.y + r.h / 2 - 14);
@@ -123,6 +124,7 @@ pub fn header(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
     inboxButtons(ctx, dl, sx - 112 + no_find, r.y + r.h / 2 - 14);
     pinsButton(ctx, dl, ch_id, sx - 184 + no_find, r.y + r.h / 2 - 14);
     if (has_panels) panelsButton(ctx, dl, sx - 220 + no_find, r.y + r.h / 2 - 14);
+    if (ch.guild == 0) callButton(ctx, dl, ch_id, sx - 256 + no_find, r.y + r.h / 2 - 14);
     if (search_w > 0) {
         const sr: d.Rect = .{ .x = sx, .y = r.y + r.h / 2 - 13, .w = search_w, .h = 26 };
         const sh = d.hit(ctx, 1, sr);
@@ -157,6 +159,18 @@ pub fn header(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
 fn panelOpen() bool {
     const e = engine.current orelse return false;
     return e.panel_open != null;
+}
+
+/// Telefonar (DM e grupo): toca o ring e entra na call; em call, desliga.
+fn callButton(ctx: *d.Ctx, dl: *c.ImDrawList, ch_id: Id, x: f32, y: f32) void {
+    const in_call = ctx.st.voice == ch_id;
+    const cr: d.Rect = .{ .x = x, .y = y, .w = 28, .h = 28 };
+    const ch = d.hit(ctx, 8, cr);
+    qa.mark(cr, "header-call", .{});
+    if (ch.clicked) ctx.act(.{ .call_dm = ch_id });
+    const ink = (if (in_call) ctx.col(.danger) else if (ch.hovered) ctx.col(.text) else ctx.col(.muted)).u();
+    icons.phone(dl, cr.x + 14, cr.y + 14, ink);
+    d.tip(ctx, cr, if (in_call) i18n.tr("Desligar a chamada", "Leave the call") else i18n.tr("Telefonar", "Call"), ch.hovered);
 }
 
 /// Abre e fecha o painel lateral dos plugins (só aparece se algum tem painel).
