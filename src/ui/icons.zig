@@ -36,9 +36,9 @@ pub fn headset(dl: *c.ImDrawList, cx: f32, cy: f32, col: u32) void {
 pub fn phone(dl: *c.ImDrawList, cx: f32, cy: f32, col: u32) void {
     c.ImDrawList_PathClear(dl);
     c.ImDrawList_PathArcTo(dl, v(cx + 1, cy + 1), 8.5, pi * 0.25, pi * 0.85, 12);
-    c.ImDrawList_PathStroke(dl, col, 0, 2.6);
-    c.ImDrawList_AddCircleFilled(dl, v(cx - 6, cy - 2), 2.6, col);
-    c.ImDrawList_AddCircleFilled(dl, v(cx - 2, cy - 6), 2.6, col);
+    c.ImDrawList_PathStroke(dl, col, 2.6, 0);
+    c.ImDrawList_AddCircleFilled(dl, v(cx - 6, cy - 2), 2.6, col, 0);
+    c.ImDrawList_AddCircleFilled(dl, v(cx - 2, cy - 6), 2.6, col, 0);
     line(dl, cx - 5.5, cy - 3, cx - 2.5, cy - 5.5, col, 3);
 }
 

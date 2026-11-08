@@ -178,10 +178,11 @@ pub fn fetchGithubReleaseFile(repo: []const u8, tag: []const u8, file: []const u
     defer arena.deinit();
     const v = try std.json.parseFromSliceLeaky(std.json.Value, arena.allocator(), body.items, .{});
     if (v != .object) return error.NoRelease;
-    const assets = v.object.get("assets") orelse return error.NoRelease;
-    if (assets != .array) return error.NoRelease;
+    // (o nome `assets` é do mapa de atalhos do atualizador)
+    const asset_list = v.object.get("assets") orelse return error.NoRelease;
+    if (asset_list != .array) return error.NoRelease;
     var asset_url: ?[]const u8 = null;
-    for (assets.array.items) |a| {
+    for (asset_list.array.items) |a| {
         if (a != .object) continue;
         const n = a.object.get("name") orelse continue;
         if (n != .string or !std.mem.eql(u8, n.string, file)) continue;
