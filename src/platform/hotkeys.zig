@@ -245,6 +245,11 @@ fn x11Loop() void {
     x11Real() catch return;
 }
 
+/// Erro de X não derruba o app (o padrão do X encerra o processo).
+fn x11IgnoreError(_: ?*anyopaque, _: ?*anyopaque) callconv(.c) c_int {
+    return 0;
+}
+
 fn x11Real() !void {
     const names = [_][]const u8{ "libX11.so.6", "libX11.so" };
     var lib: std.DynLib = undefined;
@@ -253,17 +258,12 @@ fn x11Real() !void {
         break;
     } else return error.NoX11;
 
-    const Handler = *const fn (?*opaque {}, ?*opaque {}) callconv(.c) c_int;
+    const Handler = *const fn (?*anyopaque, ?*anyopaque) callconv(.c) c_int;
     const Fn = fn (Handler) callconv(.c) Handler;
     const setErr: *const Fn = lib.lookup(*const Fn, "XSetErrorHandler") orelse return error.NoX11;
     // Erro de X (tecla já presa por outro programa) não pode matar o app:
     // o tratador padrão do X encerra o processo inteiro.
-    const ignore: Handler = &struct {
-        fn handler(_: ?*opaque {}, _: ?*opaque {}) callconv(.c) c_int {
-            return 0;
-        }
-    }.handler;
-    _ = setErr(ignore);
+    _ = setErr(&x11IgnoreError);
 
     const open: *const fn (?[:0]const u8) callconv(.c) ?*opaque {} = lib.lookup(*const fn (?[:0]const u8) callconv(.c) ?*opaque {}, "XOpenDisplay") orelse return error.NoX11;
     const close: *const fn (*opaque {}) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}) callconv(.c) c_int, "XCloseDisplay") orelse return error.NoX11;
