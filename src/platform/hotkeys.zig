@@ -10,6 +10,7 @@
 //! tudo e põe as teclas apertadas numa fila que o quadro drena.
 const std = @import("std");
 const builtin = @import("builtin");
+const c = @import("c");
 const imgui = @import("imgui_c");
 
 pub const max_binds = 16;
@@ -27,10 +28,18 @@ pub const Spec = struct {
 // --- Estado compartilhado entre a interface e a thread ----------------------
 
 var disabled = false;
-var started = false;
 var backend_ok = false;
 
-var mutex: std.Thread.Mutex = .{};
+var mutex: ?*c.SDL_Mutex = null;
+var thread: ?*c.SDL_Thread = null;
+
+fn lock() void {
+    c.SDL_LockMutex(mutex);
+}
+fn unlock() void {
+    c.SDL_UnlockMutex(mutex);
+}
+
 /// Conta de mudanças: a thread compara com a dela para saber que trocou.
 var gen: u32 = 0;
 var specs_buf: [max_binds]Spec = undefined;
@@ -48,18 +57,14 @@ pub fn disable() void {
 /// A lista de atalhos globais mudou: guarda e acorda a thread.
 pub fn update(specs: []const Spec) void {
     if (disabled) return;
-    mutex.lock();
-    defer mutex.unlock();
+    if (mutex == null) mutex = c.SDL_CreateMutex();
+    lock();
+    defer unlock();
     specs_n = @min(specs.len, max_binds);
     @memcpy(specs_buf[0..specs_n], specs[0..specs_n]);
     gen +%= 1;
-    if (!started) {
-        started = true;
-        const t = std.Thread.spawn(.{ .stack_size = 1 << 20 }, threadMain, .{}) catch {
-            started = false;
-            return;
-        };
-        t.detach();
+    if (thread == null) {
+        thread = c.SDL_CreateThread(threadMain, "atalhos", null);
     } else if (builtin.os.tag == .windows) {
         postRegrab();
     }
@@ -67,8 +72,9 @@ pub fn update(specs: []const Spec) void {
 
 /// Uma tecla global apertada (índice em ui/bindings.zig) ou null.
 pub fn pop() ?u8 {
-    mutex.lock();
-    defer mutex.unlock();
+    if (mutex == null) return null;
+    lock();
+    defer unlock();
     if (fired_len == 0) return null;
     const i = fired_buf[fired_head];
     fired_head = (fired_head + 1) % fired_buf.len;
@@ -78,25 +84,27 @@ pub fn pop() ?u8 {
 
 /// O backend do sistema abriu? (No Wayland e sem libX11, não.)
 pub fn active() bool {
-    mutex.lock();
-    defer mutex.unlock();
-    return started and backend_ok;
+    if (mutex == null) return false;
+    lock();
+    defer unlock();
+    return thread != null and backend_ok;
 }
 
 fn fire(index: u8) void {
-    mutex.lock();
-    defer mutex.unlock();
+    lock();
+    defer unlock();
     if (fired_len == fired_buf.len) return;
     fired_buf[(fired_head + fired_len) % fired_buf.len] = index;
     fired_len += 1;
 }
 
-fn threadMain() void {
+fn threadMain(_: ?*anyopaque) callconv(.c) c_int {
     switch (builtin.os.tag) {
         .windows => winLoop(),
         .linux => x11Loop(),
         else => {},
     }
+    return 0;
 }
 
 // --- Windows ----------------------------------------------------------------
@@ -136,7 +144,7 @@ fn winLoop() void {
     while (true) {
         const r = GetMessageW(&msg, null, 0, 0);
         if (r <= 0) {
-            std.Thread.sleep(50 * std.time.ns_per_ms);
+            c.SDL_Delay(50);
             continue;
         }
         if (msg.message == WM_HOTKEY) {
@@ -148,7 +156,7 @@ fn winLoop() void {
 }
 
 fn regrabWin() void {
-    mutex.lock();
+    lock();
     const specs = specs_buf[0..specs_n];
     // Sem janela: o WM_HOTKEY cai na fila da thread que registrou.
     for (0..max_binds) |id| _ = UnregisterHotKey(null, @intCast(id));
@@ -163,7 +171,7 @@ fn regrabWin() void {
         // continua funcionando com a janela em foco.
         _ = RegisterHotKey(null, @intCast(s.index), mods, vk);
     }
-    mutex.unlock();
+    unlock();
     backend_ok = true;
 }
 
@@ -270,19 +278,19 @@ fn x11Real() !void {
     const dpy = open(null) orelse return error.NoDisplay;
     defer _ = close(dpy);
     const root = rootOf(dpy);
-    mutex.lock();
+    lock();
     backend_ok = true;
     var seen: u32 = gen +% 1;
-    mutex.unlock();
+    unlock();
 
     var keys: [max_binds]struct { index: u8, keycode: u32, mods: u32 } = undefined;
     var keys_n: usize = 0;
 
     while (true) {
-        mutex.lock();
+        lock();
         const g = gen;
         const specs = specs_buf[0..specs_n];
-        mutex.unlock();
+        unlock();
 
         if (g != seen) {
             seen = g;
