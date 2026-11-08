@@ -177,7 +177,10 @@ pub const App = struct {
         const app = try gpa.create(App);
         errdefer gpa.destroy(app);
 
-        app.win = try platform.Window.init("SigmaCord", 1280, 800);
+        // 32 a mais no Windows e no Linux: a faixa de título do tema mora em cima,
+        // e a área útil continua com a altura de sempre (no macOS a barra é a nativa).
+        const win_h: i32 = if (comptime sys.macos) 800 else 832;
+        app.win = try platform.Window.init("SigmaCord", 1280, win_h);
         wake_type_global = app.win.wake_type;
         timeline.mark(.janela);
 
