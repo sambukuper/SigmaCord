@@ -307,10 +307,6 @@ pub fn windowControls(ctx: *d.Ctx, n: *const kdl.Node, r: d.Rect) void {
     const size = d.pnum(n, "size", 12);
     const gap = d.pnum(n, "gap", 8);
     const cols = [3]d.Rgba{ fx.nodeColor(ctx, n, "color", .danger), fx.nodeColor(ctx, n, "color2", .idle), fx.nodeColor(ctx, n, "color3", .online) };
-    const tips = [3][2][]const u8{ .{ "Fechar", "Close" }, .{ "Minimizar", "Minimize" }, .{ "Maximizar", "Zoom" } };
-    const marks = [3][]const u8{ "close", "minimize", "zoom" };
-    const win = c.SDL_GetRenderWindow(ctx.images.renderer);
-    const focused = !ctx.io.*.AppFocusLost;
     const cy = r.y + r.h / 2;
     const total = size * 3 + gap * 2;
     const x0 = if (d.is(n, "align", "center", "left")) r.x + (r.w - total) / 2 else if (d.is(n, "align", "right", "left")) r.right() - total else r.x;
@@ -322,6 +318,10 @@ pub fn controlsDraw(ctx: *d.Ctx, x0: f32, cy: f32, size: f32, gap: f32, cols: [3
     const total = size * 3 + gap * 2;
     // Os botões ficam de fora do arrasto da barra de título.
     @import("../platform/window.zig").excludeHit(x0 - 4, cy - size / 2 - 4, total + 8, size + 8);
+    const tips = [3][2][]const u8{ .{ "Fechar", "Close" }, .{ "Minimizar", "Minimize" }, .{ "Maximizar", "Zoom" } };
+    const marks = [3][]const u8{ "close", "minimize", "zoom" };
+    const win = c.SDL_GetRenderWindow(ctx.images.renderer);
+    const focused = !ctx.io.*.AppFocusLost;
     const hot = ctx.hovering(.{ .x = x0 - 4, .y = cy - size / 2 - 4, .w = total + 8, .h = size + 8 });
     for (0..3) |i| {
         const cx = x0 + size / 2 + @as(f32, @floatFromInt(i)) * (size + gap);
