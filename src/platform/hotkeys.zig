@@ -265,18 +265,23 @@ fn x11Real() !void {
     // o tratador padrão do X encerra o processo inteiro.
     _ = setErr(&x11IgnoreError);
 
-    const open: *const fn (?[:0]const u8) callconv(.c) ?*opaque {} = lib.lookup(*const fn (?[:0]const u8) callconv(.c) ?*opaque {}, "XOpenDisplay") orelse return error.NoX11;
-    const close: *const fn (*opaque {}) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}) callconv(.c) c_int, "XCloseDisplay") orelse return error.NoX11;
-    const rootOf: *const fn (*opaque {}) callconv(.c) u64 = lib.lookup(*const fn (*opaque {}) callconv(.c) u64, "XDefaultRootWindow") orelse return error.NoX11;
-    const keycodeOf: *const fn (*opaque {}, u64) callconv(.c) u8 = lib.lookup(*const fn (*opaque {}, u64) callconv(.c) u8, "XKeysymToKeycode") orelse return error.NoX11;
-    const grab: *const fn (*opaque {}, c_int, u32, u64, c_int, c_int, c_int) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}, c_int, u32, u64, c_int, c_int, c_int) callconv(.c) c_int, "XGrabKey") orelse return error.NoX11;
-    const ungrab: *const fn (*opaque {}, c_int, u32, u64) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}, c_int, u32, u64) callconv(.c) c_int, "XUngrabKey") orelse return error.NoX11;
-    const fdOf: *const fn (*opaque {}) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}) callconv(.c) c_int, "XConnectionNumber") orelse return error.NoX11;
-    const pending: *const fn (*opaque {}) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}) callconv(.c) c_int, "XPending") orelse return error.NoX11;
-    const next: *const fn (*opaque {}, *XEvent) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}, *XEvent) callconv(.c) c_int, "XNextEvent") orelse return error.NoX11;
-    const sync: *const fn (*opaque {}, c_int) callconv(.c) c_int = lib.lookup(*const fn (*opaque {}, c_int) callconv(.c) c_int, "XSync") orelse return error.NoX11;
+    // Um apelido só para o Display: cada `opaque {}` literal é um tipo novo,
+    // e os dois lados da declaração têm que ser o MESMO tipo.
+    const Display = *anyopaque;
+    const Dpy = ?Display;
+    const open: *const fn (?[:0]const u8) callconv(.c) Dpy = lib.lookup(*const fn (?[:0]const u8) callconv(.c) Dpy, "XOpenDisplay") orelse return error.NoX11;
+    const close: *const fn (Display) callconv(.c) c_int = lib.lookup(*const fn (Display) callconv(.c) c_int, "XCloseDisplay") orelse return error.NoX11;
+    const rootOf: *const fn (Display) callconv(.c) u64 = lib.lookup(*const fn (Display) callconv(.c) u64, "XDefaultRootWindow") orelse return error.NoX11;
+    const keycodeOf: *const fn (Display, u64) callconv(.c) u8 = lib.lookup(*const fn (Display, u64) callconv(.c) u8, "XKeysymToKeycode") orelse return error.NoX11;
+    const Grab = *const fn (Display, c_int, u32, u64, c_int, c_int, c_int) callconv(.c) c_int;
+    const grab: Grab = lib.lookup(Grab, "XGrabKey") orelse return error.NoX11;
+    const ungrab: *const fn (Display, c_int, u32, u64) callconv(.c) c_int = lib.lookup(*const fn (Display, c_int, u32, u64) callconv(.c) c_int, "XUngrabKey") orelse return error.NoX11;
+    const fdOf: *const fn (Display) callconv(.c) c_int = lib.lookup(*const fn (Display) callconv(.c) c_int, "XConnectionNumber") orelse return error.NoX11;
+    const pending: *const fn (Display) callconv(.c) c_int = lib.lookup(*const fn (Display) callconv(.c) c_int, "XPending") orelse return error.NoX11;
+    const next: *const fn (Display, *XEvent) callconv(.c) c_int = lib.lookup(*const fn (Display, *XEvent) callconv(.c) c_int, "XNextEvent") orelse return error.NoX11;
+    const sync: *const fn (Display, c_int) callconv(.c) c_int = lib.lookup(*const fn (Display, c_int) callconv(.c) c_int, "XSync") orelse return error.NoX11;
 
-    const dpy = open(null) orelse return error.NoDisplay;
+    const dpy: Display = open(null) orelse return error.NoDisplay;
     defer _ = close(dpy);
     const root = rootOf(dpy);
     lock();
