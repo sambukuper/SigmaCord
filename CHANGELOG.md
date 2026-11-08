@@ -8,6 +8,7 @@
 **Keybinds**
 - Configurable keybinds: Settings → Keybinds lists every action with its key, click it and press a new combination to change it, and the × next to it goes back to the default. Assigning a key another action already uses moves it off that action.
 - The microphone mute and the deafen toggles finally have keys, `Ctrl+Shift+M` and `Ctrl+Shift+D`, and both are rebindable like everything else.
+- Every bind can be turned off by itself (the little square next to the key), and there is one switch to make all of them work outside the window too: on Windows (RegisterHotKey) and on Linux with X11 (XGrabKey) the keys then work in any program; on Wayland they stay window-focused, since the compositor decides about global keys. Off by default: a global key is taken away from every other program.
 - The command palette, search, settings, fullscreen, next theme, inbox, saved messages and the tab actions are all in the same list. The fixed extras (Ctrl+Shift+P, interface zoom, Alt+1…9, Alt+Enter) stay as they were.
 - The rule is the same one plugins already had: letters and digits need Ctrl, Alt or Super, and F1–F24 can go alone.
 

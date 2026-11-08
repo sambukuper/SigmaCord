@@ -27,7 +27,7 @@
 | Autocomplete in the composer | `@`, `#`, `:ab` or `/`, then the arrows and `Tab` or `Enter` |
 | Push to talk | The key or mouse button you pick in Settings → Voice |
 
-Everything from "Mute / unmute the microphone" down to "Close tab" is a bind: change it in Settings → Keybinds (click the key, press a new combination; the × next to it restores the default, and letters and digits need Ctrl, Alt or Super). The rest of the table is fixed.
+Everything from "Mute / unmute the microphone" down to "Close tab" is a bind: change it in Settings → Keybinds (click the key, press a new combination; the × next to it restores the default, the little square turns the bind on and off, and letters and digits need Ctrl, Alt or Super). One switch makes all of them work outside the window too — on Windows and on Linux with X11 they then work in any program (on Wayland they stay window-focused); off by default, because a global key is taken away from every other program. The rest of the table is fixed.
 
 Right-click works on messages, users, channels and servers.
 

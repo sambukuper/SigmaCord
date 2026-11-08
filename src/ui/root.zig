@@ -228,6 +228,8 @@ fn shortcuts(ctx: *d.Ctx) void {
     const was_capturing = bindings.capturingNow();
     bindings.captureTick(ctx);
     if (was_capturing) return;
+    // Teclas globais apertadas fora da janela (platform/hotkeys.zig).
+    bindings.drain(ctx);
     if (c.ImGui_IsKeyPressed(c.ImGuiKey_Escape) and ctx.st.popup == .none and !ctx.st.selection.empty()) ctx.st.selection = .{};
     if (ctrl) zoomKeys(ctx);
     // Os atalhos configuráveis (Configurações → Atalhos de teclado): mic,

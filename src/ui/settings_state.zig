@@ -184,6 +184,22 @@ pub const Settings = struct {
     bind_saved: Text = .{},
     bind_next_tab: Text = .{},
     bind_close_tab: Text = .{},
+    /// Cada atalho liga ou desliga sozinho (desligado = tecla nenhuma).
+    bind_on_mute: bool = true,
+    bind_on_deafen: bool = true,
+    bind_on_palette: bool = true,
+    bind_on_search: bool = true,
+    bind_on_settings: bool = true,
+    bind_on_fullscreen: bool = true,
+    bind_on_theme: bool = true,
+    bind_on_inbox: bool = true,
+    bind_on_saved: bool = true,
+    bind_on_next_tab: bool = true,
+    bind_on_close_tab: bool = true,
+    /// Os atalhos valem fora da janela também (Windows e Linux com X11; no
+    /// Wayland, só com a janela em foco). Desligado por padrão: uma tecla
+    /// global é tomada de todo o sistema, e os outros programas deixam de vê-la.
+    bind_global: bool = false,
 
     // Avançado
     developer_mode: bool = false,

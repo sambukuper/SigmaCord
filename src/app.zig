@@ -37,6 +37,8 @@ const guild_color = @import("ui/guild_color.zig");
 const theme_mod = @import("theme/theme.zig");
 const plugin_host = @import("plugins/host.zig");
 const mentions = @import("core/mentions.zig");
+const hotkeys = @import("platform/hotkeys.zig");
+const bindings_mod = @import("ui/bindings.zig");
 const autocomplete = @import("ui/autocomplete.zig");
 const inbox_core = @import("core/inbox.zig");
 const leitura = @import("core/leitura.zig");
@@ -217,8 +219,12 @@ pub const App = struct {
             var dbuf: [512]u8 = undefined;
             if (draftsPath(&dbuf)) |p| app.st.drafts.load(gpa, p);
         }
-        // No QA e nos prints ninguém abre o microfone de verdade.
+        // No QA e nos prints ninguém abre o microfone de verdade, e nenhuma
+        // tecla global é registrada: os atalhos ficam só na janela.
         voz_audio.force_dummy = opts.qa or opts.shot != null;
+        if (opts.qa or opts.shot != null) hotkeys.disable();
+        // As teclas globais dos atalhos (Configurações → Atalhos de teclado).
+        bindings_mod.syncGlobal(&app.st.settings);
         app.themes.mode = app.wantedMode();
         // Já aqui: os dados da demonstração saem no idioma da interface.
         i18n.set(if (opts.qa and opts.lang == null) .pt else opts.lang orelse i18n.fromSetting(app.st.settings.language));

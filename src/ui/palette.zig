@@ -115,6 +115,7 @@ const commands = [_]Command{
 /// Uma opção nova que não esteja aqui aparece pelo nome do campo.
 const toggle_names = [_]struct { field: []const u8, pt: []const u8, en: []const u8 }{
     .{ .field = "compact", .pt = "Modo compacto", .en = "Compact mode" },
+    .{ .field = "bind_global", .pt = "Atalhos fora da janela", .en = "Binds outside the window" },
     .{ .field = "show_avatars", .pt = "Mostrar avatares", .en = "Show avatars" },
     .{ .field = "clock_24h", .pt = "Relógio de 24 horas", .en = "24-hour clock" },
     .{ .field = "status_ring", .pt = "Status em anel", .en = "Status ring" },
@@ -212,6 +213,8 @@ fn rebuild(ctx: *d.Ctx) void {
     // Opções liga/desliga: o rótulo diz o que vai acontecer.
     for (S.fields(), 0..) |f, i| {
         if (f.kind != .boolean) continue;
+        // O liga/desliga de cada atalho mora na página deles (ui/bindings.zig).
+        if (std.mem.startsWith(u8, f.name, "bind_on_")) continue;
         const on = (S.getByte(&ctx.st.settings, i) orelse continue) != 0;
         const name = toggleName(f.name) orelse f.name;
         const label = (if (on) i18n.allocPrint(a, "Desligar: {s}", "Turn off: {s}", .{name}) else i18n.allocPrint(a, "Ligar: {s}", "Turn on: {s}", .{name})) catch continue;

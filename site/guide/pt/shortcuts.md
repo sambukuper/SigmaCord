@@ -27,7 +27,7 @@
 | Autocompletar na caixa de texto | `@`, `#`, `:ab` ou `/`, depois as setas e `Tab` ou `Enter` |
 | Aperte para falar | A tecla ou o botão do mouse que você escolher em Configurações → Voz |
 
-Tudo de "Mutar / desmutar o microfone" até "Fechar aba" é um atalho configurável: troque em Configurações → Atalhos de teclado (clique na tecla, aperte outra combinação; o × ao lado volta ao padrão, e letras e números pedem Ctrl, Alt ou Super). O resto da tabela é fixo.
+Tudo de "Mutar / desmutar o microfone" até "Fechar aba" é um atalho configurável: troque em Configurações → Atalhos de teclado (clique na tecla, aperte outra combinação; o × ao lado volta ao padrão, o quadradinho liga e desliga o atalho, e letras e números pedem Ctrl, Alt ou Super). Um interruptor faz todos valerem fora da janela também — no Windows e no Linux com X11 eles passam a funcionar em qualquer programa (no Wayland ficam só na janela); vem desligado, porque uma tecla global é tomada de todos os outros programas. O resto da tabela é fixo.
 
 O botão direito funciona em mensagens, usuários, canais e servidores.
 

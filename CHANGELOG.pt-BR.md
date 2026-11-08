@@ -8,6 +8,7 @@
 **Atalhos**
 - Atalhos configuráveis: Configurações → Atalhos de teclado lista cada ação com a tecla dela; clicar e apertar outra combinação troca, e o × ao lado volta ao padrão. Se a tecla já era de outra ação, ela sai de lá.
 - O mudo do microfone e o ensurdecer finalmente têm teclas, `Ctrl+Shift+M` e `Ctrl+Shift+D`, e os dois trocam como todo o resto.
+- Cada atalho desliga sozinho (o quadradinho ao lado da tecla), e há um interruptor para fazer todos valerem fora da janela também: no Windows (RegisterHotKey) e no Linux com X11 (XGrabKey) as teclas passam a funcionar em qualquer programa; no Wayland ficam só na janela, porque quem decide sobre tecla global é o compositor. Desligado por padrão: uma tecla global é tomada de todos os outros programas.
 - A paleta de comandos, a busca, as configurações, a tela cheia, o próximo tema, a caixa de entrada, as mensagens salvas e as ações de aba estão na mesma lista. Os fixos (Ctrl+Shift+P, zoom da interface, Alt+1…9, Alt+Enter) continuam como eram.
 - A regra é a mesma que os plugins já tinham: letras e números pedem Ctrl, Alt ou Super, e F1–F24 podem ir sozinhas.
 
