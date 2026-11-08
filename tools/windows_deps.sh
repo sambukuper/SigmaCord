@@ -28,6 +28,10 @@ get() { # url sha256
                 https://repo.msys2.org/*)
                     curl -fsSL --retry 3 --connect-timeout 20 -o "$f" "https://mirror.msys2.org/mingw/ucrt64/$(basename "$1")"
                     ;;
+                # O Savannah também: o espelho do Netcologne guarda tudo.
+                https://download.savannah.gnu.org/*)
+                    curl -fsSL --retry 3 --connect-timeout 20 -o "$f"                         "https://mirror.netcologne.de/savannah/${1#https://download.savannah.gnu.org/releases/}"
+                    ;;
             esac
         }
     fi
